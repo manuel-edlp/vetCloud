@@ -29,7 +29,8 @@ class Client(models.Model):
     def __str__(self):
         return self.name
 
-    def save_client(client_data):
+    @classmethod
+    def save_client(cls, client_data):
         errors = validate_client(client_data)
 
         if len(errors.keys()) > 0:
