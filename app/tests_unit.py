@@ -3,12 +3,12 @@ from app.models import Client
 
 class ClientModelTest(TestCase):
     def test_can_create_and_get_client(self):
-        Client.objects.create(
-            name="Juan Sebastian Veron",
-            phone="221555232",
-            address="13 y 44",
-            email="brujita75@hotmail.com",
-        )
+        Client.save_client({
+            "name": "Juan Sebastian Veron",
+            "phone": "221555232",
+            "address": "13 y 44",
+            "email": "brujita75@hotmail.com",
+        })
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
 
@@ -18,36 +18,55 @@ class ClientModelTest(TestCase):
         self.assertEqual(clients[0].email, "brujita75@hotmail.com")
 
     def test_can_update_client(self):
-        Client.objects.create(
-            name="Juan Sebastian Veron",
-            phone="221555232",
-            address="13 y 44",
-            email="brujita75@hotmail.com",
-        )
+        Client.save_client({
+            "name": "Juan Sebastian Veron",
+            "phone": "221555232",
+            "address": "13 y 44",
+            "email": "brujita75@hotmail.com",
+        })
         client = Client.objects.get(pk=1)
         
         self.assertEqual(client.phone, "221555232")
 
-        client.phone="221555233"
-
-        client.save()
+        client.update_client({
+            "phone": "221555233"
+        })
 
         client_updated = Client.objects.get(pk=1)
 
         self.assertEqual(client_updated.phone, "221555233")
 
+    def test_update_client_with_error(self):
+        Client.save_client({
+            "name": "Juan Sebastian Veron",
+            "phone": "221555232",
+            "address": "13 y 44",
+            "email": "brujita75@hotmail.com",
+        })
+        client = Client.objects.get(pk=1)
+        
+        self.assertEqual(client.phone, "221555232")
+
+        result = client.update_client({
+            "phone": ""
+        })
+
+        self.assertEqual(result, (False, "El atributo phone no puede ser vacío"))
+
+        client_updated = Client.objects.get(pk=1)
+
+        self.assertEqual(client_updated.phone, "221555232")
+
     def test_can_delete_client(self):
-        Client.objects.create(
-            name="Juan Sebastian Veron",
-            phone="221555232",
-            address="13 y 44",
-            email="brujita75@hotmail.com",
-        )
+        Client.save_client({
+            "name": "Juan Sebastian Veron",
+            "phone": "221555232",
+            "address": "13 y 44",
+            "email": "brujita75@hotmail.com",
+        })
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
 
-        clients[0].delete()
+        result = clients[0].delete_client()
 
-        clients_updated = Client.objects.all()
-
-        self.assertEqual(len(clients_updated), 0)
+        self.assertEqual(len(result), 0)
