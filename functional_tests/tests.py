@@ -1,4 +1,3 @@
-import re
 import os
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
