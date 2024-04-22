@@ -4,6 +4,13 @@
 <div class="container">
     <h1 class="mb-4">Clientes</h1>
 
+    <div class="mb-2">
+        <a href="{% url 'clients_form' %}" class="btn btn-primary">
+            <i class="bi bi-plus"></i>
+            Nuevo Cliente
+        </a>
+    </div>
+
     <table class="table">
         <thead>
             <tr>
@@ -16,19 +23,21 @@
         </thead>
 
         <tbody>
+            {% for client in clients %}
             <tr>
-                {% for client in clients %}
                     <td>{{client.name}}</td>
                     <td>{{client.phone}}</td>
                     <td>{{client.email}}</td>
                     <td>{{client.address}}</td>
                     <td></td>
-                {% empty %}
+            </tr>
+            {% empty %}
+                <tr>
                     <td colspan="5" class="text-center">
                         No existen clientes
                     </td>
-                {% endfor %}
-            </tr>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
