@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect, reverse
 from .models import Client
 
+
 def home(request):
     return render(request, "home.html")
 
+
 def clients_repository(request):
     clients = Client.objects.all()
-    return render(request, "clients/repository.html", { "clients": clients })
+    return render(request, "clients/repository.html", {"clients": clients})
+
 
 def validate_client(data):
     errors = {}
@@ -28,6 +31,7 @@ def validate_client(data):
 
     return errors
 
+
 def save_client(client_data):
     errors = validate_client(client_data)
 
@@ -43,6 +47,7 @@ def save_client(client_data):
 
     return True, None
 
+
 def clients_form(request):
     if request.method == "POST":
         saved, errors = save_client(request.POST)
@@ -51,12 +56,7 @@ def clients_form(request):
             return redirect(reverse("clients_repo"))
 
         return render(
-            request,
-            "clients/form.html", 
-            {
-                "errors": errors,
-                "data": request.POST
-            }
+            request, "clients/form.html", {"errors": errors, "data": request.POST}
         )
 
     return render(request, "clients/form.html")

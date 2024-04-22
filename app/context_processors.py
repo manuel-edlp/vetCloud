@@ -1,17 +1,10 @@
 from django.urls import reverse
 
 links = [
-    {
-        "label": "Home",
-        "href": reverse("home"),
-        "icon": "bi bi-house-door"
-    },
-    {
-        "label": "Clientes",
-        "href": reverse("clients_repo"),
-        "icon": "bi bi-people"
-    },
+    {"label": "Home", "href": reverse("home"), "icon": "bi bi-house-door"},
+    {"label": "Clientes", "href": reverse("clients_repo"), "icon": "bi bi-people"},
 ]
+
 
 def navbar(request):
     def add_active(link):
@@ -24,6 +17,4 @@ def navbar(request):
 
         return copy
 
-    return {
-        "links": map(add_active, links)
-    }
+    return {"links": map(add_active, links)}
