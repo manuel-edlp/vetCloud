@@ -1,24 +1,24 @@
 from django.db import models
 
 def validate_client(data):
-        errors = {}
+    errors = {}
 
-        name = data.get("name", "")
-        phone = data.get("phone", "")
-        email = data.get("email", "")
+    name = data.get("name", "")
+    phone = data.get("phone", "")
+    email = data.get("email", "")
 
-        if name == "":
-            errors["name"] = "Por favor ingrese un nombre"
+    if name == "":
+        errors["name"] = "Por favor ingrese un nombre"
 
-        if phone == "":
-            errors["phone"] = "Por favor ingrese un teléfono"
+    if phone == "":
+        errors["phone"] = "Por favor ingrese un teléfono"
 
-        if email == "":
-            errors["email"] = "Por favor ingrese un email"
-        elif email.count("@") == 0:
-            errors["email"] = "Por favor ingrese un email valido"
+    if email == "":
+        errors["email"] = "Por favor ingrese un email"
+    elif email.count("@") == 0:
+        errors["email"] = "Por favor ingrese un email valido"
 
-        return errors
+    return errors
 
 class Client(models.Model):
     name = models.CharField(max_length=100)
@@ -44,7 +44,7 @@ class Client(models.Model):
         )
 
         return True, None
-    
+
     def update_client(self, client_data):
         for key, value in client_data.items():
             if value == "":
@@ -53,7 +53,7 @@ class Client(models.Model):
         self.save()
 
         return True, None
-    
+
     def delete_client(self):
         self.delete()
 
