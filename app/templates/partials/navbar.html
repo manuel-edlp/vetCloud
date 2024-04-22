@@ -24,7 +24,8 @@
             <li class="nav-item">
                 <a class="nav-link {% if link.active %}active{% endif %}" 
                    {% if link.active %}aria-current="page"{% endif %}
-                   href="{{ link.href }}">
+                   href="{{ link.href }}"
+                   data-testid="navbar-{{ link.label }}">
 
                     {% if link.icon %}
                         <i class="{{link.icon}}" aria-hidden="true"></i>

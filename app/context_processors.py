@@ -1,8 +1,15 @@
+from django.urls import reverse
+
 links = [
     {
         "label": "Home",
-        "href": "/",
+        "href": reverse("home"),
         "icon": "bi bi-house-door"
+    },
+    {
+        "label": "Clientes",
+        "href": reverse("clients_repo"),
+        "icon": "bi bi-people"
     },
 ]
 

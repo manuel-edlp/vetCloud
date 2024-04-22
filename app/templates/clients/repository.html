@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+    <h1 class="mb-4">Clientes</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Dirección</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                {% for client in clients %}
+                    <td>{{client.name}}</td>
+                    <td>{{client.phone}}</td>
+                    <td>{{client.email}}</td>
+                    <td>{{client.address}}</td>
+                    <td></td>
+                {% empty %}
+                    <td colspan="5" class="text-center">
+                        No existen clientes
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
