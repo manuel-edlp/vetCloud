@@ -55,16 +55,3 @@ class ClientModelTest(TestCase):
 
         self.assertEqual(client_updated.phone, "221555232")
 
-    def test_can_delete_client(self):
-        Client.save_client({
-            "name": "Juan Sebastian Veron",
-            "phone": "221555232",
-            "address": "13 y 44",
-            "email": "brujita75@hotmail.com",
-        })
-        clients = Client.objects.all()
-        self.assertEqual(len(clients), 1)
-
-        result = clients[0].delete_client()
-
-        self.assertEqual(len(result), 0)

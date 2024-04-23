@@ -53,7 +53,3 @@ class Client(models.Model):
 
         self.save()
 
-    def delete_client(self):
-        self.delete()
-
-        return Client.objects.all()

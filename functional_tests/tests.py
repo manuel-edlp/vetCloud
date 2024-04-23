@@ -12,7 +12,6 @@ playwright = sync_playwright().start()
 headless = os.environ.get("HEADLESS", 1) == 1
 slow_mo = os.environ.get("SLOW_MO", 0)
 
-
 class PlaywrightTestCase(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
@@ -121,9 +120,54 @@ class ClientsRepoTestCase(PlaywrightTestCase):
             reverse("clients_edit", kwargs={"id": client.id})
         )
 
+    def test_should_show_client_delete_action(self):
+        client = Client.objects.create(
+            name="Juan Sebastián Veron",
+            address="13 y 44",
+            phone="221555232",
+            email="brujita75@hotmail.com",
+        )
+
+        self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
+
+        edit_form = self.page.get_by_role(
+            "form",
+            name="Formulario de eliminación de cliente"
+        )
+        client_id_input = edit_form.locator('input[name=client_id]')
+
+        expect(edit_form).to_be_visible()
+        expect(edit_form).to_have_attribute("action", reverse("clients_delete"))
+        expect(client_id_input).not_to_be_visible()
+        expect(client_id_input).to_have_value(str(client.id))
+        expect(edit_form.get_by_role('button', name="Eliminar")).to_be_visible()
+
+    def test_should_can_be_able_to_delete_a_client(self):
+        Client.objects.create(
+            name="Juan Sebastián Veron",
+            address="13 y 44",
+            phone="221555232",
+            email="brujita75@hotmail.com",
+        )
+
+        self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
+
+        expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
+
+        def is_delete_response(response):
+            return response.url.find(reverse("clients_delete"))
+
+        # verificamos que el envio del formulario fue exitoso
+        with self.page.expect_response(is_delete_response) as response_info:
+            self.page.get_by_role('button', name="Eliminar").click()
+
+        response = response_info.value
+        self.assertTrue(response.status < 400)
+
+        expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
 
 class ClientCreateEditTestCase(PlaywrightTestCase):
-    def test_should_can_create_a_new_client(self):
+    def test_should_be_able_to_create_a_new_client(self):
         self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
@@ -167,7 +211,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
             self.page.get_by_text("Por favor ingrese un email valido")
         ).to_be_visible()
 
-    def test_should_can_edit_a_client(self):
+    def test_should_be_able_to_edit_a_client(self):
         client = Client.objects.create(
             name="Juan Sebastián Veron",
             address="13 y 44",

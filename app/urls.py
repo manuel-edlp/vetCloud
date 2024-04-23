@@ -6,4 +6,5 @@ urlpatterns = [
     path("clientes/", view=views.clients_repository, name="clients_repo"),
     path("clientes/nuevo/", view=views.clients_form, name="clients_form"),
     path("clientes/editar/<int:id>/", view=views.clients_form, name="clients_edit"),
+    path("clientes/eliminar/", view=views.clients_delete, name="clients_delete"),
 ]

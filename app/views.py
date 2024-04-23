@@ -5,7 +5,6 @@ from .models import Client
 def home(request):
     return render(request, "home.html")
 
-
 def clients_repository(request):
     clients = Client.objects.all()
     return render(request, "clients/repository.html", {"clients": clients})
@@ -34,3 +33,10 @@ def clients_form(request, id=None):
         client = get_object_or_404(Client, pk=id)
 
     return render(request, "clients/form.html", {"client": client})
+
+def clients_delete(request):
+    client_id = request.POST.get("client_id")
+    client = get_object_or_404(Client, pk=int(client_id))
+    client.delete()
+
+    return redirect(reverse("clients_repo"))
