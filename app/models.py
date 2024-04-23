@@ -1,5 +1,6 @@
 from django.db import models
 
+
 def validate_client(data):
     errors = {}
 
@@ -19,6 +20,7 @@ def validate_client(data):
         errors["email"] = "Por favor ingrese un email valido"
 
     return errors
+
 
 class Client(models.Model):
     name = models.CharField(max_length=100)
@@ -52,4 +54,3 @@ class Client(models.Model):
         self.address = client_data.get("address", "") or self.address
 
         self.save()
-

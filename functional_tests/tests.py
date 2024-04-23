@@ -12,13 +12,13 @@ playwright = sync_playwright().start()
 headless = os.environ.get("HEADLESS", 1) == 1
 slow_mo = os.environ.get("SLOW_MO", 0)
 
+
 class PlaywrightTestCase(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.browser: Browser = playwright.firefox.launch(
-            headless=headless,
-            slow_mo=int(slow_mo)
+            headless=headless, slow_mo=int(slow_mo)
         )
 
     @classmethod
@@ -116,8 +116,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
 
         edit_action = self.page.get_by_role("link", name="Editar")
         expect(edit_action).to_have_attribute(
-            "href",
-            reverse("clients_edit", kwargs={"id": client.id})
+            "href", reverse("clients_edit", kwargs={"id": client.id})
         )
 
     def test_should_show_client_delete_action(self):
@@ -131,16 +130,15 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
 
         edit_form = self.page.get_by_role(
-            "form",
-            name="Formulario de eliminación de cliente"
+            "form", name="Formulario de eliminación de cliente"
         )
-        client_id_input = edit_form.locator('input[name=client_id]')
+        client_id_input = edit_form.locator("input[name=client_id]")
 
         expect(edit_form).to_be_visible()
         expect(edit_form).to_have_attribute("action", reverse("clients_delete"))
         expect(client_id_input).not_to_be_visible()
         expect(client_id_input).to_have_value(str(client.id))
-        expect(edit_form.get_by_role('button', name="Eliminar")).to_be_visible()
+        expect(edit_form.get_by_role("button", name="Eliminar")).to_be_visible()
 
     def test_should_can_be_able_to_delete_a_client(self):
         Client.objects.create(
@@ -159,12 +157,13 @@ class ClientsRepoTestCase(PlaywrightTestCase):
 
         # verificamos que el envio del formulario fue exitoso
         with self.page.expect_response(is_delete_response) as response_info:
-            self.page.get_by_role('button', name="Eliminar").click()
+            self.page.get_by_role("button", name="Eliminar").click()
 
         response = response_info.value
         self.assertTrue(response.status < 400)
 
         expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
+
 
 class ClientCreateEditTestCase(PlaywrightTestCase):
     def test_should_be_able_to_create_a_new_client(self):
@@ -219,7 +218,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
             email="brujita75@hotmail.com",
         )
 
-        path = reverse('clients_edit', kwargs={"id": client.id})
+        path = reverse("clients_edit", kwargs={"id": client.id})
         self.page.goto(f"{self.live_server_url}{path}")
 
         self.page.get_by_label("Nombre").fill("Guido Carrillo")
@@ -241,7 +240,5 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
 
         edit_action = self.page.get_by_role("link", name="Editar")
         expect(edit_action).to_have_attribute(
-            "href",
-            reverse("clients_edit", kwargs={"id": client.id})
+            "href", reverse("clients_edit", kwargs={"id": client.id})
         )
-
