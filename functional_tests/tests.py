@@ -10,13 +10,17 @@ from app.models import Client
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 playwright = sync_playwright().start()
 headless = os.environ.get("HEADLESS", 1) == 1
+slow_mo = os.environ.get("SLOW_MO", 0)
 
 
 class PlaywrightTestCase(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.browser: Browser = playwright.firefox.launch(headless=headless)
+        cls.browser: Browser = playwright.firefox.launch(
+            headless=headless,
+            slow_mo=int(slow_mo)
+        )
 
     @classmethod
     def tearDownClass(cls):
