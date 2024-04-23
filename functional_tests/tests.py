@@ -105,7 +105,6 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         )
         expect(add_client_action).to_have_attribute("href", reverse("clients_form"))
 
-
     def test_should_show_client_edit_action(self):
         client = Client.objects.create(
             name="Juan Sebastián Veron",
@@ -122,42 +121,8 @@ class ClientsRepoTestCase(PlaywrightTestCase):
             reverse("clients_edit", kwargs={"id": client.id})
         )
 
-    def test_should_can_edit_a_client(self):
-        client = Client.objects.create(
-            name="Juan Sebastián Veron",
-            address="13 y 44",
-            phone="221555232",
-            email="brujita75@hotmail.com",
-        )
 
-        path = reverse('clients_edit', kwargs={"id": client.id})
-        self.page.goto(f"{self.live_server_url}{path}")
-
-        self.page.get_by_label("Nombre").fill("Guido Carrillo")
-        self.page.get_by_label("Teléfono").fill("221232555")
-        self.page.get_by_label("Email").fill("goleador@gmail.com")
-        self.page.get_by_label("Dirección").fill("1 y 57")
-
-        self.page.get_by_role("button", name="Guardar").click()
-
-        expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
-        expect(self.page.get_by_text("13 y 44")).not_to_be_visible()
-        expect(self.page.get_by_text("221555232")).not_to_be_visible()
-        expect(self.page.get_by_text("brujita75@hotmail.com")).not_to_be_visible()
-
-        expect(self.page.get_by_text("Guido Carrillo")).to_be_visible()
-        expect(self.page.get_by_text("1 y 57")).to_be_visible()
-        expect(self.page.get_by_text("221232555")).to_be_visible()
-        expect(self.page.get_by_text("goleador@gmail.com")).to_be_visible()
-
-        edit_action = self.page.get_by_role("link", name="Editar")
-        expect(edit_action).to_have_attribute(
-            "href",
-            reverse("clients_edit", kwargs={"id": client.id})
-        )
-
-
-class ClientCreateTestCase(PlaywrightTestCase):
+class ClientCreateEditTestCase(PlaywrightTestCase):
     def test_should_can_create_a_new_client(self):
         self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
 
@@ -201,3 +166,38 @@ class ClientCreateTestCase(PlaywrightTestCase):
         expect(
             self.page.get_by_text("Por favor ingrese un email valido")
         ).to_be_visible()
+
+    def test_should_can_edit_a_client(self):
+        client = Client.objects.create(
+            name="Juan Sebastián Veron",
+            address="13 y 44",
+            phone="221555232",
+            email="brujita75@hotmail.com",
+        )
+
+        path = reverse('clients_edit', kwargs={"id": client.id})
+        self.page.goto(f"{self.live_server_url}{path}")
+
+        self.page.get_by_label("Nombre").fill("Guido Carrillo")
+        self.page.get_by_label("Teléfono").fill("221232555")
+        self.page.get_by_label("Email").fill("goleador@gmail.com")
+        self.page.get_by_label("Dirección").fill("1 y 57")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
+        expect(self.page.get_by_text("13 y 44")).not_to_be_visible()
+        expect(self.page.get_by_text("221555232")).not_to_be_visible()
+        expect(self.page.get_by_text("brujita75@hotmail.com")).not_to_be_visible()
+
+        expect(self.page.get_by_text("Guido Carrillo")).to_be_visible()
+        expect(self.page.get_by_text("1 y 57")).to_be_visible()
+        expect(self.page.get_by_text("221232555")).to_be_visible()
+        expect(self.page.get_by_text("goleador@gmail.com")).to_be_visible()
+
+        edit_action = self.page.get_by_role("link", name="Editar")
+        expect(edit_action).to_have_attribute(
+            "href",
+            reverse("clients_edit", kwargs={"id": client.id})
+        )
+
