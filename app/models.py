@@ -46,13 +46,12 @@ class Client(models.Model):
         return True, None
 
     def update_client(self, client_data):
-        for key, value in client_data.items():
-            if value == "":
-                return False, "El atributo %s no puede ser vacío" % (key)
-            setattr(self, key, value)
-        self.save()
+        self.name = client_data.get("name", "") or self.name
+        self.email = client_data.get("email", "") or self.email
+        self.phone = client_data.get("phone", "") or self.phone
+        self.address = client_data.get("address", "") or self.address
 
-        return True, None
+        self.save()
 
     def delete_client(self):
         self.delete()

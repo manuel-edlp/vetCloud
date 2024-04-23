@@ -52,6 +52,10 @@ class ClientsTest(TestCase):
         self.assertContains(response, "Por favor ingrese un teléfono")
         self.assertContains(response, "Por favor ingrese un email")
 
+    def test_should_response_with_404_status_if_client_doesnt_exists(self):
+        response = self.client.get(reverse("clients_edit", kwargs={"id": 100}))
+        self.assertEqual(response.status_code, 404)
+
     def test_validation_invalid_email(self):
         response = self.client.post(
             reverse("clients_form"),

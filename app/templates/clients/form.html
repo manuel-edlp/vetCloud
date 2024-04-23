@@ -18,12 +18,14 @@
 
                 {% csrf_token %}
 
+                <input type="hidden" value="{{ client.id }}" name="id" />
+
                 <div>
                     <label for="name" class="form-label">Nombre</label>
                     <input type="text"
                         id="name"
                         name="name"
-                        value="{{data.name}}"
+                        value="{{client.name}}"
                         class="form-control"
                         required/>
 
@@ -39,7 +41,7 @@
                         id="phone"
                         name="phone"
                         class="form-control"
-                        value="{{data.phone}}"
+                        value="{{client.phone}}"
                         required/>
 
                     {% if errors.phone %}
@@ -54,7 +56,7 @@
                         id="email"
                         name="email"
                         class="form-control"
-                        value="{{ data.email }}"
+                        value="{{ client.email }}"
                         required/>
 
                     {% if errors.email %}
@@ -68,7 +70,7 @@
                     <input type="text"
                         id="address"
                         name="address"
-                        value="{{data.address}}"
+                        value="{{client.address}}"
                         class="form-control" />
 
                     <div class="invalid-feedback">

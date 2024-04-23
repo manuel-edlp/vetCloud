@@ -25,7 +25,7 @@ class ClientModelTest(TestCase):
             "email": "brujita75@hotmail.com",
         })
         client = Client.objects.get(pk=1)
-        
+
         self.assertEqual(client.phone, "221555232")
 
         client.update_client({
@@ -44,14 +44,12 @@ class ClientModelTest(TestCase):
             "email": "brujita75@hotmail.com",
         })
         client = Client.objects.get(pk=1)
-        
+
         self.assertEqual(client.phone, "221555232")
 
-        result = client.update_client({
+        client.update_client({
             "phone": ""
         })
-
-        self.assertEqual(result, (False, "El atributo phone no puede ser vacío"))
 
         client_updated = Client.objects.get(pk=1)
 

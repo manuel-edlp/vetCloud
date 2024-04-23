@@ -29,7 +29,11 @@
                     <td>{{client.phone}}</td>
                     <td>{{client.email}}</td>
                     <td>{{client.address}}</td>
-                    <td></td>
+                    <td>
+                        <a class="btn btn-outline-primary"
+                           href="{% url 'clients_edit' id=client.id %}"
+                        >Editar</a>
+                    </td>
             </tr>
             {% empty %}
                 <tr>
