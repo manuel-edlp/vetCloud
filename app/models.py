@@ -98,3 +98,53 @@ class Provider(models.Model):
         self.email = provider_data.get("email", "") or self.email
 
         self.save()
+
+def validate_product(data):
+    errors = {}
+
+    name = data.get("name", "")
+    product_type = data.get("type", "")
+    price = data.get("price", "")
+
+    if name == "":
+        errors["name"] = "Por favor ingrese su nombre"
+
+    if product_type == "":
+        errors["type"] = "Por favor ingrese un tipo de cliente"
+
+    if not isinstance(price, (int, float)) or price <= 0:
+        errors["price"] = "Por favor ingrese un precio válido"
+
+    return errors
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    product_type = models.CharField(max_length=15)
+    price = models.FloatField()
+    
+
+    def __str__(self):
+        return self.name
+
+    @classmethod
+    def save_product(cls, product_data):
+        errors = validate_product(product_data)
+
+        if len(errors.keys()) > 0:
+            return False, errors
+
+        Product.objects.create(
+            name=product_data.get("name"),
+            product_type=product_data.get("type"),
+            price=product_data.get("price"),
+        )
+
+        return True, None
+
+    def update_product(self, product_data):
+        self.name = product_data.get("name", "") or self.name
+        self.product_type = product_data.get("type", "") or self.product_type
+        self.price = product_data.get("price", "") or self.price
+
+        self.save()
