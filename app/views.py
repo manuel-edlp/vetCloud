@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from .models import Client
 from .models import Provider
+from .models import Pet
 
 
 def home(request):
@@ -83,3 +84,33 @@ def provider_delete(request):
     provider.delete()
 
     return redirect(reverse("provider_repo"))
+
+#Mascota
+def pet_repository(request):
+    pets = Provider.objects.all()
+    return render(request, "pets/repository.html", {"pets": pets})
+
+def pet_form(request, id=None):
+    if request.method == "POST":
+        pet_id = request.POST.get("id", "")
+        errors = {}
+        saved = True
+
+        if pet_id == "":
+            saved, errors = Pet.save_pet(request.POST)
+        else:
+            pet = get_object_or_404(Pet, pk=pet_id)
+            pet.update_pet(request.POST)
+
+        if saved:
+            return redirect(reverse("pet_repo"))
+
+        return render(
+            request, "pets/form.html", {"errors": errors, "pet": request.POST}
+        )
+
+    pet = None
+    if id is not None:
+        pet = get_object_or_404(Pet, pk=id)
+
+    return render(request, "pets/form.html", {"pet": pet})
