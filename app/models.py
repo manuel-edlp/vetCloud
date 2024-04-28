@@ -98,3 +98,51 @@ class Provider(models.Model):
         self.email = provider_data.get("email", "") or self.email
 
         self.save()
+
+
+def validate_pet(data):
+    errors = {}
+
+    name = data.get("name", "")
+    breed = data.get("breed", "")
+    birthday = data.get("birthday", "")
+
+    if name == "":
+        errors["name"] = "Por favor ingrese un nombre"
+
+    if breed == "":
+        errors["breed"] = "Por favor ingrese una raza"
+    
+    if birthday == "":
+        errors["birthday"] = "Por favor ingrese una fecha de nacimiento"
+        
+    return errors
+class Pet(models.Model):
+    name = models.CharField(max_length=40)
+    breed = models.CharField(max_length=40)
+    birthday = models.DateField
+    
+    def __str__(self):
+        return self.name
+
+    @classmethod
+    def save_pet(cls, pet_data):
+        errors = validate_pet(pet_data)
+
+        if len(errors.keys()) > 0:
+            return False, errors
+
+        Provider.objects.create(
+            name=pet_data.get("name"),
+            breed=pet_data.get("breed"),
+            birthday=pet_data.get("birthday")
+        )
+
+        return True, None
+
+    def update_pet(self, pet_data):
+        self.name = pet_data.get("name", "") or self.name
+        self.breed = pet_data.get("breed", "") or self.breed
+        self.birthday = pet_data.get("birthday", "") or self.birthday
+
+        self.save()
