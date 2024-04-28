@@ -25,4 +25,5 @@ Aplicación web para veterinarias utilizada en la cursada 2024 de Ingeniería y 
 ## Integrantes:
 
 Baez Gonazalo - Proveedor
+Semper, Juan Manuel - Producto
 
