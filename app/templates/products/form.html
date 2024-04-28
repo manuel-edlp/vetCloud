@@ -36,23 +36,23 @@
                     {% endif %}
                 </div>
                 <div>
-                    <label for="type" class="form-label">Tipo</label>
+                    <label for="product_type" class="form-label">Tipo</label>
                     <input type="text"
-                        id="type"
-                        name="type"
-                        value="{{product.type}}"
+                        id="product_type"
+                        name="product_type"
+                        value="{{product.product_type}}"
                         class="form-control"
                         required/>
 
                     {% if errors.type %}
                         <div class="invalid-feedback">
-                            {{ errors.type }}
+                            {{ errors.ptroduct_type }}
                         </div>
                     {% endif %}
                 </div>
                 <div>
                     <label for="price" class="form-label">Precio</label>
-                    <input type="text"
+                    <input type="number"
                         id="price"
                         name="price"
                         value="{{product.price}}"
