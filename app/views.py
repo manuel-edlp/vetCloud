@@ -87,7 +87,7 @@ def provider_delete(request):
 
 #Mascota
 def pet_repository(request):
-    pets = Provider.objects.all()
+    pets = Pet.objects.all()
     return render(request, "pets/repository.html", {"pets": pets})
 
 def pet_form(request, id=None):
@@ -114,3 +114,11 @@ def pet_form(request, id=None):
         pet = get_object_or_404(Pet, pk=id)
 
     return render(request, "pets/form.html", {"pet": pet})
+
+
+def pet_delete(request):
+    pet_id = request.POST.get("pet_id")
+    pet = get_object_or_404(Pet, pk=int(pet_id))
+    pet.delete()
+
+    return redirect(reverse("pet_repo"))
