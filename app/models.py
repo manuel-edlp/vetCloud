@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 
 def validate_client(data):
@@ -132,10 +133,18 @@ class Pet(models.Model):
         if len(errors.keys()) > 0:
             return False, errors
 
-        Provider.objects.create(
+        # Convertir birthday a un objeto de fecha
+        birthday_str = pet_data.get("birthday")
+        try:
+            birthday = datetime.strptime(birthday_str, "%d-%m-%Y").date()
+        except ValueError:
+            errors["birthday"] = "Formato de fecha incorrecto"
+            return False, errors
+
+        Pet.objects.create(
             name=pet_data.get("name"),
             breed=pet_data.get("breed"),
-            birthday=pet_data.get("birthday")
+            birthday=birthday
         )
 
         return True, None
