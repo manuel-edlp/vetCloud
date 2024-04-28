@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+    <h1 class="mb-4">Mascotas</h1>
+
+    <div class="mb-2">
+        <a href="{% url 'pet_form' %}" class="btn btn-primary">
+            <i class="bi bi-plus"></i>
+            Nueva Mascota
+        </a>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Raza</th>
+                <th>Fecha de nacimiento</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for pet in pets %}
+            <tr>
+                    <td>{{pet.name}}</td>
+                    <td>{{pet.breed}}</td>
+                    <td>{{pet.birthday}}</td>
+                    <td>
+                        <a class="btn btn-outline-primary"
+                           href="{% url 'pet_edit' id=pet.id %}"
+                        >Editar</a>
+                        <form method="POST"
+                            action="{% url 'pet_delete' %}"
+                            aria-label="Formulario de eliminación de mascota">
+                            {% csrf_token %}
+
+                            <input type="hidden" name="pet_id" value="{{ pet.id }}" />
+                            <button class="btn btn-outline-danger">Eliminar</button>
+                        </form>
+                    </td>
+            </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">
+                        No existen mascotas
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
