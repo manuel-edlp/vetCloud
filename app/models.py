@@ -54,3 +54,47 @@ class Client(models.Model):
         self.address = client_data.get("address", "") or self.address
 
         self.save()
+
+def validate_proveer(data):
+    errors = {}
+
+    name = data.get("name", "")
+    email = data.get("email", "")
+
+    if name == "":
+        errors["name"] = "Por favor ingrese un nombre"
+
+    if email == "":
+        errors["email"] = "Por favor ingrese un email"
+    elif email.count("@") == 0:
+        errors["email"] = "Por favor ingrese un email valido"
+
+    return errors
+
+
+class Proveer(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    
+    def __str__(self):
+        return self.name
+
+    @classmethod
+    def save_proveer(cls, proveer_data):
+        errors = validate_proveer(proveer_data)
+
+        if len(errors.keys()) > 0:
+            return False, errors
+
+        Client.objects.create(
+            name=client_data.get("name"),
+            email=client_data.get("email"),
+        )
+
+        return True, None
+
+    def update_proveer(self, client_data):
+        self.name = client_data.get("name", "") or self.name
+        self.email = client_data.get("email", "") or self.email
+        
+        self.save()
