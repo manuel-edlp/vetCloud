@@ -55,7 +55,7 @@ class Client(models.Model):
 
         self.save()
 
-def validate_proveer(data):
+def validate_provider(data):
     errors = {}
 
     name = data.get("name", "")
@@ -72,7 +72,7 @@ def validate_proveer(data):
     return errors
 
 
-class Proveer(models.Model):
+class Provider(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
     
@@ -80,21 +80,21 @@ class Proveer(models.Model):
         return self.name
 
     @classmethod
-    def save_proveer(cls, proveer_data):
-        errors = validate_proveer(proveer_data)
+    def save_provider(cls, provider_data):
+        errors = validate_provider(provider_data)
 
         if len(errors.keys()) > 0:
             return False, errors
 
-        Client.objects.create(
-            name=client_data.get("name"),
-            email=client_data.get("email"),
+        Provider.objects.create(
+            name=provider_data.get("name"),
+            email=provider_data.get("email"),
         )
 
         return True, None
 
-    def update_proveer(self, client_data):
-        self.name = client_data.get("name", "") or self.name
-        self.email = client_data.get("email", "") or self.email
-        
+    def update_provider(self, provider_data):
+        self.name = provider_data.get("name", "") or self.name
+        self.email = provider_data.get("email", "") or self.email
+
         self.save()
