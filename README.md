@@ -22,3 +22,7 @@ Aplicación web para veterinarias utilizada en la cursada 2024 de Ingeniería y 
 
 `python manage.py runserver`
 
+## Integrantes:
+
+Baez Gonazalo - Proveedor
+
