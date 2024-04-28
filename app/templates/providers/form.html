@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+            <h1>Nuevo Cliente</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+            <form class="vstack gap-3 {% if errors %}was-validated{% endif %}"
+                aria-label="Formulario de creacion de cliente"
+                method="POST"
+                action="{% url 'clients_form' %}"
+                novalidate>
+
+                {% csrf_token %}
+
+                <input type="hidden" value="{{ client.id }}" name="id" />
+
+                <div>
+                    <label for="name" class="form-label">Nombre</label>
+                    <input type="text"
+                        id="name"
+                        name="name"
+                        value="{{client.name}}"
+                        class="form-control"
+                        required/>
+
+                    {% if errors.name %}
+                        <div class="invalid-feedback">
+                            {{ errors.name }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="phone" class="form-label">Teléfono</label>
+                    <input type="text"
+                        id="phone"
+                        name="phone"
+                        class="form-control"
+                        value="{{client.phone}}"
+                        required/>
+
+                    {% if errors.phone %}
+                        <div class="invalid-feedback">
+                            {{ errors.phone }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email"
+                        id="email"
+                        name="email"
+                        class="form-control"
+                        value="{{ client.email }}"
+                        required/>
+
+                    {% if errors.email %}
+                        <div class="invalid-feedback">
+                            {{ errors.email }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="address" class="form-label">Dirección</label>
+                    <input type="text"
+                        id="address"
+                        name="address"
+                        value="{{client.address}}"
+                        class="form-control" />
+
+                    <div class="invalid-feedback">
+                        La dirrección es opcional
+                    </div>
+                </div>
+
+                <button class="btn btn-primary">Guardar</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
