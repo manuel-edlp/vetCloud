@@ -110,7 +110,7 @@ def validate_product(data):
         errors["name"] = "Por favor ingrese su nombre"
 
     if product_type == "":
-        errors["type"] = "Por favor ingrese un tipo de cliente"
+        errors["type"] = "Por favor ingrese un tipo de producto"
 
     if not isinstance(price, (int, float)) or price <= 0:
         errors["price"] = "Por favor ingrese un precio válido"
