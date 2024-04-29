@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 
 def validate_client(data):
@@ -123,9 +124,8 @@ class Product(models.Model):
     product_type = models.CharField(max_length=15)
     price = models.CharField(max_length=15)
     
-
     def __str__(self):
-        return self.name
+            return self.name
 
     @classmethod
     def save_product(cls, product_data):
@@ -139,12 +139,61 @@ class Product(models.Model):
             product_type=product_data.get("product_type"),
             price=product_data.get("price"),
         )
-
+    
         return True, "Producto creado exitosamente"
 
     def update_product(self, product_data):
         self.name = product_data.get("name", "") or self.name
         self.product_type = product_data.get("product_type", "") or self.product_type
         self.price = product_data.get("price", "") or self.price
+
+        self.save()
+
+def validate_pet(data):
+    errors = {}
+
+    name = data.get("name", "")
+    breed = data.get("breed", "")
+    birthday = data.get("birthday", "")
+
+    if name == "":
+        errors["name"] = "Por favor ingrese un nombre"
+
+    if breed == "":
+        errors["breed"] = "Por favor ingrese una raza"
+    
+    if birthday == "":
+        errors["birthday"] = "Por favor ingrese una fecha de nacimiento"
+        
+    return errors
+
+
+class Pet(models.Model):
+    name = models.CharField(max_length=40)
+    breed = models.CharField(max_length=40)
+    birthday = models.CharField(max_length=40,default='')
+    
+    def __str__(self):
+            return self.name
+
+    @classmethod
+    def save_pet(cls, pet_data):
+        errors = validate_pet(pet_data)
+    
+        if len(errors.keys()) > 0:
+            return False, errors
+
+        Pet.objects.create(
+            name=pet_data.get("name"),
+            breed=pet_data.get("breed"),
+            birthday=pet_data.get("birthday"),
+        )
+
+        return True, None
+    
+    def update_pet(self, pet_data):
+        self.name = pet_data.get("name", "") or self.name
+        self.breed = pet_data.get("breed", "") or self.breed
+        self.birthday = pet_data.get("birthday", "") or self.birthday
 
         self.save()

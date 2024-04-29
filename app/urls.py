@@ -11,8 +11,14 @@ urlpatterns = [
     path("proveedor/nuevo/", view=views.provider_form, name="provider_form"),
     path("proveedor/editar/<int:id>/", view=views.provider_form, name="provider_edit"),
     path("proveedor/eliminar/", view=views.provider_delete, name="provider_delete"),
+    # Producto
     path("producto/", view=views.product_repository, name="product_repo"),
     path("producto/nuevo/", view=views.product_form, name="product_form"),
     path("producto/editar/<int:id>/", view=views.product_form, name="product_edit"),
     path("producto/eliminar/", view=views.product_delete, name="product_delete"),
+    # Mascota
+    path("mascota/", view=views.pet_repository, name="pet_repo"),
+    path("mascota/nuevo/", view=views.pet_form, name="pet_form"),
+    path("mascota/editar/<int:id>/", view=views.pet_form, name="pet_edit"),
+    path("mascota/eliminar/", view=views.pet_delete, name="pet_delete"),
 ]
