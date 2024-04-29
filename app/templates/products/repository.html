@@ -24,9 +24,9 @@
         <tbody>
             {% for product in products %}
             <tr>
-                    <td>{{client.name}}</td>
-                    <td>{{client.product_type}}</td>
-                    <td>{{client.price}}</td>
+                    <td>{{product.name}}</td>
+                    <td>{{product.product_type}}</td>
+                    <td>{{product.price}}</td>
                     <td>
                         <a class="btn btn-outline-primary"
                            href="{% url 'product_edit' id=client.id %}"
