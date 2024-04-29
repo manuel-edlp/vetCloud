@@ -140,7 +140,7 @@ class Product(models.Model):
             price=product_data.get("price"),
         )
 
-        return True, None
+        return True, "Producto creado exitosamente"
 
     def update_product(self, product_data):
         self.name = product_data.get("name", "") or self.name
