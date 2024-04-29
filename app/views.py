@@ -88,8 +88,8 @@ def provider_delete(request):
 #Veterinario
 
 def veterinary_repository(request):
-    veterinary = Veterinary.objects.all()
-    return render(request, "veterinary/repository.html", {"veterinary": veterinary})
+    veterinaries = Veterinary.objects.all()
+    return render(request, "veterinaries/repository.html", {"veterinaries": veterinaries})
 
 
 def veterinary_form(request, id=None):
@@ -108,14 +108,14 @@ def veterinary_form(request, id=None):
             return redirect(reverse("veterinary_repo"))
 
         return render(
-            request, "veterinarys/form.html", {"errors": errors, "veterinary": request.POST}
+            request, "veterinaries/form.html", {"errors": errors, "veterinary": request.POST}
         )
 
     veterinary = None
     if id is not None:
         veterinary = get_object_or_404(Veterinary, pk=id)
 
-    return render(request, "veterinary/form.html", {"veterinary": veterinary})
+    return render(request, "veterinaries/form.html", {"veterinary": veterinary})
 
 
 def veterinary_delete(request):
