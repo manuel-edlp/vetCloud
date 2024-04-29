@@ -36,7 +36,7 @@
                             aria-label="Formulario de eliminación de producto">
                             {% csrf_token %}
 
-                            <input type="hidden" name="client_id" value="{{ client.id }}" />
+                            <input type="hidden" name="product_id" value="{{ product.id }}" />
                             <button class="btn btn-outline-danger">Eliminar</button>
                         </form>
                     </td>
