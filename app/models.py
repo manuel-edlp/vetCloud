@@ -121,7 +121,7 @@ def validate_pet(data):
 class Pet(models.Model):
     name = models.CharField(max_length=40)
     breed = models.CharField(max_length=40)
-    birthday = models.DateField
+    birthday = models.CharField(max_length=40,default='')
     
     def __str__(self):
         return self.name
@@ -133,18 +133,10 @@ class Pet(models.Model):
         if len(errors.keys()) > 0:
             return False, errors
 
-        # Convertir birthday a un objeto de fecha
-        birthday_str = pet_data.get("birthday")
-        try:
-            birthday = datetime.strptime(birthday_str, "%d-%m-%Y").date()
-        except ValueError:
-            errors["birthday"] = "Formato de fecha incorrecto"
-            return False, errors
-
         Pet.objects.create(
             name=pet_data.get("name"),
             breed=pet_data.get("breed"),
-            birthday=birthday
+            birthday=pet_data.get("birthday"),
         )
 
         return True, None
