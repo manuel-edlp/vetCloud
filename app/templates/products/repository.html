@@ -29,7 +29,7 @@
                     <td>{{product.price}}</td>
                     <td>
                         <a class="btn btn-outline-primary"
-                           href="{% url 'product_edit' id=client.id %}"
+                           href="{% url 'product_edit' id=product.id %}"
                         >Editar</a>
                         <form method="POST"
                             action="{% url 'product_delete' %}"
