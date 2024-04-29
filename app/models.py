@@ -103,7 +103,7 @@ def validate_product(data):
     errors = {}
 
     name = data.get("name", "")
-    product_type = data.get("type", "")
+    product_type = data.get("product_type", "")
     price = data.get("price", "")
 
     if name == "":
