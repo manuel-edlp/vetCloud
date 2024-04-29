@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from .models import Client
 from .models import Provider
+from .models import Veterinary
 
 
 def home(request):
@@ -83,3 +84,43 @@ def provider_delete(request):
     provider.delete()
 
     return redirect(reverse("provider_repo"))
+
+#Veterinario
+
+def veterinary_repository(request):
+    veterinary = Veterinary.objects.all()
+    return render(request, "veterinary/repository.html", {"veterinary": veterinary})
+
+
+def veterinary_form(request, id=None):
+    if request.method == "POST":
+        veterinary_id = request.POST.get("id", "")
+        errors = {}
+        saved = True
+
+        if veterinary_id == "":
+            saved, errors = Veterinary.save_veterinary(request.POST)
+        else:
+            veterinary = get_object_or_404(Veterinary, pk=veterinary_id)
+            veterinary.update_veterinary(request.POST)
+
+        if saved:
+            return redirect(reverse("veterinary_repo"))
+
+        return render(
+            request, "veterinarys/form.html", {"errors": errors, "veterinary": request.POST}
+        )
+
+    veterinary = None
+    if id is not None:
+        veterinary = get_object_or_404(Veterinary, pk=id)
+
+    return render(request, "veterinary/form.html", {"veterinary": veterinary})
+
+
+def veterinary_delete(request):
+    veterinary_id = request.POST.get("veterinary_id")
+    veterinary = get_object_or_404(Veterinary, pk=int(veterinary_id))
+    veterinary.delete()
+
+    return redirect(reverse("veterinary_repo"))
