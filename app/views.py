@@ -87,12 +87,12 @@ def provider_delete(request):
 
 
 # Producto
-def products_repository(request):
+def product_repository(request):
     products = Product.objects.all()
-    return render(request, "productos/repository.html", {"products": products})
+    return render(request, "products/repository.html", {"products": products})
 
 
-def products_form(request, id=None):
+def product_form(request, id=None):
     if request.method == "POST":
         product_id = request.POST.get("id", "")
         errors = {}
@@ -118,7 +118,7 @@ def products_form(request, id=None):
     return render(request, "products/form.html", {"product": product})
 
 
-def products_delete(request):
+def product_delete(request):
     product_id = request.POST.get("product_id")
     product = get_object_or_404(Product, pk=int(product_id))
     product.delete()
