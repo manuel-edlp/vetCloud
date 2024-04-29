@@ -136,7 +136,7 @@ class Veterinary(models.Model):
         if len(errors.keys()) > 0:
             return False, errors
 
-        Provider.objects.create(
+        Veterinary.objects.create(
             name=veterinary_data.get("name"),
             email=veterinary_data.get("email"),
             phone=veterinary_data.get("phone"),
