@@ -136,7 +136,7 @@ class Product(models.Model):
 
         Product.objects.create(
             name=product_data.get("name"),
-            product_type=product_data.get("type"),
+            product_type=product_data.get("product_type"),
             price=product_data.get("price"),
         )
 
@@ -144,7 +144,7 @@ class Product(models.Model):
 
     def update_product(self, product_data):
         self.name = product_data.get("name", "") or self.name
-        self.product_type = product_data.get("type", "") or self.product_type
+        self.product_type = product_data.get("product_type", "") or self.product_type
         self.price = product_data.get("price", "") or self.price
 
         self.save()
