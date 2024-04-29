@@ -112,7 +112,7 @@ def validate_product(data):
     if product_type == "":
         errors["type"] = "Por favor ingrese un tipo de producto"
 
-    if not isinstance(price, (int, float)) or price <= 0:
+    if price == "":
         errors["price"] = "Por favor ingrese un precio válido"
 
     return errors
@@ -121,7 +121,7 @@ def validate_product(data):
 class Product(models.Model):
     name = models.CharField(max_length=100)
     product_type = models.CharField(max_length=15)
-    price = models.FloatField()
+    price = models.CharField(max_length=15)
     
 
     def __str__(self):
