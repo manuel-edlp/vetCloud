@@ -198,6 +198,24 @@ class Pet(models.Model):
 
         self.save()
 
+def validate_medicine(data):
+    errors = {}
+
+    name = data.get("name", "")
+    description = data.get("description", "")
+    dose = data.get("dose", "")
+
+    if name == "":
+        errors["name"] = "Por favor ingrese un nombre"
+
+    if description == "":
+        errors["description"] = "Por favor ingrese una descripción"
+
+    if dose == "":
+        errors["dose"] = "Por favor ingrese una dosis"
+
+    return errors
+    
 class Medicine(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255)
@@ -206,6 +224,7 @@ class Medicine(models.Model):
     def __str__(self):
         return self.name
     
+
     @classmethod
     def save_medicine(cls, medicine_data):
         errors = validate_medicine(medicine_data)
@@ -228,22 +247,6 @@ class Medicine(models.Model):
 
         self.save()
 
-    def validate_medicine(data):
-        errors = {}
 
-        name = data.get("name", "")
-        description = data.get("description", "")
-        dose = data.get("dose", "")
-
-        if name == "":
-            errors["name"] = "Por favor ingrese un nombre"
-
-        if description == "":
-            errors["description"] = "Por favor ingrese una descripción"
-
-        if dose == "":
-            errors["dose"] = "Por favor ingrese una dosis"
-
-        return errors
 
     

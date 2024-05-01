@@ -165,6 +165,7 @@ def medicine_repository(request):
     return render(request, "medicines/repository.html", {"medicines": medicines})
 
 def medicine_form(request, id=None):
+    medicine = None  # Asignar un valor predeterminado a la variable medicine
     if request.method == "POST":
         medicine_id = request.POST.get("id", "")
         errors = {}
@@ -180,7 +181,7 @@ def medicine_form(request, id=None):
             return redirect(reverse("medicine_repo"))
 
         return render(
-            request, "medicines/form.html", {"errors": errors, "medicine": request.POST}
+            request, "medicines/form.html", {"errors": errors, "medicine": medicine}
         )
 
     medicine = None
