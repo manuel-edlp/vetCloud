@@ -27,3 +27,4 @@ Aplicación web para veterinarias utilizada en la cursada 2024 de Ingeniería y 
 Baez Gonazalo - Proveedor
 Semper, Juan Manuel - Producto
 Manuel Morullo - Mascota
+González Lurbé, Feliciano - Medicamento
