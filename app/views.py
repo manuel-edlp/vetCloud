@@ -1,9 +1,5 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
-from .models import Client
-from .models import Provider
-from .models import Product
-from .models import Pet
-
+from .models import Client, Provider, Product, Pet, Medicine
 
 def home(request):
     return render(request, "home.html")
@@ -162,3 +158,40 @@ def pet_delete(request):
     pet.delete()
 
     return redirect(reverse("pet_repo"))
+
+# Funciones para Medicamentos
+def medicine_repository(request):
+    medicines = Medicine.objects.all()
+    return render(request, "medicines/repository.html", {"medicines": medicines})
+
+def medicine_form(request, id=None):
+    if request.method == "POST":
+        medicine_id = request.POST.get("id", "")
+        errors = {}
+        saved = True
+
+        if medicine_id == "":
+            saved, errors = Medicine.save_medicine(request.POST)
+        else:
+            medicine = get_object_or_404(Medicine, pk=medicine_id)
+            medicine.update_medicine(request.POST)
+
+        if saved:
+            return redirect(reverse("medicine_repo"))
+
+        return render(
+            request, "medicines/form.html", {"errors": errors, "medicine": request.POST}
+        )
+
+    medicine = None
+    if id is not None:
+        medicine = get_object_or_404(Medicine, pk=id)
+
+    return render(request, "medicines/form.html", {"medicine": medicine})
+
+def medicine_delete(request):
+    medicine_id = request.POST.get("medicine_id")
+    medicine = get_object_or_404(Medicine, pk=int(medicine_id))
+    medicine.delete()
+
+    return redirect(reverse("medicine_repo"))
