@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
-from .models import Client, Provider, Product, Pet, Medicine
+from .models import Client, Provider, Product, Pet, Medicine, Veterinary
 
 def home(request):
     return render(request, "home.html")
@@ -158,6 +158,46 @@ def pet_delete(request):
     pet.delete()
 
     return redirect(reverse("pet_repo"))
+
+#Veterinario
+
+def veterinary_repository(request):
+    veterinaries = Veterinary.objects.all()
+    return render(request, "veterinaries/repository.html", {"veterinaries": veterinaries})
+
+
+def veterinary_form(request, id=None):
+    if request.method == "POST":
+        veterinary_id = request.POST.get("id", "")
+        errors = {}
+        saved = True
+
+        if veterinary_id == "":
+            saved, errors = Veterinary.save_veterinary(request.POST)
+        else:
+            veterinary = get_object_or_404(Veterinary, pk=veterinary_id)
+            veterinary.update_veterinary(request.POST)
+
+        if saved:
+            return redirect(reverse("veterinary_repo"))
+
+        return render(
+            request, "veterinaries/form.html", {"errors": errors, "veterinary": request.POST}
+        )
+
+    veterinary = None
+    if id is not None:
+        veterinary = get_object_or_404(Veterinary, pk=id)
+
+    return render(request, "veterinaries/form.html", {"veterinary": veterinary})
+
+
+def veterinary_delete(request):
+    veterinary_id = request.POST.get("veterinary_id")
+    veterinary = get_object_or_404(Veterinary, pk=int(veterinary_id))
+    veterinary.delete()
+
+    return redirect(reverse("veterinary_repo"))
 
 # Funciones para Medicamentos
 def medicine_repository(request):

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+    <h1 class="mb-4">Veterinarios</h1>
+
+    <div class="mb-2">
+        <a href="{% url 'veterinary_form' %}" class="btn btn-primary">
+            <i class="bi bi-plus"></i>
+            Nuevo Veterinario
+        </a>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for veterinary in veterinaries %}
+            <tr>
+                    <td>{{veterinary.name}}</td>
+                    <td>{{veterinary.email}}</td>
+                    <td>{{veterinary.phone}}</td>
+                    <td>
+                        <a class="btn btn-outline-primary"
+                           href="{% url 'veterinary_edit' id=veterinary.id %}"
+                        >Editar</a>
+                        <form method="POST"
+                            action="{% url 'veterinary_delete' %}"
+                            aria-label="Formulario de eliminación de Veterinario">
+                            {% csrf_token %}
+
+                            <input type="hidden" name="veterinary_id" value="{{ veterinary.id }}" />
+                            <button class="btn btn-outline-danger">Eliminar</button>
+                        </form>
+                    </td>
+            </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">
+                        No existen veterinarios
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
