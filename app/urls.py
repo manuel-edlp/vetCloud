@@ -21,13 +21,15 @@ urlpatterns = [
     path("mascota/", view=views.pet_repository, name="pet_repo"),
     path("mascota/nuevo/", view=views.pet_form, name="pet_form"),
     path("mascota/editar/<int:id>/", view=views.pet_form, name="pet_edit"),
-    path("mascota/eliminar/", view=views.pet_delete, name="pet_delete"),
-   
+    path("mascota/eliminar/", view=views.pet_delete, name="pet_delete"),   
     #Veterinario
     path("veterinario/", view=views.veterinary_repository, name="veterinary_repo"),
     path("veterinario/nuevo/", view=views.veterinary_form, name="veterinary_form"),
     path("veterinario/editar/<int:id>/", view=views.veterinary_form, name="veterinary_edit"),
     path("veterinario/eliminar/", view=views.veterinary_delete, name="veterinary_delete"),
-
-
+     # Medicamento
+    path("medicamento/", view=views.medicine_repository, name="medicine_repo"),
+    path("medicamento/nuevo/", view=views.medicine_form, name="medicine_form"),
+    path("medicamento/editar/<int:id>/", view=views.medicine_form, name="medicine_edit"),
+    path("medicamento/eliminar/", view=views.medicine_delete, name="medicine_delete"),
 ]

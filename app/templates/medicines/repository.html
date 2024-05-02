@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+    <h1 class="mb-4">Medicamentos</h1>
+
+    <div class="mb-2">
+        <a href="{% url 'medicine_form' %}" class="btn btn-primary">
+            <i class="bi bi-plus"></i>
+            Nuevo Medicamento
+        </a>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Dosis</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for medicine in medicines %}
+            <tr>
+                    <td>{{ medicine.name }}</td>
+                    <td>{{ medicine.description }}</td>
+                    <td>{{ medicine.dose }}</td>
+                    <td>
+                        <a class="btn btn-outline-primary"
+                           href="{% url 'medicine_edit' id=medicine.id %}"
+                        >Editar</a>
+                        <form method="POST"
+                            action="{% url 'medicine_delete' %}"
+                            aria-label="Formulario de eliminación de medicamento">
+                            {% csrf_token %}
+
+                            <input type="hidden" name="medicine_id" value="{{ medicine.id }}" />
+                            <button class="btn btn-outline-danger">Eliminar</button>
+                        </form>
+                    </td>
+            </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">
+                        No existen medicamentos
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -199,7 +199,6 @@ class Pet(models.Model):
 
         self.save()
 
-
 def validate_veterinary(data):
     errors = {}
 
@@ -234,6 +233,7 @@ class Veterinary(models.Model):
         if len(errors.keys()) > 0:
             return False, errors
 
+
         Veterinary.objects.create(
             name=veterinary_data.get("name"),
             email=veterinary_data.get("email"),
@@ -247,4 +247,53 @@ class Veterinary(models.Model):
         self.email = veterinary_data.get("email", "") or self.email
         self.phone = veterinary_data.get("phone", "") or self.phone
 
+        self.save()
+
+def validate_medicine(data):
+    errors = {}
+
+    name = data.get("name", "")
+    description = data.get("description", "")
+    dose = data.get("dose", "")
+
+    if name == "":
+        errors["name"] = "Por favor ingrese un nombre"
+
+    if description == "":
+        errors["description"] = "Por favor ingrese una descripción"
+
+    if dose == "":
+        errors["dose"] = "Por favor ingrese una dosis"
+
+    return errors
+    
+class Medicine(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=255)
+    dose = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+    
+
+    @classmethod
+    def save_medicine(cls, medicine_data):
+        errors = validate_medicine(medicine_data)
+
+
+        if len(errors.keys()) > 0:
+            return False, errors
+
+        Medicine.objects.create(
+            name=medicine_data.get("name"),
+            description=medicine_data.get("description"),
+            dose=medicine_data.get("dose"),
+        )
+
+        return True, "Medicamento creado exitosamente"
+    
+    def update_medicine(self, medicine_data):
+        self.name = medicine_data.get("name", "") or self.name
+        self.description = medicine_data.get("description", "") or self.description
+        self.dose = medicine_data.get("dose", "") or self.dose
         self.save()
