@@ -21,6 +21,3 @@ Aplicación web para veterinarias utilizada en la cursada 2024 de Ingeniería y 
 ## Iniciar app
 
 `python manage.py runserver`
-
-# Integrantes del Grupo
-# González Lurbé Feliciano
