@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+            <h1>Nuevo Producto</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+            <form class="vstack gap-3 {% if errors %}was-validated{% endif %}"
+                aria-label="Formulario de creacion de producto"
+                method="POST"
+                action="{% url 'product_form' %}"
+                novalidate>
+
+                {% csrf_token %}
+
+                <input type="hidden" value="{{ product.id }}" name="id" />
+
+                <div>
+                    <label for="name" class="form-label">Nombre</label>
+                    <input type="text"
+                        id="name"
+                        name="name"
+                        value="{{product.name}}"
+                        class="form-control"
+                        required/>
+
+                    {% if errors.name %}
+                        <div class="invalid-feedback">
+                            {{ errors.name }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="product_type" class="form-label">Tipo</label>
+                    <input type="text"
+                        id="product_type"
+                        name="product_type"
+                        value="{{product.product_type}}"
+                        class="form-control"
+                        required/>
+
+                    {% if errors.product_type %}
+                        <div class="invalid-feedback">
+                            {{ errors.product_type }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="price" class="form-label">Precio</label>
+                    <input type="text"
+                        id="price"
+                        name="price"
+                        value="{{product.price}}"
+                        class="form-control"
+                        required/>
+
+                    {% if errors.price %}
+                        <div class="invalid-feedback">
+                            {{ errors.price }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <button class="btn btn-primary">Guardar</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -21,3 +21,11 @@ Aplicación web para veterinarias utilizada en la cursada 2024 de Ingeniería y 
 ## Iniciar app
 
 `python manage.py runserver`
+
+## Integrantes:
+
+Baez Gonazalo - Proveedor
+Semper, Juan Manuel - Producto
+Morullo Manuel  - Mascota
+Abregu Candela - Veterinario
+González Lurbé, Feliciano - Medicamento
