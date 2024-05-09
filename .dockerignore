@@ -1,0 +1,12 @@
+# Ignorar archivos y directorios generados durante el desarrollo
+*.pyc
+__pycache__
+# Ignorar archivos de configuración local
+.env
+config/local_config.py
+# Ignorar archivos de git
+.git
+.gitignore
+# Ignorar archivos Logs o Temporales
+logs/
+tmp/
