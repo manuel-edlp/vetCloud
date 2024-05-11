@@ -43,6 +43,14 @@ Comando para utilizar mi imagen
 ## Docker Gonzalez Lurbe Feliciano
 
 ## Docker Semper Juan Manuel
+Comando utilizado para construir imagen
+>> docker build --build-arg VERSION=1.2 -t vetsoft-app:1.2 .
+
+Comando utilizado para crear y ejecutar contenedor
+>> docker run -p 8000:8000 --name vetsoft-v0 vetsoft-app:1.2
+
+Comando para utilizar mi imagen
+>> docker start vetsoft-v2
 
 ## Docker Abregu Candela
 
