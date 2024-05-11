@@ -31,10 +31,10 @@ Abregu Candela - Veterinario
 González Lurbé, Feliciano - Medicamento
 
 ## Docker Baez Gonzalo
-Comando utilizado para crear el contenedor
+Comando utilizado para construir imagen
 >> docker build --build-arg VERSION=1.0 -t vetsoft-app:1.0 .
 
-Comando utilizado para crear la imagen 
+Comando utilizado para crear y ejecutar contenedor
 >> docker run -p 8000:8000 --name vetsoft-v0 vetsoft-app:1.0
 
 Comando para utilizar mi imagen
