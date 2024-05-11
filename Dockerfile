@@ -1,5 +1,5 @@
 # Utilizamos una imagen base adecuada para nuestra aplicación. En este caso, usaremos una imagen de Python.
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 # Establecemos el directorio de trabajo dentro del contenedor
 WORKDIR /app
@@ -25,4 +25,4 @@ COPY . .
 EXPOSE 8000
 
 # Comando para ejecutar la aplicación
-CMD ["python", "app.py"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
