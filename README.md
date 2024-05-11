@@ -63,3 +63,11 @@ Comando para utilizar mi imagen
 ## Docker Abregu Candela
 
 ## Docker Morullo Manuel
+Comando utilizado para construir imagen
+>> docker build --build-arg VERSION=1.4 -t vetsoft-app:1.4 .
+
+Comando utilizado para crear y ejecutar contenedor
+>> docker run -p 8000:8000 --name vetsoft-v4 vetsoft-app:1.4
+
+Comando para utilizar mi imagen
+>> docker start vetsoft-v4
