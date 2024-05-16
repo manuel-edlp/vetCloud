@@ -17,6 +17,7 @@
                 <th>Nombre</th>
                 <th>Tipo</th>
                 <th>Precio</th>
+                <th>Imagen</th>
                 <th></th>
             </tr>
         </thead>
@@ -24,29 +25,29 @@
         <tbody>
             {% for product in products %}
             <tr>
-                    <td>{{product.name}}</td>
-                    <td>{{product.product_type}}</td>
-                    <td>{{product.price}}</td>
-                    <td>
-                        <a class="btn btn-outline-primary"
-                           href="{% url 'product_edit' id=product.id %}"
-                        >Editar</a>
-                        <form method="POST"
-                            action="{% url 'product_delete' %}"
-                            aria-label="Formulario de eliminación de producto">
-                            {% csrf_token %}
-
-                            <input type="hidden" name="product_id" value="{{ product.id }}" />
-                            <button class="btn btn-outline-danger">Eliminar</button>
-                        </form>
-                    </td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.product_type }}</td>
+                <td>{{ product.price }}</td>
+                <td>
+                    {% if product.image_url %}
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-width: 100px; max-height: 100px;">
+                    {% else %}
+                        No hay imagen
+                    {% endif %}        
+                </td>
+                <td>
+                    <a class="btn btn-outline-primary" href="{% url 'product_edit' id=product.id %}">Editar</a>
+                    <form method="POST" action="{% url 'product_delete' %}" aria-label="Formulario de eliminación de producto">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ product.id }}" />
+                        <button class="btn btn-outline-danger">Eliminar</button>
+                    </form>
+                </td>
             </tr>
             {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center">
-                        No existen productos
-                    </td>
-                </tr>
+            <tr>
+                <td colspan="5" class="text-center">No existen productos</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>

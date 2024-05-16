@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-p)^5i@33!)v)l7*c#q)%j(g5d+**-yo%)6l*vg!gs_w-e=^_ig
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['vetcloud.azurewebsites.net']
+ALLOWED_HOSTS = ['vetcloud.azurewebsites.net','127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = ['https://vetcloud.azurewebsites.net']
 
@@ -80,13 +80,17 @@ WSGI_APPLICATION = "vetsoft.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "vetDb", # Nombre de la base de datos
+        "NAME": "vetBd", # Nombre de la base de datos
         "USER": "postgres",
-        "PASSWORD": "Admin1234",
-        "HOST": "vet.postgres.database.azure.com",  # dirección del servidor de PostgreSQL
+        "PASSWORD": "1234",
+        "HOST": "127.0.0.1",  # dirección del servidor de PostgreSQL
         "PORT": "5432",  # el puerto por defecto de PostgreSQL
     }
 }
+
+# Conexion con blob storage
+AZURE_BLOB_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=vetstorage01;AccountKey=MdThxXZ8jIwfgq4CjR64ZrssmMn60VR6aOA4MdPS/13PezRE9eCKXynbBzbrjL7CON+sHJ6azwe1+ASt45/zAA==;EndpointSuffix=core.windows.net'
+AZURE_BLOB_CONTAINER_NAME = 'imagenes'
 
 
 

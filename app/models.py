@@ -1,6 +1,8 @@
 from django.db import models
 from datetime import datetime
-
+from django.conf import settings
+from azure.storage.blob import BlobServiceClient
+from django.core.files.base import ContentFile
 
 def validate_client(data):
     errors = {}
@@ -124,31 +126,63 @@ class Product(models.Model):
     name = models.CharField(max_length=100)
     product_type = models.CharField(max_length=15)
     price = models.CharField(max_length=15)
-    
+    image_url = models.URLField(null=True, blank=True)  # Campo para almacenar la URL de la imagen en Blob Storage
+
     def __str__(self):
-            return self.name
+        return self.name
 
     @classmethod
-    def save_product(cls, product_data):
+    def save_product(cls, product_data, product_image):
         errors = validate_product(product_data)
 
         if len(errors.keys()) > 0:
             return False, errors
 
+        # Guardar la imagen en Azure Blob Storage
+        image_url = upload_image_to_azure(product_image)
+
         Product.objects.create(
             name=product_data.get("name"),
             product_type=product_data.get("product_type"),
             price=product_data.get("price"),
+            image_url=image_url  # Guardar la URL de la imagen
         )
     
         return True, "Producto creado exitosamente"
 
-    def update_product(self, product_data):
+    def update_product(self, product_data, product_image):
         self.name = product_data.get("name", "") or self.name
         self.product_type = product_data.get("product_type", "") or self.product_type
         self.price = product_data.get("price", "") or self.price
-
+        if product_image:  # Solo actualiza la imagen si se proporciona una nueva
+            # Guardar la nueva imagen en Azure Blob Storage
+            self.image_url = upload_image_to_azure(product_image)
+        
         self.save()
+
+def upload_image_to_azure(image):
+    # Obtener el primer archivo de imagen del objeto MultiValueDict
+    image_file = image['image']
+
+    # Conectar al servicio de Blob Storage de Azure
+    blob_service_client = BlobServiceClient.from_connection_string(settings.AZURE_BLOB_CONNECTION_STRING)
+
+    # Obtener una referencia al contenedor en Azure Blob Storage
+    container_client = blob_service_client.get_container_client(settings.AZURE_BLOB_CONTAINER_NAME)
+
+    # Subir la imagen al contenedor
+    with image_file.open() as data:
+        # Leer el contenido del archivo
+        content = data.read()
+
+        # Crear un archivo temporal para la carga en Azure Blob Storage
+        with ContentFile(content) as file:
+            # Subir el archivo al contenedor
+            blob_client = container_client.get_blob_client(image_file.name)
+            blob_client.upload_blob(file)
+
+    # Construir y devolver la URL de la imagen
+    return f"https://vetstorage01.blob.core.windows.net/imagenes/{image_file.name}"
 
 def validate_pet(data):
     errors = {}

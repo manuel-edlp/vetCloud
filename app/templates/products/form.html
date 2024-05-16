@@ -14,6 +14,7 @@
                 aria-label="Formulario de creacion de producto"
                 method="POST"
                 action="{% url 'product_form' %}"
+                enctype="multipart/form-data"
                 novalidate>
 
                 {% csrf_token %}
@@ -65,7 +66,21 @@
                         </div>
                     {% endif %}
                 </div>
-
+                <div>
+                    <label for="image" class="form-label">Imagen</label>
+                    <input type="file"
+                        id="image"
+                        name="image"
+                        class="form-control"
+                        accept="image/*"
+                        required/>
+                
+                    {% if errors.image %}
+                        <div class="invalid-feedback">
+                            {{ errors.image }}
+                        </div>
+                    {% endif %}
+                </div>
                 <button class="btn btn-primary">Guardar</button>
             </form>
         </div>

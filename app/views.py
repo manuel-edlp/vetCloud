@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from .models import Client, Provider, Product, Pet, Medicine, Veterinary
+from django.core.files.storage import FileSystemStorage
+
 
 def home(request):
     return render(request, "home.html")
@@ -96,10 +98,12 @@ def product_form(request, id=None):
         saved = True
 
         if product_id == "":
-            saved, errors = Product.save_product(request.POST)
+            # Obtén la imagen del formulario
+            product_image = request.FILES.get("image")
+            saved, errors = Product.save_product(request.POST, product_image)  # Pasa la imagen
         else:
             product = get_object_or_404(Product, pk=product_id)
-            product.update_product(request.POST)
+            product.update_product(request.POST, request.FILES)  # Pasar request.FILES
 
         if saved:
             return redirect(reverse("product_repo"))
