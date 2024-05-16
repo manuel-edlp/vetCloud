@@ -78,10 +78,10 @@ WSGI_APPLICATION = "vetsoft.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "vetcloud-vetBd",
-        "USER": "rhoojoyyuy",
-        "PASSWORD": "svG3Kjb2$biQddW3",
-        "HOST": "vetcloud-server.postgres.database.azure.com",  # o la dirección de tu servidor de PostgreSQL
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "Admin1234",
+        "HOST": "vet.postgres.database.azure.com",  # o la dirección de tu servidor de PostgreSQL
         "PORT": "5432",  # el puerto por defecto de PostgreSQL
     }
 }
