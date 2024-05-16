@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['vetcloud.azurewebsites.net']
 
-CSRF_TRUSTED_ORIGINGS = ['https://vetcloud.azurewebsites.net']
+CSRF_TRUSTED_ORIGINS = ['https://vetcloud.azurewebsites.net']
+
 
 # Application definition
 
