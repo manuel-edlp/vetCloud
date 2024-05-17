@@ -3,6 +3,7 @@ from .models import Client, Provider, Product, Pet, Medicine, Veterinary
 from django.core.files.storage import FileSystemStorage
 
 
+
 def home(request):
     return render(request, "home.html")
 
@@ -103,7 +104,8 @@ def product_form(request, id=None):
             saved, errors = Product.save_product(request.POST, product_image)  # Pasa la imagen
         else:
             product = get_object_or_404(Product, pk=product_id)
-            product.update_product(request.POST, request.FILES)  # Pasar request.FILES
+            product_image = request.FILES.get("image")
+            product.update_product(request.POST,product_image)  # Pasar request.FILES
 
         if saved:
             return redirect(reverse("product_repo"))

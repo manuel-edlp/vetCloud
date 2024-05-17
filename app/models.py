@@ -3,6 +3,7 @@ from datetime import datetime
 from django.conf import settings
 from azure.storage.blob import BlobServiceClient
 from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import UploadedFile
 
 def validate_client(data):
     errors = {}
@@ -154,15 +155,33 @@ class Product(models.Model):
         self.name = product_data.get("name", "") or self.name
         self.product_type = product_data.get("product_type", "") or self.product_type
         self.price = product_data.get("price", "") or self.price
-        if product_image:  # Solo actualiza la imagen si se proporciona una nueva
-            # Guardar la nueva imagen en Azure Blob Storage
-            self.image_url = upload_image_to_azure(product_image)
-        
-        self.save()
 
-def upload_image_to_azure(image):
-    # Obtener el primer archivo de imagen del objeto MultiValueDict
-    image_file = image['image']
+        if product_image:  # Only update image if a new one is provided
+            # Delete existing image if there was one
+            if self.image_url:
+                delete_image_from_azure(self.image_url)
+
+            # Upload new image and get the URL
+            new_image_url = upload_image_to_azure(product_image)
+
+            # Check if upload was successful before saving
+            if new_image_url:
+                self.image_url = new_image_url
+                print(f"New image uploaded successfully: {new_image_url}")  # Add logging for debugging
+            else:
+                print(f"Error uploading new image!")  # Add logging for debugging
+
+        self.save()
+        
+    def delete(self, *args, **kwargs):
+        # Eliminar la imagen de Azure Blob Storage
+        if self.image_url:
+            delete_image_from_azure(self.image_url)
+        super().delete(*args, **kwargs)
+
+def upload_image_to_azure(image_file):
+    if not isinstance(image_file, UploadedFile) or image_file is None:
+        return None
 
     # Conectar al servicio de Blob Storage de Azure
     blob_service_client = BlobServiceClient.from_connection_string(settings.AZURE_BLOB_CONNECTION_STRING)
@@ -171,18 +190,28 @@ def upload_image_to_azure(image):
     container_client = blob_service_client.get_container_client(settings.AZURE_BLOB_CONTAINER_NAME)
 
     # Subir la imagen al contenedor
-    with image_file.open() as data:
-        # Leer el contenido del archivo
-        content = data.read()
-
-        # Crear un archivo temporal para la carga en Azure Blob Storage
-        with ContentFile(content) as file:
-            # Subir el archivo al contenedor
-            blob_client = container_client.get_blob_client(image_file.name)
-            blob_client.upload_blob(file)
+    with image_file.open('rb') as data:
+        blob_client = container_client.get_blob_client(image_file.name)
+        blob_client.upload_blob(data)
 
     # Construir y devolver la URL de la imagen
     return f"https://vetstorage01.blob.core.windows.net/imagenes/{image_file.name}"
+
+
+
+def delete_image_from_azure(image_url):
+    # Conectar al servicio de Blob Storage de Azure
+    blob_service_client = BlobServiceClient.from_connection_string(settings.AZURE_BLOB_CONNECTION_STRING)
+
+    # Extraer el nombre del contenedor y el nombre del blob (archivo) de la URL
+    container_name = settings.AZURE_BLOB_CONTAINER_NAME
+    blob_name = image_url.split("/")[-1]
+
+    # Obtener una referencia al blob (archivo) en Azure Blob Storage
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+
+    # Eliminar el blob (archivo) del contenedor
+    blob_client.delete_blob()
 
 def validate_pet(data):
     errors = {}
