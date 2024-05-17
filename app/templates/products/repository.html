@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load filters %}
 {% block main %}
 <div class="container">
     <h1 class="mb-4">Productos</h1>
@@ -30,7 +30,9 @@
                 <td>{{ product.price }}</td>
                 <td>
                     {% if product.image_url %}
-                        <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-width: 100px; max-height: 100px;">
+                        {% with sas_token=product.image_url|generate_sas_token %}
+                            <img src="{{ product.image_url }}{{ sas_token }}" alt="{{ product.name }}" style="max-width: 100px; max-height: 100px;">
+                        {% endwith %}
                     {% else %}
                         No hay imagen
                     {% endif %}        
