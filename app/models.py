@@ -110,7 +110,7 @@ def validate_product(data):
         errors["name"] = "Por favor ingrese su nombre"
 
     if product_type == "":
-        errors["type"] = "Por favor ingrese un tipo de producto"
+        errors["product_type"] = "Por favor ingrese un tipo de producto"
 
     if price == "":
         errors["price"] = "Por favor ingrese un precio válido"
@@ -121,7 +121,7 @@ def validate_product(data):
 class Product(models.Model):
     name = models.CharField(max_length=100)
     product_type = models.CharField(max_length=15)
-    price = models.CharField(max_length=15)
+    price = models.IntegerField()
     
 
     def __str__(self):
