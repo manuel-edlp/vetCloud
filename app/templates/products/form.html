@@ -52,13 +52,15 @@
                 </div>
                 <div>
                     <label for="price" class="form-label">Precio</label>
-                    <input type="text"
+                    <input type="number"
                         id="price"
                         name="price"
                         value="{{product.price}}"
                         class="form-control"
-                        required/>
-
+                        required
+                        min="0"
+                        step="1"/>
+                        
                     {% if errors.price %}
                         <div class="invalid-feedback">
                             {{ errors.price }}
