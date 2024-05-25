@@ -39,11 +39,11 @@ class HomeTestCase(PlaywrightTestCase):
     def test_should_have_navbar_with_links(self):
         self.page.goto(self.live_server_url)
 
-        navbar_home_link = self.page.get_by_test_id("navbar-Home")
+        navbar_home_link = self.page.get_by_test_id("navbar-Inicio")
 
         expect(navbar_home_link).to_be_visible()
         expect(navbar_home_link).to_have_text("Home")
-        expect(navbar_home_link).to_have_attribute("href", reverse("home"))
+        expect(navbar_home_link).to_have_attribute("href", reverse("Inicio"))
 
         navbar_clients_link = self.page.get_by_test_id("navbar-Clientes")
 
