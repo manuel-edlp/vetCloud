@@ -2,7 +2,8 @@ import os
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from playwright.sync_api import sync_playwright, expect, Browser
-
+from datetime import datetime
+from django.utils import timezone
 from django.urls import reverse
 
 from app.models import Client
@@ -17,7 +18,7 @@ class PlaywrightTestCase(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.browser: Browser = playwright.firefox.launch(
+        cls.browser: Browser = playwright.chromium.launch(
             headless=headless, slow_mo=int(slow_mo)
         )
 
@@ -42,8 +43,9 @@ class HomeTestCase(PlaywrightTestCase):
         navbar_home_link = self.page.get_by_test_id("navbar-Inicio")
 
         expect(navbar_home_link).to_be_visible()
-        expect(navbar_home_link).to_have_text("Home")
-        expect(navbar_home_link).to_have_attribute("href", reverse("Inicio"))
+        expect(navbar_home_link).to_have_text("Inicio")
+        expect(navbar_home_link).to_have_attribute("href", reverse("home"))
+
 
         navbar_clients_link = self.page.get_by_test_id("navbar-Clientes")
 
@@ -242,3 +244,45 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         expect(edit_action).to_have_attribute(
             "href", reverse("clients_edit", kwargs={"id": client.id})
         )
+# Validacion de fecha de nacimiento al Crear Mascota
+class PetFormCreateValidationTestCase(PlaywrightTestCase):
+    def test_should_show_error_for_future_birth_date(self):
+        self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        # Introduce una fecha de nacimiento no valida
+        future_date = datetime.now().date() + timezone.timedelta(days=7)  # Ejemplo: 7 días en el futuro
+        future_date_str = future_date.strftime("%Y-%m-%d")  # Formatea la fecha como cadena
+
+        self.page.get_by_label("Nombre").fill("Frida")
+        self.page.get_by_label("Raza").fill("negrita")
+        self.page.get_by_label("Fecha de nacimiento").fill(future_date_str)  # Introduce la fecha en el campo
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        # Verifica si se muestra el mensaje de error esperado
+        expect(self.page.get_by_text("La fecha de nacimiento debe ser menor a la fecha actual")).to_be_visible()
+
+    def test_should_show_error_for_present_birth_date(self):
+        self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        # Introduce una fecha de nacimiento no valida
+        future_date = datetime.now().date()  # Dia actual
+        future_date_str = future_date.strftime("%Y-%m-%d")  # Formatea la fecha como cadena
+
+        self.page.get_by_label("Nombre").fill("Frida")
+        self.page.get_by_label("Raza").fill("negrita")
+        self.page.get_by_label("Fecha de nacimiento").fill(future_date_str)  # Introduce la fecha en el campo
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        # Verifica si se muestra el mensaje de error esperado
+        expect(self.page.get_by_text("La fecha de nacimiento debe ser menor a la fecha actual")).to_be_visible()      
+
+
+       
+
+        

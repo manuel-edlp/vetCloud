@@ -1,5 +1,6 @@
 from django.test import TestCase
-from app.models import Client
+from app.models import Client,Pet,validate_pet
+from django.utils import timezone
 
 
 class ClientModelTest(TestCase):
@@ -57,3 +58,21 @@ class ClientModelTest(TestCase):
         client_updated = Client.objects.get(pk=1)
 
         self.assertEqual(client_updated.phone, "221555232")
+
+class PetModelTest(TestCase):
+    def test_validate_pet_birthday(self):
+        # Probamos la validación de fecha de nacimiento para una mascota
+        valid_data = {
+            "name": "Frida",
+            "breed": "negrita",
+            "birthday": "2013-01-01"  # Fecha de nacimiento válida
+        }
+        self.assertEqual(validate_pet(valid_data), {})  # La validación debería pasar sin errores
+        future_date = timezone.now().date() + timezone.timedelta(days=1)
+        invalid_data = {
+            "name": "Frida",
+            "breed": "negrita",
+            "birthday": future_date.strftime("%Y-%m-%d")  # Fecha de nacimiento en el futuro
+        }
+        expected_error = {"birthday": "La fecha de nacimiento debe ser menor a la fecha actual"}
+        self.assertEqual(validate_pet(invalid_data), expected_error)  # La validación debería dar error

@@ -164,14 +164,21 @@ def validate_pet(data):
     
     if birthday == "":
         errors["birthday"] = "Por favor ingrese una fecha de nacimiento"
-        
+    else:
+        try:
+            birth = datetime.strptime(birthday, "%Y-%m-%d").date()
+            if birth >= datetime.now().date():
+                errors["birthday"] = "La fecha de nacimiento debe ser menor a la fecha actual"
+        except ValueError:
+            errors["birthday"] = "Formato de fecha inválido. Por favor ingrese la fecha en el formato correcto (YYYY-MM-DD)"
+
     return errors
 
 
 class Pet(models.Model):
     name = models.CharField(max_length=40)
     breed = models.CharField(max_length=40)
-    birthday = models.CharField(max_length=40,default='')
+    birthday = models.DateField()
     
     def __str__(self):
             return self.name
@@ -192,11 +199,15 @@ class Pet(models.Model):
         return True, None
     
     def update_pet(self, pet_data):
+        errors = validate_pet(pet_data)
+        if len(errors.keys()) > 0:
+            print("Retorno false")
+            return False, errors
+        print("guardo")
         self.name = pet_data.get("name", "") or self.name
         self.breed = pet_data.get("breed", "") or self.breed
         self.birthday = pet_data.get("birthday", "") or self.birthday
-
-
+        
         self.save()
 
 def validate_veterinary(data):
