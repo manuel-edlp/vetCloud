@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.shortcuts import reverse
-from app.models import Client
+from app.models import Client,Pet
+from datetime import datetime
+from django.utils import timezone 
 
 
 class HomePageTest(TestCase):
@@ -93,3 +95,47 @@ class ClientsTest(TestCase):
         self.assertEqual(editedClient.phone, client.phone)
         self.assertEqual(editedClient.address, client.address)
         self.assertEqual(editedClient.email, client.email)
+
+
+class PetsTest(TestCase):
+    def test_create_pet_with_valid_birthday(self):
+        # Crear una mascota con fecha de nacimiento válida
+        response = self.client.post(
+            reverse("pet_form"), 
+            data={
+                "name": "Frida",
+                "breed": "negrita",
+                "birthday": "2013-01-01",  # Fecha de nacimiento válida
+            },
+        )
+
+        # Verificar que la mascota se haya creado correctamente
+        pets = Pet.objects.all()
+        self.assertEqual(len(pets), 1)
+
+        # Verificar los detalles de la mascota creada
+        self.assertEqual(pets[0].name, "Frida")
+        self.assertEqual(pets[0].breed, "negrita")
+        self.assertEqual(pets[0].birthday, datetime(2013, 1, 1).date())  # Convertir a objeto Date
+
+        # Verificar la redirección después de crear la mascota
+        self.assertRedirects(response, reverse("pet_repo"))
+
+    def test_create_pet_with_invalid_birthday(self):
+        # Intentar crear una mascota con fecha de nacimiento en el futuro
+        future_date = datetime.now().date() + timezone.timedelta(days=1)
+        response = self.client.post(
+            reverse("pet_form"),
+            data={
+                "name": "Frida",
+                "breed": "negrita",
+                "birthday": future_date.strftime("%Y-%m-%d"),  # Fecha de nacimiento en el futuro
+            },
+        )
+
+        # Verificar que la mascota no se haya creado debido a la fecha de nacimiento inválida
+        pets = Pet.objects.all()
+        self.assertEqual(len(pets), 0)
+
+        # Verificar que se muestra un mensaje de error en la respuesta
+        self.assertContains(response, "La fecha de nacimiento debe ser menor a la fecha actual")
