@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.shortcuts import reverse
-from app.models import Client,Pet
+
+from app.models import Client,Pet,Provider
 from datetime import datetime
 from django.utils import timezone 
 
@@ -13,7 +14,7 @@ class HomePageTest(TestCase):
 
 class ClientsTest(TestCase):
     def test_repo_use_repo_template(self):
-        response = self.client.get(reverse("clients_repo"))
+        response = self.client.get(reverse("clients_repo")) 
         self.assertTemplateUsed(response, "clients/repository.html")
 
     def test_repo_display_all_clients(self):
@@ -95,6 +96,41 @@ class ClientsTest(TestCase):
         self.assertEqual(editedClient.phone, client.phone)
         self.assertEqual(editedClient.address, client.address)
         self.assertEqual(editedClient.email, client.email)
+        
+class ProviderTest(TestCase):
+    def test_repo_use_repo_template(self):
+        response = self.client.get(reverse("provider_repo"))
+        self.assertTemplateUsed(response, "providers/repository.html")
+
+    def test_can_create_provider(self):
+        response = self.client.post(
+            reverse("provider_form"),
+            data={
+                "name": "Juan Roman Riquelme",
+                "email": "senor10@hotmail.com",
+                "address": "13 y 44",
+            },
+        )
+        providers = Provider.objects.all()
+        self.assertEqual(len(providers), 1)
+
+        self.assertEqual(providers[0].name, "Juan Roman Riquelme")
+        self.assertEqual(providers[0].email, "senor10@hotmail.com")
+        self.assertEqual(providers[0].address, "13 y 44")
+
+        self.assertRedirects(response, reverse("provider_repo"))
+    
+    def test_validation_invalid_email(self): #Agrego una función ajena a la funcionalidad agregada para mayor calidad.
+        response = self.client.post(
+            reverse("provider_form"),
+            data={
+                "name": "Juan Roman Riquelme",
+                "email": "senor10",
+                "address": "13 y 44",
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un email valido")
 
 
 class PetsTest(TestCase):
@@ -139,3 +175,4 @@ class PetsTest(TestCase):
 
         # Verificar que se muestra un mensaje de error en la respuesta
         self.assertContains(response, "La fecha de nacimiento debe ser menor a la fecha actual")
+
