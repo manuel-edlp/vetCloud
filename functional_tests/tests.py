@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright, expect, Browser
 
 from django.urls import reverse
 
-from app.models import Client
+from app.models import Client, Provider
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 playwright = sync_playwright().start()
@@ -39,10 +39,10 @@ class HomeTestCase(PlaywrightTestCase):
     def test_should_have_navbar_with_links(self):
         self.page.goto(self.live_server_url)
 
-        navbar_home_link = self.page.get_by_test_id("navbar-Home")
+        navbar_home_link = self.page.get_by_test_id("navbar-Inicio")
 
         expect(navbar_home_link).to_be_visible()
-        expect(navbar_home_link).to_have_text("Home")
+        expect(navbar_home_link).to_have_text("Inicio")
         expect(navbar_home_link).to_have_attribute("href", reverse("home"))
 
         navbar_clients_link = self.page.get_by_test_id("navbar-Clientes")
@@ -242,3 +242,25 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         expect(edit_action).to_have_attribute(
             "href", reverse("clients_edit", kwargs={"id": client.id})
         )
+
+class ProvidersRepoTestCase(PlaywrightTestCase):
+    def test_should_show_message_if_table_is_empty(self):
+        self.page.goto(f"{self.live_server_url}{reverse('provider_repo')}")
+
+        expect(self.page.get_by_text("No existen proveedores")).to_be_visible()
+
+    def test_should_show_providers_data(self):
+        Provider.objects.create(
+            name="Juan Roman Riquelme",
+            email="senor10@hotmail.com",
+            address="13 y 44",
+        )
+
+    def test_should_show_add_provider_action(self):
+        self.page.goto(f"{self.live_server_url}{reverse('provider_repo')}")
+
+        add_provider_action = self.page.get_by_role(
+            "link", name="Nuevo Proveedor", exact=False
+        )
+        expect(add_provider_action).to_have_attribute("href", reverse("provider_form"))
+        
