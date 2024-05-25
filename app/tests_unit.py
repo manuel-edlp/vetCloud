@@ -59,6 +59,7 @@ class ClientModelTest(TestCase):
 
         self.assertEqual(client_updated.phone, "221555232")
 
+class PetModelTest(TestCase):
     def test_validate_pet_birthday(self):
         # Probamos la validación de fecha de nacimiento para una mascota
         valid_data = {
