@@ -2,10 +2,11 @@ import os
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from playwright.sync_api import sync_playwright, expect, Browser
-
+from datetime import datetime
+from django.utils import timezone
 from django.urls import reverse
 
-from app.models import Client
+from app.models import Client, Provider, Product
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 playwright = sync_playwright().start()
@@ -17,7 +18,7 @@ class PlaywrightTestCase(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.browser: Browser = playwright.firefox.launch(
+        cls.browser: Browser = playwright.chromium.launch(
             headless=headless, slow_mo=int(slow_mo)
         )
 
@@ -42,8 +43,10 @@ class HomeTestCase(PlaywrightTestCase):
         navbar_home_link = self.page.get_by_test_id("navbar-Inicio")
 
         expect(navbar_home_link).to_be_visible()
-        expect(navbar_home_link).to_have_text("Home")
-        expect(navbar_home_link).to_have_attribute("href", reverse("Inicio"))
+        expect(navbar_home_link).to_have_text("Inicio")
+        expect(navbar_home_link).to_have_attribute("href", reverse("home"))
+
+
 
         navbar_clients_link = self.page.get_by_test_id("navbar-Clientes")
 
@@ -242,3 +245,120 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         expect(edit_action).to_have_attribute(
             "href", reverse("clients_edit", kwargs={"id": client.id})
         )
+
+class ProvidersRepoTestCase(PlaywrightTestCase):
+    def test_should_show_message_if_table_is_empty(self):
+        self.page.goto(f"{self.live_server_url}{reverse('provider_repo')}")
+
+        expect(self.page.get_by_text("No existen proveedores")).to_be_visible()
+
+    def test_should_show_providers_data(self):
+        Provider.objects.create(
+            name="Juan Roman Riquelme",
+            email="senor10@hotmail.com",
+            address="13 y 44",
+        )
+
+    def test_should_show_add_provider_action(self):
+        self.page.goto(f"{self.live_server_url}{reverse('provider_repo')}")
+
+        add_provider_action = self.page.get_by_role(
+            "link", name="Nuevo Proveedor", exact=False
+        )
+        expect(add_provider_action).to_have_attribute("href", reverse("provider_form"))
+        
+# Validacion de fecha de nacimiento al Crear Mascota
+class PetFormCreateValidationTestCase(PlaywrightTestCase):
+    def test_should_show_error_for_future_birth_date(self):
+        self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        # Introduce una fecha de nacimiento no valida
+        future_date = datetime.now().date() + timezone.timedelta(days=7)  # Ejemplo: 7 días en el futuro
+        future_date_str = future_date.strftime("%Y-%m-%d")  # Formatea la fecha como cadena
+
+        self.page.get_by_label("Nombre").fill("Frida")
+        self.page.get_by_label("Raza").fill("negrita")
+        self.page.get_by_label("Fecha de nacimiento").fill(future_date_str)  # Introduce la fecha en el campo
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        # Verifica si se muestra el mensaje de error esperado
+        expect(self.page.get_by_text("La fecha de nacimiento debe ser menor a la fecha actual")).to_be_visible()
+
+    def test_should_show_error_for_present_birth_date(self):
+        self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        # Introduce una fecha de nacimiento no valida
+        future_date = datetime.now().date()  # Dia actual
+        future_date_str = future_date.strftime("%Y-%m-%d")  # Formatea la fecha como cadena
+
+        self.page.get_by_label("Nombre").fill("Frida")
+        self.page.get_by_label("Raza").fill("negrita")
+        self.page.get_by_label("Fecha de nacimiento").fill(future_date_str)  # Introduce la fecha en el campo
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        # Verifica si se muestra el mensaje de error esperado
+        expect(self.page.get_by_text("La fecha de nacimiento debe ser menor a la fecha actual")).to_be_visible()      
+
+
+       
+        
+
+
+# Pruebas de unidad para verificar la creación exitosa de un nuevo producto
+
+class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
+    def test_should_be_able_to_create_a_new_product(self):
+        self.page.goto(f"{self.live_server_url}{reverse('product_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+# Completar el formulario para crear un nuevo producto con valores específicos
+        self.page.get_by_label("Nombre").fill("Gentamicina")
+        self.page.get_by_label("Tipo").fill("Antibiotico")
+        self.page.get_by_label("Precio").fill("200")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+# Verificar que los detalles del producto recién creado sean visibles en la página
+        expect(self.page.get_by_text("Gentamicina")).to_be_visible()
+        expect(self.page.get_by_text("Antibiotico")).to_be_visible()
+        expect(self.page.get_by_text("200")).to_be_visible()
+
+# Prueba para verificar si se muestran errores cuando el formulario es inválido con un precio menor que cero
+    def test_should_view_errors_if_form_is_invalid_with_price_less_than_zero(self):
+        self.page.goto(f"{self.live_server_url}{reverse('product_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+# Verificar que se muestren mensajes de error para ingresar nombre, tipo y precio
+        expect(self.page.get_by_text("Por favor ingrese su nombre")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese un tipo")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese un precio")).to_be_visible()
+
+# Completar el formulario con un precio negativo y enviarlo
+        self.page.get_by_label("Nombre").fill("Gentamicina")
+        self.page.get_by_label("Tipo").fill("Antibiótico")
+        self.page.get_by_label("Precio").fill("-10")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+# Verificar que los mensajes de error para ingresar el nombre y el tipo no sean visibles
+        expect(self.page.get_by_text("Por favor ingrese su nombre")).not_to_be_visible()
+        expect(
+            self.page.get_by_text("Por favor ingrese un tipo")
+        ).not_to_be_visible()
+
+# Verificar que el mensaje de error "El precio debe ser mayor que cero" sea visible
+        expect(
+            self.page.get_by_text("El precio debe ser mayor que cero")
+        ).to_be_visible()
+
+        

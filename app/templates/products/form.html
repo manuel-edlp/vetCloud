@@ -1,4 +1,3 @@
-{% extends 'base.html' %}
 
 {% block main %}
 <div class="container">
@@ -10,6 +9,8 @@
 
     <div class="row">
         <div class="col-lg-6 offset-lg-3">
+
+            
             <form class="vstack gap-3 {% if errors %}was-validated{% endif %}"
                 aria-label="Formulario de creacion de producto"
                 method="POST"
@@ -26,7 +27,7 @@
                         id="name"
                         name="name"
                         value="{{product.name}}"
-                        class="form-control"
+                        class="form-control {% if errors.name %}is-invalid{% endif %}"
                         required/>
 
                     {% if errors.name %}
@@ -41,7 +42,7 @@
                         id="product_type"
                         name="product_type"
                         value="{{product.product_type}}"
-                        class="form-control"
+                        class="form-control {% if errors.name %}is-invalid{% endif %}"
                         required/>
 
                     {% if errors.product_type %}
