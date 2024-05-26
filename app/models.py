@@ -2,6 +2,7 @@ from django.db import models
 from datetime import datetime
 
 
+
 def validate_client(data):
     errors = {}
 
@@ -119,15 +120,23 @@ def validate_product(data):
         errors["product_type"] = "Por favor ingrese un tipo de producto"
 
     if price == "":
-        errors["price"] = "Por favor ingrese un precio válido"
-
+        errors["price"] = "Por favor ingrese un precio"
+    else:
+        try:
+            float_price = float(price)
+            if float_price <= 0:
+                errors["price"] = "El precio debe ser mayor que cero"
+        except ValueError:
+            errors["price"] = "El precio debe ser un número válido"
+    
     return errors
+
 
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
     product_type = models.CharField(max_length=15)
-    price = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     
     def __str__(self):
             return self.name
