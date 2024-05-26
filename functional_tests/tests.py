@@ -6,7 +6,7 @@ from datetime import datetime
 from django.utils import timezone
 from django.urls import reverse
 
-from app.models import Client, Provider
+from app.models import Client, Provider, Product
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 playwright = sync_playwright().start()
@@ -306,4 +306,58 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
 
 
        
+        
+
+
+# Pruebas de unidad para verificar la creación exitosa de un nuevo producto
+
+class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
+    def test_should_be_able_to_create_a_new_product(self):
+        self.page.goto(f"{self.live_server_url}{reverse('product_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+# Completar el formulario para crear un nuevo producto con valores específicos
+        self.page.get_by_label("Nombre").fill("Gentamicina")
+        self.page.get_by_label("Tipo").fill("Antibiotico")
+        self.page.get_by_label("Precio").fill("200")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+# Verificar que los detalles del producto recién creado sean visibles en la página
+        expect(self.page.get_by_text("Gentamicina")).to_be_visible()
+        expect(self.page.get_by_text("Antibiotico")).to_be_visible()
+        expect(self.page.get_by_text("200")).to_be_visible()
+
+# Prueba para verificar si se muestran errores cuando el formulario es inválido con un precio menor que cero
+    def test_should_view_errors_if_form_is_invalid_with_price_less_than_zero(self):
+        self.page.goto(f"{self.live_server_url}{reverse('product_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+# Verificar que se muestren mensajes de error para ingresar nombre, tipo y precio
+        expect(self.page.get_by_text("Por favor ingrese su nombre")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese un tipo")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese un precio")).to_be_visible()
+
+# Completar el formulario con un precio negativo y enviarlo
+        self.page.get_by_label("Nombre").fill("Gentamicina")
+        self.page.get_by_label("Tipo").fill("Antibiótico")
+        self.page.get_by_label("Precio").fill("-10")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+# Verificar que los mensajes de error para ingresar el nombre y el tipo no sean visibles
+        expect(self.page.get_by_text("Por favor ingrese su nombre")).not_to_be_visible()
+        expect(
+            self.page.get_by_text("Por favor ingrese un tipo")
+        ).not_to_be_visible()
+
+# Verificar que el mensaje de error "El precio debe ser mayor que cero" sea visible
+        expect(
+            self.page.get_by_text("El precio debe ser mayor que cero")
+        ).to_be_visible()
+
         
