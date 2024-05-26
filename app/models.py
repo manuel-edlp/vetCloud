@@ -213,6 +213,7 @@ class Pet(models.Model):
         self.birthday = pet_data.get("birthday", "") or self.birthday
         
         self.save()
+        return True, None
 
 def validate_veterinary(data):
     errors = {}
