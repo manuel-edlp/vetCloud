@@ -47,6 +47,7 @@ class HomeTestCase(PlaywrightTestCase):
         expect(navbar_home_link).to_have_attribute("href", reverse("home"))
 
 
+
         navbar_clients_link = self.page.get_by_test_id("navbar-Clientes")
 
         expect(navbar_clients_link).to_be_visible()
