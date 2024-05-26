@@ -4,6 +4,8 @@ from django.shortcuts import reverse
 from app.models import Client,Pet,Provider
 from datetime import datetime
 from django.utils import timezone 
+from app.models import Product
+
 
 
 class HomePageTest(TestCase):
@@ -176,3 +178,63 @@ class PetsTest(TestCase):
         # Verificar que se muestra un mensaje de error en la respuesta
         self.assertContains(response, "La fecha de nacimiento debe ser menor a la fecha actual")
 
+
+class ProductsTest(TestCase):
+    def test_create_product_with_valid_price(self):
+        # Crear un producto con precio válido
+        response = self.client.post(
+            reverse("product_form"), 
+            data={
+                "name": "Producto Test",
+                "product_type": "Tipo Test",
+                "price": "10.00",  # Precio válido
+            },
+        )
+
+        # Verificar que el producto se haya creado correctamente
+        products = Product.objects.all()
+        self.assertEqual(len(products), 1)
+
+        # Verificar los detalles del producto creado
+        self.assertEqual(products[0].name, "Producto Test")
+        self.assertEqual(products[0].product_type, "Tipo Test")
+        self.assertEqual(products[0].price, 10.00)  # Precio válido
+
+        # Verificar la redirección después de crear el producto
+        self.assertRedirects(response, reverse("product_repo"))
+
+    def test_create_product_with_invalid_price(self):
+        # Intentar crear un producto con precio negativo
+        response = self.client.post(
+            reverse("product_form"),
+            data={
+                "name": "Producto Test",
+                "product_type": "Tipo Test",
+                "price": "-5.00",  # Precio inválido (negativo)
+            },
+        )
+
+        # Verificar que el producto no se haya creado debido al precio inválido
+        products = Product.objects.all()
+        self.assertEqual(len(products), 0)
+
+        # Verificar que se muestra un mensaje de error en la respuesta
+        self.assertContains(response, "El precio debe ser mayor que cero")
+
+    def test_create_product_with_non_numeric_price(self):
+        # Intentar crear un producto con precio no numérico
+        response = self.client.post(
+            reverse("product_form"),
+            data={
+                "name": "Producto Test",
+                "product_type": "Tipo Test",
+                "price": "precio_invalido",  # Precio inválido (no numérico)
+            },
+        )
+
+        # Verificar que el producto no se haya creado debido al precio inválido
+        products = Product.objects.all()
+        self.assertEqual(len(products), 0)
+
+        # Verificar que se muestra un mensaje de error en la respuesta
+        self.assertContains(response, "El precio debe ser un número válido")
