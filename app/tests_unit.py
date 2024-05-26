@@ -1,6 +1,10 @@
 from django.test import TestCase
-from app.models import Client,Pet,validate_pet,Provider
+from app.models import Client,Pet,validate_pet,Provider, Product
 from django.utils import timezone
+from django.test import TestCase
+
+
+
 
 
 class ClientModelTest(TestCase):
@@ -92,3 +96,37 @@ class PetModelTest(TestCase):
         }
         expected_error = {"birthday": "La fecha de nacimiento debe ser menor a la fecha actual"}
         self.assertEqual(validate_pet(invalid_data), expected_error)  # La validación debería dar error
+
+
+class ProductModelTest(TestCase):
+    def test_create_product_with_valid_price(self):
+        success, message_or_errors = Product.save_product({
+            "name": "Test Product",
+            "product_type": "Test Type",
+            "price": "100"
+        })
+
+        self.assertTrue(success)
+        self.assertEqual(message_or_errors, "Producto creado exitosamente")
+
+    def test_create_product_with_invalid_price_zero(self):
+        success, message_or_errors = Product.save_product({
+            "name": "Test Product",
+            "product_type": "Test Type",
+            "price": "0"
+        })
+
+        self.assertFalse(success)
+        self.assertIn("price", message_or_errors)
+        self.assertEqual(message_or_errors["price"], "El precio debe ser mayor que cero")
+
+    def test_create_product_with_invalid_price_negative(self):
+        success, message_or_errors = Product.save_product({
+            "name": "Test Product",
+            "product_type": "Test Type",
+            "price": "-10"
+        })
+
+        self.assertFalse(success)
+        self.assertIn("price", message_or_errors)
+        self.assertEqual(message_or_errors["price"], "El precio debe ser mayor que cero")
