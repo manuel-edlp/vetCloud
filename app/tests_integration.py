@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.shortcuts import reverse
-from app.models import Client, Medicine
+from app.models import Client,Pet,Provider,Medicine
+from datetime import datetime
+from django.utils import timezone
 
 
 class HomePageTest(TestCase):
@@ -11,7 +13,7 @@ class HomePageTest(TestCase):
 
 class ClientsTest(TestCase):
     def test_repo_use_repo_template(self):
-        response = self.client.get(reverse("clients_repo"))
+        response = self.client.get(reverse("clients_repo")) 
         self.assertTemplateUsed(response, "clients/repository.html")
 
     def test_repo_display_all_clients(self):
@@ -145,3 +147,82 @@ class MedicineIntegrationTest(TestCase):
         self.assertEqual(updated_medicine.name, "Ibuprofen")
         self.assertEqual(updated_medicine.description, medicine.description)
         self.assertEqual(updated_medicine.dose, medicine.dose)
+        
+class ProviderTest(TestCase):
+    def test_repo_use_repo_template(self):
+        response = self.client.get(reverse("provider_repo"))
+        self.assertTemplateUsed(response, "providers/repository.html")
+
+    def test_can_create_provider(self):
+        response = self.client.post(
+            reverse("provider_form"),
+            data={
+                "name": "Juan Roman Riquelme",
+                "email": "senor10@hotmail.com",
+                "address": "13 y 44",
+            },
+        )
+        providers = Provider.objects.all()
+        self.assertEqual(len(providers), 1)
+
+        self.assertEqual(providers[0].name, "Juan Roman Riquelme")
+        self.assertEqual(providers[0].email, "senor10@hotmail.com")
+        self.assertEqual(providers[0].address, "13 y 44")
+
+        self.assertRedirects(response, reverse("provider_repo"))
+    
+    def test_validation_invalid_email(self): #Agrego una función ajena a la funcionalidad agregada para mayor calidad.
+        response = self.client.post(
+            reverse("provider_form"),
+            data={
+                "name": "Juan Roman Riquelme",
+                "email": "senor10",
+                "address": "13 y 44",
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un email valido")
+
+
+class PetsTest(TestCase):
+    def test_create_pet_with_valid_birthday(self):
+        # Crear una mascota con fecha de nacimiento válida
+        response = self.client.post(
+            reverse("pet_form"), 
+            data={
+                "name": "Frida",
+                "breed": "negrita",
+                "birthday": "2013-01-01",  # Fecha de nacimiento válida
+            },
+        )
+
+        # Verificar que la mascota se haya creado correctamente
+        pets = Pet.objects.all()
+        self.assertEqual(len(pets), 1)
+
+        # Verificar los detalles de la mascota creada
+        self.assertEqual(pets[0].name, "Frida")
+        self.assertEqual(pets[0].breed, "negrita")
+        self.assertEqual(pets[0].birthday, datetime(2013, 1, 1).date())  # Convertir a objeto Date
+
+        # Verificar la redirección después de crear la mascota
+        self.assertRedirects(response, reverse("pet_repo"))
+
+    def test_create_pet_with_invalid_birthday(self):
+        # Intentar crear una mascota con fecha de nacimiento en el futuro
+        future_date = datetime.now().date() + timezone.timedelta(days=1)
+        response = self.client.post(
+            reverse("pet_form"),
+            data={
+                "name": "Frida",
+                "breed": "negrita",
+                "birthday": future_date.strftime("%Y-%m-%d"),  # Fecha de nacimiento en el futuro
+            },
+        )
+
+        # Verificar que la mascota no se haya creado debido a la fecha de nacimiento inválida
+        pets = Pet.objects.all()
+        self.assertEqual(len(pets), 0)
+
+        # Verificar que se muestra un mensaje de error en la respuesta
+        self.assertContains(response, "La fecha de nacimiento debe ser menor a la fecha actual")

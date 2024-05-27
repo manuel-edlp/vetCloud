@@ -2,10 +2,10 @@ import os
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from playwright.sync_api import sync_playwright, expect, Browser
-
+from datetime import datetime
+from django.utils import timezone
 from django.urls import reverse
-
-from app.models import Client, Medicine
+from app.models import Client, Provider, Medicine
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 playwright = sync_playwright().start()
@@ -17,7 +17,7 @@ class PlaywrightTestCase(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.browser: Browser = playwright.firefox.launch(
+        cls.browser: Browser = playwright.chromium.launch(
             headless=headless, slow_mo=int(slow_mo)
         )
 
@@ -44,6 +44,7 @@ class HomeTestCase(PlaywrightTestCase):
         expect(navbar_home_link).to_be_visible()
         expect(navbar_home_link).to_have_text("Inicio")
         expect(navbar_home_link).to_have_attribute("href", reverse("home"))
+
 
         navbar_clients_link = self.page.get_by_test_id("navbar-Clientes")
 
@@ -243,6 +244,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
             "href", reverse("clients_edit", kwargs={"id": client.id})
         )
 
+
 class MedicineCreateEditTestCase(PlaywrightTestCase):
     def test_should_be_able_to_create_a_new_medicine(self):
         self.page.goto(f"{self.live_server_url}{reverse('medicine_form')}")
@@ -306,3 +308,62 @@ class MedicineCreateEditTestCase(PlaywrightTestCase):
         expect(edit_action).to_have_attribute(
             "href", reverse("medicine_edit", kwargs={"id": medicine.id})
         )
+
+class ProvidersRepoTestCase(PlaywrightTestCase):
+    def test_should_show_message_if_table_is_empty(self):
+        self.page.goto(f"{self.live_server_url}{reverse('provider_repo')}")
+
+        expect(self.page.get_by_text("No existen proveedores")).to_be_visible()
+
+    def test_should_show_providers_data(self):
+        Provider.objects.create(
+            name="Juan Roman Riquelme",
+            email="senor10@hotmail.com",
+            address="13 y 44",
+        )
+
+    def test_should_show_add_provider_action(self):
+        self.page.goto(f"{self.live_server_url}{reverse('provider_repo')}")
+
+        add_provider_action = self.page.get_by_role(
+            "link", name="Nuevo Proveedor", exact=False
+        )
+        expect(add_provider_action).to_have_attribute("href", reverse("provider_form"))
+        
+# Validacion de fecha de nacimiento al Crear Mascota
+class PetFormCreateValidationTestCase(PlaywrightTestCase):
+    def test_should_show_error_for_future_birth_date(self):
+        self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        # Introduce una fecha de nacimiento no valida
+        future_date = datetime.now().date() + timezone.timedelta(days=7)  # Ejemplo: 7 días en el futuro
+        future_date_str = future_date.strftime("%Y-%m-%d")  # Formatea la fecha como cadena
+
+        self.page.get_by_label("Nombre").fill("Frida")
+        self.page.get_by_label("Raza").fill("negrita")
+        self.page.get_by_label("Fecha de nacimiento").fill(future_date_str)  # Introduce la fecha en el campo
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        # Verifica si se muestra el mensaje de error esperado
+        expect(self.page.get_by_text("La fecha de nacimiento debe ser menor a la fecha actual")).to_be_visible()
+
+    def test_should_show_error_for_present_birth_date(self):
+        self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        # Introduce una fecha de nacimiento no valida
+        future_date = datetime.now().date()  # Dia actual
+        future_date_str = future_date.strftime("%Y-%m-%d")  # Formatea la fecha como cadena
+
+        self.page.get_by_label("Nombre").fill("Frida")
+        self.page.get_by_label("Raza").fill("negrita")
+        self.page.get_by_label("Fecha de nacimiento").fill(future_date_str)  # Introduce la fecha en el campo
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        # Verifica si se muestra el mensaje de error esperado
+        expect(self.page.get_by_text("La fecha de nacimiento debe ser menor a la fecha actual")).to_be_visible()      
