@@ -2,6 +2,7 @@ from django.test import TestCase
 from app.models import Client,Pet,validate_pet,Provider,Medicine
 from django.utils import timezone
 
+
 class ClientModelTest(TestCase):
     def test_can_create_and_get_client(self):
         Client.save_client(
@@ -57,7 +58,6 @@ class ClientModelTest(TestCase):
         client_updated = Client.objects.get(pk=1)
 
         self.assertEqual(client_updated.phone, "221555232")
-
 
 class MedicineModelTest(TestCase):
     def test_can_create_and_get_medicine(self):
@@ -163,3 +163,26 @@ class PetModelTest(TestCase):
         }
         expected_error = {"birthday": "La fecha de nacimiento debe ser menor a la fecha actual"}
         self.assertEqual(validate_pet(invalid_data), expected_error)  # La validación debería dar error
+    
+    def test_create_pet_with_valid_weight(self):
+        success, message_or_errors = Pet.save_pet({
+            "name": "Frida",
+            "breed": "negrita",
+            "birthday": "2017-01-01",
+            "weight": "4" # Peso válido
+        })
+
+        self.assertTrue(success)
+        self.assertEqual(message_or_errors, None)
+
+    def test_create_pet_with_invalid_weight_negative(self):
+        success, message_or_errors = Pet.save_pet({
+            "name": "Frida",
+            "breed": "negrita",
+            "birthday": "2017-01-01",
+            "weight": "-1" # Peso inválido
+        })
+
+        self.assertFalse(success)
+        self.assertIn("weight", message_or_errors)
+        self.assertEqual(message_or_errors["weight"], "Por favor ingrese un peso correcto (debe ser mayor a cero)")

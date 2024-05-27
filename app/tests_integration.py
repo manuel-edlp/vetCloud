@@ -4,7 +4,6 @@ from app.models import Client,Pet,Provider,Medicine
 from datetime import datetime
 from django.utils import timezone
 
-
 class HomePageTest(TestCase):
     def test_use_home_template(self):
         response = self.client.get(reverse("home"))
@@ -184,8 +183,51 @@ class ProviderTest(TestCase):
         self.assertContains(response, "Por favor ingrese un email valido")
 
 
-class PetsTest(TestCase):
-    def test_create_pet_with_valid_birthday(self):
+class PetsTest(TestCase): #JUANMA? ESO HICE
+    def test_create_pet_with_valid_weight(self):
+        # Crear un mascota con peso válido
+        response = self.client.post(
+            reverse("pet_form"), 
+            data={
+                "name": "Frida",
+                "breed": "negrita",
+                "birthday": "2017-01-01",
+                "weight": "4" # Peso válido
+            },
+        )
+
+        # Verificar que la mascota se haya creado correctamente
+        pets = Pet.objects.all()
+        self.assertEqual(len(pets), 1)
+
+        # Verificar los detalles del mascota creado
+        self.assertEqual(pets[0].name, "Frida")
+        self.assertEqual(pets[0].breed, "negrita")
+        self.assertEqual(pets[0].birthday, "2017-01-01")
+        self.assertEqual(pets[0].weight, 4)  # Peso válido
+
+        # Verificar la redirección después de crear el mascota
+        self.assertRedirects(response, reverse("pet_repo"))
+
+    def test_create_product_with_invalid_weight(self):
+        # Intentar crear una mascota con precio negativo
+        response = self.client.post(
+            reverse("pet_form"),
+            data={
+                "name": "Frida",
+                "breed": "negrita",
+                "birthday": "2017-01-01",
+                "weight": "-10" # Peso inválido
+            },
+
+        # Verificar que la mascota no se haya creado debido al peso inválido
+        pets = Pet.objects.all()
+        self.assertEqual(len(pets), 0)
+
+        # Verificar que se muestra un mensaje de error en la respuesta
+        self.assertContains(response, "Por favor ingrese un peso correcto (debe ser mayor a cero)")
+          
+     def test_create_pet_with_valid_birthday(self):
         # Crear una mascota con fecha de nacimiento válida
         response = self.client.post(
             reverse("pet_form"), 
