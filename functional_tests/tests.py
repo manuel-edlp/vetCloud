@@ -245,8 +245,6 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         )
 
 
-=======
-
 class MedicineCreateEditTestCase(PlaywrightTestCase):
     def test_should_be_able_to_create_a_new_medicine(self):
         self.page.goto(f"{self.live_server_url}{reverse('medicine_form')}")

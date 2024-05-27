@@ -219,6 +219,7 @@ class PetsTest(TestCase): #JUANMA? ESO HICE
                 "birthday": "2017-01-01",
                 "weight": "-10" # Peso inválido
             },
+        )
 
         # Verificar que la mascota no se haya creado debido al peso inválido
         pets = Pet.objects.all()
@@ -227,7 +228,7 @@ class PetsTest(TestCase): #JUANMA? ESO HICE
         # Verificar que se muestra un mensaje de error en la respuesta
         self.assertContains(response, "Por favor ingrese un peso correcto (debe ser mayor a cero)")
           
-     def test_create_pet_with_valid_birthday(self):
+    def test_create_pet_with_valid_birthday(self):
         # Crear una mascota con fecha de nacimiento válida
         response = self.client.post(
             reverse("pet_form"), 
