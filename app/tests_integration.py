@@ -97,11 +97,11 @@ class ClientsTest(TestCase):
 class MedicineIntegrationTest(TestCase):
     def test_can_create_medicine(self):
         response = self.client.post(
-            reverse("medicines_form"),
+            reverse("medicine_form"),
             data={
                 "name": "Paracetamol",
                 "description": "Analgesic and antipyretic",
-                "dose": 500,
+                "dose": 5,
             },
         )
         medicines = Medicine.objects.all()
@@ -109,13 +109,13 @@ class MedicineIntegrationTest(TestCase):
 
         self.assertEqual(medicines[0].name, "Paracetamol")
         self.assertEqual(medicines[0].description, "Analgesic and antipyretic")
-        self.assertEqual(medicines[0].dose, 500)
+        self.assertEqual(medicines[0].dose, 5)
 
-        self.assertRedirects(response, reverse("medicines_repo"))
+        self.assertRedirects(response, reverse("medicine_repo"))
 
     def test_validation_errors_create_medicine(self):
         response = self.client.post(
-            reverse("medicines_form"),
+            reverse("medicine_form"),
             data={},
         )
 
@@ -131,7 +131,7 @@ class MedicineIntegrationTest(TestCase):
         )
 
         response = self.client.post(
-            reverse("medicines_form"),
+            reverse("medicine_form"),
             data={
                 "id": medicine.id,
                 "name": "Ibuprofen",
