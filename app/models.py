@@ -169,6 +169,7 @@ def validate_pet(data):
     name = data.get("name", "")
     breed = data.get("breed", "")
     birthday = data.get("birthday", "")
+    weight = data.get("weight", "")
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
 
@@ -177,6 +178,11 @@ def validate_pet(data):
     
     if birthday == "":
         errors["birthday"] = "Por favor ingrese una fecha de nacimiento"
+
+        
+    if weight == "" or int(weight) < 0:
+        errors["weight"] = "Por favor ingrese un peso correcto (debe ser mayor a cero)" 
+    
     else:
         try:
             birth = datetime.strptime(birthday, "%Y-%m-%d").date()
@@ -191,6 +197,10 @@ def validate_pet(data):
 class Pet(models.Model):
     name = models.CharField(max_length=40)
     breed = models.CharField(max_length=40)
+
+    birthday = models.CharField(max_length=40,default='')
+    weight = models.IntegerField()
+
     birthday = models.DateField()
     
     def __str__(self):
@@ -207,6 +217,7 @@ class Pet(models.Model):
             name=pet_data.get("name"),
             breed=pet_data.get("breed"),
             birthday=pet_data.get("birthday"),
+            weight=pet_data.get("weight"),
         )
 
         return True, None
@@ -220,8 +231,15 @@ class Pet(models.Model):
         self.name = pet_data.get("name", "") or self.name
         self.breed = pet_data.get("breed", "") or self.breed
         self.birthday = pet_data.get("birthday", "") or self.birthday
+        self.weight = pet_data.get("weight", "") or self.weight
+
+        errors = validate_pet(pet_data)
+    
+        if len(errors.keys()) > 0:
+            return False, errors
         
         self.save()
+        return True, None
 
 def validate_veterinary(data):
     errors = {}
@@ -273,6 +291,15 @@ class Veterinary(models.Model):
 
         self.save()
 
+def validate_dose(dose):
+    try:
+        dose_value = int(dose)
+        if dose_value < 1 or dose_value > 10:
+            return "La dosis debe estar entre 1 y 10."
+    except ValueError:
+        return "La dosis debe ser un número entero."
+    return None
+
 def validate_medicine(data):
     errors = {}
 
@@ -288,9 +315,13 @@ def validate_medicine(data):
 
     if dose == "":
         errors["dose"] = "Por favor ingrese una dosis"
+    else:
+        dose_error = validate_dose(dose)
+        if dose_error:
+            errors["dose"] = dose_error
 
     return errors
-    
+
 class Medicine(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255)
@@ -298,12 +329,10 @@ class Medicine(models.Model):
 
     def __str__(self):
         return self.name
-    
 
     @classmethod
     def save_medicine(cls, medicine_data):
         errors = validate_medicine(medicine_data)
-
 
         if len(errors.keys()) > 0:
             return False, errors
@@ -319,5 +348,12 @@ class Medicine(models.Model):
     def update_medicine(self, medicine_data):
         self.name = medicine_data.get("name", "") or self.name
         self.description = medicine_data.get("description", "") or self.description
-        self.dose = medicine_data.get("dose", "") or self.dose
+        
+        if "dose" in medicine_data:
+            dose_error = validate_dose(medicine_data["dose"])
+            if dose_error:
+                return False, {"dose": dose_error}
+            self.dose = medicine_data["dose"]
+
         self.save()
+        return True, {}
