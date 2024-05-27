@@ -186,7 +186,7 @@ class ProviderTest(TestCase):
         self.assertContains(response, "Por favor ingrese un email valido")
 
 
-class PetsTest(TestCase): #JUANMA? ESO HICE
+class PetsTest(TestCase):
     def test_create_pet_with_valid_weight(self):
         # Crear un mascota con peso válido
         response = self.client.post(
@@ -206,7 +206,7 @@ class PetsTest(TestCase): #JUANMA? ESO HICE
         # Verificar los detalles del mascota creado
         self.assertEqual(pets[0].name, "Frida")
         self.assertEqual(pets[0].breed, "negrita")
-        self.assertEqual(pets[0].birthday, "2017-01-01")
+        self.assertEqual(pets[0].birthday, datetime(2017, 1, 1).date())
         self.assertEqual(pets[0].weight, 4)  # Peso válido
 
         # Verificar la redirección después de crear el mascota
@@ -239,6 +239,7 @@ class PetsTest(TestCase): #JUANMA? ESO HICE
                 "name": "Frida",
                 "breed": "negrita",
                 "birthday": "2013-01-01",  # Fecha de nacimiento válida
+                "weight": 4,
             },
         )
 
@@ -250,6 +251,7 @@ class PetsTest(TestCase): #JUANMA? ESO HICE
         self.assertEqual(pets[0].name, "Frida")
         self.assertEqual(pets[0].breed, "negrita")
         self.assertEqual(pets[0].birthday, datetime(2013, 1, 1).date())  # Convertir a objeto Date
+        self.assertEqual(pets[0].weight, 4)
 
         # Verificar la redirección después de crear la mascota
         self.assertRedirects(response, reverse("pet_repo"))
@@ -263,6 +265,7 @@ class PetsTest(TestCase): #JUANMA? ESO HICE
                 "name": "Frida",
                 "breed": "negrita",
                 "birthday": future_date.strftime("%Y-%m-%d"),  # Fecha de nacimiento en el futuro
+                "weight": "4",
             },
         )
 

@@ -347,7 +347,7 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Frida")
         self.page.get_by_label("Raza").fill("negrita")
         self.page.get_by_label("Fecha de nacimiento").fill(future_date_str)  # Introduce la fecha en el campo
-
+        self.page.get_by_label("Peso").fill("4")
         self.page.get_by_role("button", name="Guardar").click()
 
         # Verifica si se muestra el mensaje de error esperado
@@ -365,6 +365,7 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Frida")
         self.page.get_by_label("Raza").fill("negrita")
         self.page.get_by_label("Fecha de nacimiento").fill(future_date_str)  # Introduce la fecha en el campo
+        self.page.get_by_label("Peso").fill("4")
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -374,6 +375,52 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
     def test_should_be_able_to_create_a_new_pet(self):
         self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
 
+    # Pruebas para peso de la mascota
+    def test_should_be_able_to_create_a_new_pet(self):
+        self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        # Completar el formulario para crear una nueva mascota con valores específicos
+        self.page.get_by_label("Nombre").fill("Frida")
+        self.page.get_by_label("Raza").fill("negrita")
+        self.page.get_by_label("Fecha de nacimiento").fill("2017-01-11")
+        self.page.get_by_label("Peso").fill("10")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        # Verificar que los detalles de la mascota recién creado sean visibles en la página
+        expect(self.page.get_by_text("Frida")).to_be_visible()
+        expect(self.page.get_by_text("negrita")).to_be_visible()
+        expect(self.page.get_by_text("Jan. 11, 2017")).to_be_visible()
+        expect(self.page.get_by_text("10")).to_be_visible()
+
+        # Prueba para verificar si se muestran errores cuando el formulario es inválido con un peso menor que cero
+    def test_should_view_errors_if_form_is_invalid_with_weight_less_than_zero(self): 
+        self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        # Verificar que se muestren mensajes de error para ingresar nombre, raza, fecha de nacimiento y peso
+        expect(self.page.get_by_text("Por favor ingrese un nombre")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese una raza")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese una fecha de nacimiento")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese un peso correcto (debe ser mayor a cero)")).to_be_visible()
+
+        # Completar el formulario con un peso negativo y enviarlo
+        self.page.get_by_label("Nombre").fill("Frida")
+        self.page.get_by_label("Raza").fill("negrita")
+        self.page.get_by_label("Fecha de nacimiento").fill("2017-01-11")
+        self.page.get_by_label("Peso").fill("-10")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        # Verificar que el mensaje de error "El peso debe ser mayor que cero" sea visible
+        expect(
+            self.page.get_by_text("Por favor ingrese un peso correcto (debe ser mayor a cero)")
+        ).to_be_visible()
 
     
 
@@ -429,44 +476,3 @@ class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
         ).to_be_visible()
 
         
-    def test_should_be_able_to_create_a_new_pet(self):
-        self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
-
-        expect(self.page.get_by_role("form")).to_be_visible()
-
-        # Completar el formulario para crear una nueva mascota con valores específicos
-        self.page.get_by_label("Nombre").fill("Frida")
-        self.page.get_by_label("Raza").fill("negrita")
-        self.page.get_by_label("Fecha de nacimiento").fill("2017-01-11")
-        self.page.get_by_label("Peso").fill("10")
-
-        self.page.get_by_role("button", name="Guardar").click()
-
-        # Verificar que los detalles de la mascota recién creado sean visibles en la página
-        expect(self.page.get_by_text("Frida")).to_be_visible()
-        expect(self.page.get_by_text("negrita")).to_be_visible()
-        expect(self.page.get_by_text("2017-01-11")).to_be_visible()
-        expect(self.page.get_by_text("10")).to_be_visible()
-
-        # Prueba para verificar si se muestran errores cuando el formulario es inválido con un peso menor que cero
-    def test_should_view_errors_if_form_is_invalid_with_weight_less_than_zero(self): 
-        self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
-   
-        # Verificar que se muestren mensajes de error para ingresar nombre, raza, fecha de nacimiento y peso
-        expect(self.page.get_by_text("Por favor ingrese un nombre")).to_be_visible()
-        expect(self.page.get_by_text("Por favor ingrese una raza")).to_be_visible()
-        expect(self.page.get_by_text("Por favor ingrese una fecha de nacimiento")).to_be_visible()
-        expect(self.page.get_by_text("Por favor ingrese un peso correcto (debe ser mayor a cero)")).to_be_visible()
-
-        # Completar el formulario con un peso negativo y enviarlo
-        self.page.get_by_label("Nombre").fill("Frida")
-        self.page.get_by_label("Raza").fill("negrita")
-        self.page.get_by_label("Fecha de nacimiento").fill("2017-01-11")
-        self.page.get_by_label("Peso").fill("-10")
-
-        self.page.get_by_role("button", name="Guardar").click()
-
-        # Verificar que el mensaje de error "El peso debe ser mayor que cero" sea visible
-        expect(
-            self.page.get_by_text("Por favor ingrese un peso correcto (debe ser mayor a cero)")
-        ).to_be_visible()
