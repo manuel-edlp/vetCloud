@@ -1,9 +1,8 @@
 from django.test import TestCase
 from django.shortcuts import reverse
-
-from app.models import Client,Pet,Provider
+from app.models import Client,Pet,Provider,Medicine
 from datetime import datetime
-from django.utils import timezone 
+from django.utils import timezone
 
 
 class HomePageTest(TestCase):
@@ -96,6 +95,58 @@ class ClientsTest(TestCase):
         self.assertEqual(editedClient.phone, client.phone)
         self.assertEqual(editedClient.address, client.address)
         self.assertEqual(editedClient.email, client.email)
+
+class MedicineIntegrationTest(TestCase):
+    def test_can_create_medicine(self):
+        response = self.client.post(
+            reverse("medicine_form"),
+            data={
+                "name": "Paracetamol",
+                "description": "Analgesic and antipyretic",
+                "dose": 5,
+            },
+        )
+        medicines = Medicine.objects.all()
+        self.assertEqual(len(medicines), 1)
+
+        self.assertEqual(medicines[0].name, "Paracetamol")
+        self.assertEqual(medicines[0].description, "Analgesic and antipyretic")
+        self.assertEqual(medicines[0].dose, 5)
+
+        self.assertRedirects(response, reverse("medicine_repo"))
+
+    def test_validation_errors_create_medicine(self):
+        response = self.client.post(
+            reverse("medicine_form"),
+            data={},
+        )
+
+        self.assertContains(response, "Por favor ingrese un nombre")
+        self.assertContains(response, "Por favor ingrese una descripción")
+        self.assertContains(response, "Por favor ingrese una dosis")
+
+    def test_update_medicine_with_valid_data(self):
+        medicine = Medicine.objects.create(
+            name="Paracetamol",
+            description="Analgesic and antipyretic",
+            dose=500,
+        )
+
+        response = self.client.post(
+            reverse("medicine_form"),
+            data={
+                "id": medicine.id,
+                "name": "Ibuprofen",
+            },
+        )
+
+        # Redirect after post
+        self.assertEqual(response.status_code, 302)
+
+        updated_medicine = Medicine.objects.get(pk=medicine.id)
+        self.assertEqual(updated_medicine.name, "Ibuprofen")
+        self.assertEqual(updated_medicine.description, medicine.description)
+        self.assertEqual(updated_medicine.dose, medicine.dose)
         
 class ProviderTest(TestCase):
     def test_repo_use_repo_template(self):
@@ -175,4 +226,3 @@ class PetsTest(TestCase):
 
         # Verificar que se muestra un mensaje de error en la respuesta
         self.assertContains(response, "La fecha de nacimiento debe ser menor a la fecha actual")
-

@@ -265,6 +265,15 @@ class Veterinary(models.Model):
 
         self.save()
 
+def validate_dose(dose):
+    try:
+        dose_value = int(dose)
+        if dose_value < 1 or dose_value > 10:
+            return "La dosis debe estar entre 1 y 10."
+    except ValueError:
+        return "La dosis debe ser un número entero."
+    return None
+
 def validate_medicine(data):
     errors = {}
 
@@ -280,9 +289,13 @@ def validate_medicine(data):
 
     if dose == "":
         errors["dose"] = "Por favor ingrese una dosis"
+    else:
+        dose_error = validate_dose(dose)
+        if dose_error:
+            errors["dose"] = dose_error
 
     return errors
-    
+
 class Medicine(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255)
@@ -290,12 +303,10 @@ class Medicine(models.Model):
 
     def __str__(self):
         return self.name
-    
 
     @classmethod
     def save_medicine(cls, medicine_data):
         errors = validate_medicine(medicine_data)
-
 
         if len(errors.keys()) > 0:
             return False, errors
@@ -311,5 +322,12 @@ class Medicine(models.Model):
     def update_medicine(self, medicine_data):
         self.name = medicine_data.get("name", "") or self.name
         self.description = medicine_data.get("description", "") or self.description
-        self.dose = medicine_data.get("dose", "") or self.dose
+        
+        if "dose" in medicine_data:
+            dose_error = validate_dose(medicine_data["dose"])
+            if dose_error:
+                return False, {"dose": dose_error}
+            self.dose = medicine_data["dose"]
+
         self.save()
+        return True, {}

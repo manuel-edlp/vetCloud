@@ -5,8 +5,7 @@ from playwright.sync_api import sync_playwright, expect, Browser
 from datetime import datetime
 from django.utils import timezone
 from django.urls import reverse
-
-from app.models import Client, Provider
+from app.models import Client, Provider, Medicine
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 playwright = sync_playwright().start()
@@ -245,6 +244,71 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
             "href", reverse("clients_edit", kwargs={"id": client.id})
         )
 
+
+class MedicineCreateEditTestCase(PlaywrightTestCase):
+    def test_should_be_able_to_create_a_new_medicine(self):
+        self.page.goto(f"{self.live_server_url}{reverse('medicine_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill("Medicina A")
+        self.page.get_by_label("Descripción").fill("medicamento generico")
+        self.page.get_by_label("Dosis").fill("5")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("Medicina A")).to_be_visible()
+        expect(self.page.get_by_text("medicamento generico")).to_be_visible()
+        expect(self.page.get_by_text("5")).to_be_visible()
+
+    def test_should_view_errors_if_form_is_invalid(self):
+        self.page.goto(f"{self.live_server_url}{reverse('medicine_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("Por favor ingrese un nombre")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese una descripción")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese una dosis")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill("Medicina A")
+        self.page.get_by_label("Descripción").fill("Descripción")
+        self.page.get_by_label("Dosis").fill("0")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("La dosis debe estar entre 1 y 10.")).to_be_visible()
+
+    def test_should_be_able_to_edit_a_medicine(self):
+        medicine = Medicine.objects.create(
+            name="Medicina A",
+            description="medicamento generico",
+            dose=5,
+        )
+
+        path = reverse("medicine_edit", kwargs={"id": medicine.id})
+        self.page.goto(f"{self.live_server_url}{path}")
+
+        self.page.get_by_label("Nombre").fill("Medicina B")
+        self.page.get_by_label("Descripción").fill("Descripción nueva")
+        self.page.get_by_label("Dosis").fill("10")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("Medicina A")).not_to_be_visible()
+        expect(self.page.get_by_text("medicamento generico")).not_to_be_visible()
+        expect(self.page.get_by_text("5")).not_to_be_visible()
+
+        expect(self.page.get_by_text("Medicina B")).to_be_visible()
+        expect(self.page.get_by_text("Descripción nueva")).to_be_visible()
+        expect(self.page.get_by_text("10")).to_be_visible()
+
+        edit_action = self.page.get_by_role("link", name="Editar")
+        expect(edit_action).to_have_attribute(
+            "href", reverse("medicine_edit", kwargs={"id": medicine.id})
+        )
+
 class ProvidersRepoTestCase(PlaywrightTestCase):
     def test_should_show_message_if_table_is_empty(self):
         self.page.goto(f"{self.live_server_url}{reverse('provider_repo')}")
@@ -303,7 +367,3 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
 
         # Verifica si se muestra el mensaje de error esperado
         expect(self.page.get_by_text("La fecha de nacimiento debe ser menor a la fecha actual")).to_be_visible()      
-
-
-       
-        
