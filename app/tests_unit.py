@@ -170,6 +170,33 @@ class PetModelTest(TestCase):
         expected_error = {"birthday": "La fecha de nacimiento debe ser menor a la fecha actual"}
         self.assertEqual(validate_pet(invalid_data), expected_error)  # La validación debería dar error
 
+
+
+    # Validacion de peso mascota
+
+    def test_create_pet_with_valid_weight(self):
+        success, message_or_errors = Pet.save_pet({
+            "name": "Frida",
+            "breed": "negrita",
+            "birthday": "2017-01-01",
+            "weight": "4" # Peso válido
+        })
+
+        self.assertTrue(success)
+        self.assertEqual(message_or_errors, None)
+
+    def test_create_pet_with_invalid_weight_negative(self):
+        success, message_or_errors = Pet.save_pet({
+            "name": "Frida",
+            "breed": "negrita",
+            "birthday": "2017-01-01",
+            "weight": "-1" # Peso inválido
+        })
+
+        self.assertFalse(success)
+        self.assertIn("weight", message_or_errors)
+        self.assertEqual(message_or_errors["weight"], "Por favor ingrese un peso correcto (debe ser mayor a cero)")
+
 class ProductModelTest(TestCase):
     def test_create_product_with_valid_price(self):
         success, message_or_errors = Product.save_product({
@@ -203,25 +230,4 @@ class ProductModelTest(TestCase):
         self.assertIn("price", message_or_errors)
         self.assertEqual(message_or_errors["price"], "El precio debe ser mayor que cero")
     
-    def test_create_pet_with_valid_weight(self):
-        success, message_or_errors = Pet.save_pet({
-            "name": "Frida",
-            "breed": "negrita",
-            "birthday": "2017-01-01",
-            "weight": "4" # Peso válido
-        })
-
-        self.assertTrue(success)
-        self.assertEqual(message_or_errors, None)
-
-    def test_create_pet_with_invalid_weight_negative(self):
-        success, message_or_errors = Pet.save_pet({
-            "name": "Frida",
-            "breed": "negrita",
-            "birthday": "2017-01-01",
-            "weight": "-1" # Peso inválido
-        })
-
-        self.assertFalse(success)
-        self.assertIn("weight", message_or_errors)
-        self.assertEqual(message_or_errors["weight"], "Por favor ingrese un peso correcto (debe ser mayor a cero)")
+    
