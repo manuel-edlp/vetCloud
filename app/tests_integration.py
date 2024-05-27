@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.shortcuts import reverse
-from app.models import Client
+from app.models import Client,Pet
 
 
 class HomePageTest(TestCase):
@@ -93,3 +93,49 @@ class ClientsTest(TestCase):
         self.assertEqual(editedClient.phone, client.phone)
         self.assertEqual(editedClient.address, client.address)
         self.assertEqual(editedClient.email, client.email)
+
+
+class PetsTest(TestCase):
+    def test_create_pet_with_valid_price(self):
+        # Crear un mascota con peso válido
+        response = self.client.post(
+            reverse("pet_form"), 
+            data={
+                "name": "Frida",
+                "breed": "negrita",
+                "birthday": "2017-01-01",
+                "weight": "4" # Peso válido
+            },
+        )
+
+        # Verificar que la mascota se haya creado correctamente
+        pets = Pet.objects.all()
+        self.assertEqual(len(pets), 1)
+
+        # Verificar los detalles del mascota creado
+        self.assertEqual(pets[0].name, "Frida")
+        self.assertEqual(pets[0].breed, "negrita")
+        self.assertEqual(pets[0].birthday, "2017-01-01")
+        self.assertEqual(pets[0].weight, 4)  # Precio válido
+
+        # Verificar la redirección después de crear el mascota
+        self.assertRedirects(response, reverse("pet_repo"))
+
+    def test_create_product_with_invalid_price(self):
+        # Intentar crear una mascota con precio negativo
+        response = self.client.post(
+            reverse("pet_form"),
+            data={
+                "name": "Frida",
+                "breed": "negrita",
+                "birthday": "2017-01-01",
+                "weight": "-10" # Peso inválido
+            },
+        )
+
+        # Verificar que la mascota no se haya creado debido al peso inválido
+        pets = Pet.objects.all()
+        self.assertEqual(len(pets), 0)
+
+        # Verificar que se muestra un mensaje de error en la respuesta
+        self.assertContains(response, "Por favor ingrese un peso correcto (debe ser mayor a cero)")
