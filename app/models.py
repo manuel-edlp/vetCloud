@@ -156,12 +156,20 @@ class Product(models.Model):
     
         return True, "Producto creado exitosamente"
 
+
     def update_product(self, product_data):
+
+
+        errors = validate_product(product_data)
+        if len(errors.keys()) > 0:
+            return False, errors
+
         self.name = product_data.get("name", "") or self.name
         self.product_type = product_data.get("product_type", "") or self.product_type
         self.price = product_data.get("price", "") or self.price
 
         self.save()
+        return True, None
 
 def validate_pet(data):
     errors = {}
