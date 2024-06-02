@@ -75,6 +75,19 @@ class  ProviderModelTest(TestCase):
         self.assertEqual(providers[0].address, "13 y 44")
         self.assertEqual(providers[0].email, "senor10@gmail.com")
 
+    #Agrego test unitario especifico de la issue de provider
+    def test_provider_address(self):
+        addres = "calle 13 y 44"
+        Provider.save_provider(
+            {
+                "name": "Juan Roman Riquelme",
+                "email": "senor10@gmail.com",
+                "address": addres, #guardo proveedor con direccion especifica
+            }
+        )
+        provider = Provider.objects.get(address=addres) #recupero proveedor segun la direccion (supongo que no van a haber dos proveedores con esa direccion)
+        self.assertEqual(provider.address, addres) #verifica que la direccion recuperada coincida con la especifica
+
 class PetModelTest(TestCase):
     def test_validate_pet_birthday(self):
         # Probamos la validación de fecha de nacimiento para una mascota
