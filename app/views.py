@@ -220,7 +220,7 @@ def medicine_form(request, id=None):
             return redirect(reverse("medicine_repo"))
 
         return render(
-            request, "medicines/form.html", {"errors": errors, "medicine": medicine}
+            request, "medicines/form.html", {"errors": errors, "medicine": request.POST}
         )
 
     medicine = None
