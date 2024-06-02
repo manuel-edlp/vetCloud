@@ -245,8 +245,6 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         )
 
 
-=======
-
 class MedicineCreateEditTestCase(PlaywrightTestCase):
     def test_should_be_able_to_create_a_new_medicine(self):
         self.page.goto(f"{self.live_server_url}{reverse('medicine_form')}")
@@ -397,7 +395,7 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("Por favor ingrese un nombre")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese una raza")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese una fecha de nacimiento")).to_be_visible()
-        expect(self.page.get_by_text("Por favor ingrese un peso correcto (debe ser mayor a cero)")).to_be_visible()
+        expect(self.page.get_by_text("El peso debe ser mayor a cero")).to_be_visible()
 
         # Completar el formulario con un peso negativo y enviarlo
         self.page.get_by_label("Nombre").fill("Frida")
@@ -409,5 +407,5 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
 
         # Verificar que el mensaje de error "El peso debe ser mayor que cero" sea visible
         expect(
-            self.page.get_by_text("Por favor ingrese un peso correcto (debe ser mayor a cero)")
+            self.page.get_by_text("El peso debe ser mayor a cero")
         ).to_be_visible()
