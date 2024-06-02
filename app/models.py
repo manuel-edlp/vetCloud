@@ -61,6 +61,7 @@ def validate_provider(data):
 
     name = data.get("name", "")
     email = data.get("email", "")
+    address = data.get("address", "")
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
@@ -69,6 +70,9 @@ def validate_provider(data):
         errors["email"] = "Por favor ingrese un email"
     elif email.count("@") == 0:
         errors["email"] = "Por favor ingrese un email valido"
+    
+    if address == "":
+        errors["address"] = "Por favor, ingrese una direccion"
 
     return errors
 
@@ -76,7 +80,7 @@ def validate_provider(data):
 class Provider(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
-    address = models.CharField(max_length=100, blank=True)
+    address = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
@@ -97,11 +101,20 @@ class Provider(models.Model):
         return True, None
 
     def update_provider(self, provider_data):
+        errors = validate_provider(provider_data)
+
+        if len(errors) > 0:
+            return False, errors
+
         self.name = provider_data.get("name", "") or self.name
         self.email = provider_data.get("email", "") or self.email
         self.address = provider_data.get("address", "") or self.address
 
-        self.save()
+        try:
+            self.save()
+            return True, None
+        except:
+            return False, errors
 
 
 
