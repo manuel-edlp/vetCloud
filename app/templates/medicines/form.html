@@ -36,11 +36,13 @@
                     {% endif %}
                 </div>
                 <div>
-                    <label for="description" class="form-label">Descripción</label>
-                    <textarea id ="description"
+                    <label for="breed" class="form-label">Descripción</label>
+                    <input type="text"
+                        id="description"
                         name="description"
                         class="form-control"
-                        required>{{ medicine.description }}</textarea>
+                        value="{{medicine.description}}"
+                        required/>
 
                     {% if errors.description %}
                         <div class="invalid-feedback">
@@ -50,11 +52,11 @@
                 </div>
                 <div>
                     <label for="dose" class="form-label">Dosis</label>
-                    <input type="number"
+                    <input type="number" min="0" max="10" step="1"
                         id="dose"
                         name="dose"
+                        class="form-control {% if errors.dose %}is-invalid{% endif %}"
                         value="{{ medicine.dose }}"
-                        class="form-control"
                         required/>
 
                     {% if errors.dose %}
@@ -63,6 +65,7 @@
                         </div>
                     {% endif %}
                 </div>
+
                 <button class="btn btn-primary">Guardar</button>
             </form>
         </div>
