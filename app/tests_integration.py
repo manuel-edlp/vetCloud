@@ -132,6 +132,22 @@ class ProviderTest(TestCase):
 
         self.assertContains(response, "Por favor ingrese un email valido")
 
+    def test_validation_address_null(self): #Agrego una función especifica del issue
+        #La modificacion es que la direccion es obligatoria. Comprueba que al poner una direccion vacia devuelva el mensaje de error
+        response = self.client.post(
+            reverse("provider_form"),
+            data={
+                "name": "Juan Roman Riquelme",
+                "email": "senor10@gmail.com",
+                "address": "",
+            },
+        )
+
+        providers = Provider.objects.all()
+        self.assertEqual(len(providers), 0)
+
+        self.assertContains(response, "Por favor, ingrese una direccion")
+
 
 class PetsTest(TestCase):
     def test_create_pet_with_valid_birthday(self):
