@@ -430,6 +430,7 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("Por favor ingrese una fecha de nacimiento")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese un peso")).to_be_visible()
 
+
         # Completar el formulario con un peso negativo y enviarlo
         self.page.get_by_label("Nombre").fill("Frida")
         self.page.get_by_label("Raza").fill("negrita")
@@ -440,8 +441,10 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
 
         # Verificar que el mensaje de error "El peso debe ser mayor que cero" sea visible
         expect(
-            self.page.get_by_text("El peso debe ser mayor a cero")
+            self.page.get_by_text("Por favor ingrese un peso correcto (debe ser mayor a cero)")
         ).to_be_visible()
+
+    
 
 # Pruebas de unidad para verificar la creación exitosa de un nuevo producto
 
@@ -493,3 +496,5 @@ class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
         expect(
             self.page.get_by_text("El precio debe ser mayor que cero")
         ).to_be_visible()
+
+        
