@@ -59,7 +59,7 @@ def provider_form(request, id=None):
             saved, errors = Provider.save_provider(request.POST)
         else:
             provider = get_object_or_404(Provider, pk=provider_id)
-            provider.update_provider(request.POST)
+            saved, errors = provider.update_provider(request.POST)
 
         if saved:
             return redirect(reverse("provider_repo"))
@@ -130,13 +130,18 @@ def pet_form(request, id=None):
     if request.method == "POST":
         pet_id = request.POST.get("id", "")
         errors = {}
-        saved = True
+        saved = False
 
         if pet_id == "":
             saved, errors = Pet.save_pet(request.POST)
         else:
             pet = get_object_or_404(Pet, pk=pet_id)
-            saved,errors = pet.update_pet(request.POST)
+            update_result = pet.update_pet(request.POST)
+            if update_result is not None:
+                saved, errors = update_result
+            else:
+                saved = True
+
         if saved:
             return redirect(reverse("pet_repo"))
 
@@ -214,13 +219,13 @@ def medicine_form(request, id=None):
             saved, errors = Medicine.save_medicine(request.POST)
         else:
             medicine = get_object_or_404(Medicine, pk=medicine_id)
-            medicine.update_medicine(request.POST)
+            saved,errors = medicine.update_medicine(request.POST)
 
         if saved:
             return redirect(reverse("medicine_repo"))
 
         return render(
-            request, "medicines/form.html", {"errors": errors, "medicine": medicine}
+            request, "medicines/form.html", {"errors": errors, "medicine": request.POST}
         )
 
     medicine = None

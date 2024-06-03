@@ -2,6 +2,7 @@ from django.db import models
 from datetime import datetime
 
 
+
 def validate_client(data):
     errors = {}
 
@@ -61,6 +62,7 @@ def validate_provider(data):
 
     name = data.get("name", "")
     email = data.get("email", "")
+    address = data.get("address", "")
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
@@ -69,6 +71,9 @@ def validate_provider(data):
         errors["email"] = "Por favor ingrese un email"
     elif email.count("@") == 0:
         errors["email"] = "Por favor ingrese un email valido"
+    
+    if address == "":
+        errors["address"] = "Por favor, ingrese una direccion"
 
     return errors
 
@@ -76,7 +81,7 @@ def validate_provider(data):
 class Provider(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
-    address = models.CharField(max_length=100, blank=True)
+    address = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
@@ -97,11 +102,20 @@ class Provider(models.Model):
         return True, None
 
     def update_provider(self, provider_data):
+        errors = validate_provider(provider_data)
+
+        if len(errors) > 0:
+            return False, errors
+
         self.name = provider_data.get("name", "") or self.name
         self.email = provider_data.get("email", "") or self.email
         self.address = provider_data.get("address", "") or self.address
 
-        self.save()
+        try:
+            self.save()
+            return True, None
+        except:
+            return False, errors
 
 
 
@@ -119,15 +133,23 @@ def validate_product(data):
         errors["product_type"] = "Por favor ingrese un tipo de producto"
 
     if price == "":
-        errors["price"] = "Por favor ingrese un precio válido"
-
+        errors["price"] = "Por favor ingrese un precio"
+    else:
+        try:
+            float_price = float(price)
+            if float_price <= 0:
+                errors["price"] = "El precio debe ser mayor que cero"
+        except ValueError:
+            errors["price"] = "El precio debe ser un número válido"
+    
     return errors
+
 
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
     product_type = models.CharField(max_length=15)
-    price = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     
     def __str__(self):
             return self.name
@@ -287,14 +309,6 @@ class Veterinary(models.Model):
 
         self.save()
 
-def validate_dose(dose):
-    try:
-        dose_value = int(dose)
-        if dose_value < 1 or dose_value > 10:
-            return "La dosis debe estar entre 1 y 10."
-    except ValueError:
-        return "La dosis debe ser un número entero."
-    return None
 
 def validate_medicine(data):
     errors = {}
@@ -308,14 +322,15 @@ def validate_medicine(data):
 
     if description == "":
         errors["description"] = "Por favor ingrese una descripción"
-
     if dose == "":
         errors["dose"] = "Por favor ingrese una dosis"
     else:
-        dose_error = validate_dose(dose)
-        if dose_error:
-            errors["dose"] = dose_error
-
+        try:
+            int_dose = int(dose)
+            if int_dose < 1 or int_dose > 10:
+                errors["dose"] = "La dosis debe estar en un rango de 1 a 10"
+        except ValueError:
+            errors["dose"] = "La dosis debe ser un número entero válido"
     return errors
 
 class Medicine(models.Model):
@@ -339,17 +354,20 @@ class Medicine(models.Model):
             dose=medicine_data.get("dose"),
         )
 
-        return True, "Medicamento creado exitosamente"
-    
+        return True, None
     def update_medicine(self, medicine_data):
+        errors = validate_medicine(medicine_data)
+
+        if len(errors) > 0:
+            return False, errors
+    
         self.name = medicine_data.get("name", "") or self.name
         self.description = medicine_data.get("description", "") or self.description
-        
-        if "dose" in medicine_data:
-            dose_error = validate_dose(medicine_data["dose"])
-            if dose_error:
-                return False, {"dose": dose_error}
-            self.dose = medicine_data["dose"]
+        self.dose = medicine_data.get("dose", "") or self.dose
 
-        self.save()
-        return True, {}
+        try:
+            self.save()
+            return True, None
+        except:
+            return False, errors
+    

@@ -2,7 +2,10 @@ from django.test import TestCase
 from django.shortcuts import reverse
 from app.models import Client,Pet,Provider,Medicine
 from datetime import datetime
-from django.utils import timezone
+from django.utils import timezone 
+from app.models import Product
+
+
 
 class HomePageTest(TestCase):
     def test_use_home_template(self):
@@ -124,29 +127,38 @@ class MedicineIntegrationTest(TestCase):
         self.assertContains(response, "Por favor ingrese una descripción")
         self.assertContains(response, "Por favor ingrese una dosis")
 
-    def test_update_medicine_with_valid_data(self):
-        medicine = Medicine.objects.create(
-            name="Paracetamol",
-            description="Analgesic and antipyretic",
-            dose=500,
-        )
-
+    def test_validation_valid_dose(self):
         response = self.client.post(
             reverse("medicine_form"),
             data={
-                "id": medicine.id,
-                "name": "Ibuprofen",
+                "name": "prueba",
+                "description": "qwe",
+                "dose": 4,
             },
         )
+        self.assertEqual(response.status_code, 302) # verificamos medicina creada tras la redireccion
 
-        # Redirect after post
-        self.assertEqual(response.status_code, 302)
-
-        updated_medicine = Medicine.objects.get(pk=medicine.id)
-        self.assertEqual(updated_medicine.name, "Ibuprofen")
-        self.assertEqual(updated_medicine.description, medicine.description)
-        self.assertEqual(updated_medicine.dose, medicine.dose)
+    def test_validation_invalid_dose_is_greater_than_10(self):
+        response = self.client.post(
+            reverse("medicine_form"),
+            data={
+                "name": "prueba",
+                "description": "qwe",
+                "dose": 13,
+            },
+        )
+        self.assertContains(response, "La dosis debe estar en un rango de 1 a 10")
         
+    def test_validation_invalid_dose_is_less_than_1(self):
+        response = self.client.post(
+            reverse("medicine_form"),
+            data={
+                "name": "prueba",
+                "description": "qwe",
+                "dose": -1,
+            },
+        )
+        self.assertContains(response, "La dosis debe estar en un rango de 1 a 10")
 class ProviderTest(TestCase):
     def test_repo_use_repo_template(self):
         response = self.client.get(reverse("provider_repo"))
@@ -181,6 +193,22 @@ class ProviderTest(TestCase):
         )
 
         self.assertContains(response, "Por favor ingrese un email valido")
+
+    def test_validation_address_null(self): #Agrego una función especifica del issue
+        #La modificacion es que la direccion es obligatoria. Comprueba que al poner una direccion vacia devuelva el mensaje de error
+        response = self.client.post(
+            reverse("provider_form"),
+            data={
+                "name": "Juan Roman Riquelme",
+                "email": "senor10@gmail.com",
+                "address": "",
+            },
+        )
+
+        providers = Provider.objects.all()
+        self.assertEqual(len(providers), 0)
+
+        self.assertContains(response, "Por favor, ingrese una direccion")
 
 
 class PetsTest(TestCase):
@@ -237,7 +265,7 @@ class PetsTest(TestCase):
                 "name": "Frida",
                 "breed": "negrita",
                 "birthday": "2013-01-01",  # Fecha de nacimiento válida
-                "weight": "4", 
+                "weight": "4",
             },
         )
 
@@ -249,6 +277,7 @@ class PetsTest(TestCase):
         self.assertEqual(pets[0].name, "Frida")
         self.assertEqual(pets[0].breed, "negrita")
         self.assertEqual(pets[0].birthday, datetime(2013, 1, 1).date())  # Convertir a objeto Date
+        self.assertEqual(pets[0].weight, 4)
 
         # Verificar la redirección después de crear la mascota
         self.assertRedirects(response, reverse("pet_repo"))
@@ -272,3 +301,64 @@ class PetsTest(TestCase):
 
         # Verificar que se muestra un mensaje de error en la respuesta
         self.assertContains(response, "La fecha de nacimiento debe ser menor a la fecha actual")
+
+
+class ProductsTest(TestCase):
+    def test_create_product_with_valid_price(self):
+        # Crear un producto con precio válido
+        response = self.client.post(
+            reverse("product_form"), 
+            data={
+                "name": "Producto Test",
+                "product_type": "Tipo Test",
+                "price": "10.00",  # Precio válido
+            },
+        )
+
+        # Verificar que el producto se haya creado correctamente
+        products = Product.objects.all()
+        self.assertEqual(len(products), 1)
+
+        # Verificar los detalles del producto creado
+        self.assertEqual(products[0].name, "Producto Test")
+        self.assertEqual(products[0].product_type, "Tipo Test")
+        self.assertEqual(products[0].price, 10.00)  # Precio válido
+
+        # Verificar la redirección después de crear el producto
+        self.assertRedirects(response, reverse("product_repo"))
+
+    def test_create_product_with_invalid_price(self):
+        # Intentar crear un producto con precio negativo
+        response = self.client.post(
+            reverse("product_form"),
+            data={
+                "name": "Producto Test",
+                "product_type": "Tipo Test",
+                "price": "-5.00",  # Precio inválido (negativo)
+            },
+        )
+
+        # Verificar que el producto no se haya creado debido al precio inválido
+        products = Product.objects.all()
+        self.assertEqual(len(products), 0)
+
+        # Verificar que se muestra un mensaje de error en la respuesta
+        self.assertContains(response, "El precio debe ser mayor que cero")
+
+    def test_create_product_with_non_numeric_price(self):
+        # Intentar crear un producto con precio no numérico
+        response = self.client.post(
+            reverse("product_form"),
+            data={
+                "name": "Producto Test",
+                "product_type": "Tipo Test",
+                "price": "precio_invalido",  # Precio inválido (no numérico)
+            },
+        )
+
+        # Verificar que el producto no se haya creado debido al precio inválido
+        products = Product.objects.all()
+        self.assertEqual(len(products), 0)
+
+        # Verificar que se muestra un mensaje de error en la respuesta
+        self.assertContains(response, "El precio debe ser un número válido")

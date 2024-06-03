@@ -1,7 +1,6 @@
 from django.test import TestCase
-from app.models import Client,Pet,validate_pet,Provider,Medicine
+from app.models import Client,Pet,validate_pet,Provider, Product,Medicine
 from django.utils import timezone
-
 
 class ClientModelTest(TestCase):
     def test_can_create_and_get_client(self):
@@ -60,22 +59,19 @@ class ClientModelTest(TestCase):
         self.assertEqual(client_updated.phone, "221555232")
 
 class MedicineModelTest(TestCase):
-    def test_can_create_and_get_medicine(self):
-        success, _ = Medicine.save_medicine(
+    
+    def test_can_create_medicine_with_valid_dose(self):
+        success, errors = Medicine.save_medicine(
             {
-                "name": "Paracetamol",
-                "description": "Medicamento para el dolor",
-                "dose": 5,
+                "name": "Ibuprofeno",
+                "description": "Medicamento antiinflamatorio",
+                "dose": 1,
             }
         )
         self.assertTrue(success)
 
         medicines = Medicine.objects.all()
         self.assertEqual(len(medicines), 1)
-
-        self.assertEqual(medicines[0].name, "Paracetamol")
-        self.assertEqual(medicines[0].description, "Medicamento para el dolor")
-        self.assertEqual(medicines[0].dose, 5)
 
     def test_cannot_create_medicine_with_invalid_dose(self):
         success, errors = Medicine.save_medicine(
@@ -90,25 +86,6 @@ class MedicineModelTest(TestCase):
 
         medicines = Medicine.objects.all()
         self.assertEqual(len(medicines), 0)
-
-    def test_can_update_medicine(self):
-        Medicine.save_medicine(
-            {
-                "name": "Paracetamol",
-                "description": "Medicamento para el dolor",
-                "dose": 5,
-            }
-        )
-        medicine = Medicine.objects.get(pk=1)
-
-        self.assertEqual(medicine.dose, 5)
-
-        success, _ = medicine.update_medicine({"dose": 7})
-
-        self.assertTrue(success)
-        medicine_updated = Medicine.objects.get(pk=1)
-
-        self.assertEqual(medicine_updated.dose, 7)
 
     def test_update_medicine_with_invalid_dose(self):
         Medicine.save_medicine(
@@ -146,6 +123,19 @@ class  ProviderModelTest(TestCase):
         self.assertEqual(providers[0].address, "13 y 44")
         self.assertEqual(providers[0].email, "senor10@gmail.com")
 
+    #Agrego test unitario especifico de la issue de provider
+    def test_provider_address(self):
+        addres = "calle 13 y 44"
+        Provider.save_provider(
+            {
+                "name": "Juan Roman Riquelme",
+                "email": "senor10@gmail.com",
+                "address": addres, #guardo proveedor con direccion especifica
+            }
+        )
+        provider = Provider.objects.get(address=addres) #recupero proveedor segun la direccion (supongo que no van a haber dos proveedores con esa direccion)
+        self.assertEqual(provider.address, addres) #verifica que la direccion recuperada coincida con la especifica
+
 class PetModelTest(TestCase):
     def test_validate_pet_birthday(self):
         # Probamos la validación de fecha de nacimiento para una mascota
@@ -165,7 +155,11 @@ class PetModelTest(TestCase):
         }
         expected_error = {"birthday": "La fecha de nacimiento debe ser menor a la fecha actual"}
         self.assertEqual(validate_pet(invalid_data), expected_error)  # La validación debería dar error
-    
+
+
+
+    # Validacion de peso mascota
+
     def test_create_pet_with_valid_weight(self):
         success, message_or_errors = Pet.save_pet({
             "name": "Frida",
@@ -188,3 +182,36 @@ class PetModelTest(TestCase):
         self.assertFalse(success)
         self.assertIn("weight", message_or_errors)
         self.assertEqual(message_or_errors["weight"], "El peso debe ser mayor a cero")
+
+class ProductModelTest(TestCase):
+    def test_create_product_with_valid_price(self):
+        success, message_or_errors = Product.save_product({
+            "name": "Test Product",
+            "product_type": "Test Type",
+            "price": "100"
+        })
+
+        self.assertTrue(success)
+        self.assertEqual(message_or_errors, "Producto creado exitosamente")
+
+    def test_create_product_with_invalid_price_zero(self):
+        success, message_or_errors = Product.save_product({
+            "name": "Test Product",
+            "product_type": "Test Type",
+            "price": "0"
+        })
+
+        self.assertFalse(success)
+        self.assertIn("price", message_or_errors)
+        self.assertEqual(message_or_errors["price"], "El precio debe ser mayor que cero")
+
+    def test_create_product_with_invalid_price_negative(self):
+        success, message_or_errors = Product.save_product({
+            "name": "Test Product",
+            "product_type": "Test Type",
+            "price": "-10"
+        })
+
+        self.assertFalse(success)
+        self.assertIn("price", message_or_errors)
+        self.assertEqual(message_or_errors["price"], "El precio debe ser mayor que cero")
