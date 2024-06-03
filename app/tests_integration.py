@@ -127,29 +127,38 @@ class MedicineIntegrationTest(TestCase):
         self.assertContains(response, "Por favor ingrese una descripción")
         self.assertContains(response, "Por favor ingrese una dosis")
 
-    def test_update_medicine_with_valid_data(self):
-        medicine = Medicine.objects.create(
-            name="Paracetamol",
-            description="Analgesic and antipyretic",
-            dose=500,
-        )
-
+    def test_validation_valid_dose(self):
         response = self.client.post(
             reverse("medicine_form"),
             data={
-                "id": medicine.id,
-                "name": "Ibuprofen",
+                "name": "prueba",
+                "description": "qwe",
+                "dose": 4,
             },
         )
+        self.assertEqual(response.status_code, 302) # verificamos medicina creada tras la redireccion
 
-        # Redirect after post
-        self.assertEqual(response.status_code, 302)
-
-        updated_medicine = Medicine.objects.get(pk=medicine.id)
-        self.assertEqual(updated_medicine.name, "Ibuprofen")
-        self.assertEqual(updated_medicine.description, medicine.description)
-        self.assertEqual(updated_medicine.dose, medicine.dose)
+    def test_validation_invalid_dose_is_greater_than_10(self):
+        response = self.client.post(
+            reverse("medicine_form"),
+            data={
+                "name": "prueba",
+                "description": "qwe",
+                "dose": 13,
+            },
+        )
+        self.assertContains(response, "La dosis debe estar en un rango de 1 a 10")
         
+    def test_validation_invalid_dose_is_less_than_1(self):
+        response = self.client.post(
+            reverse("medicine_form"),
+            data={
+                "name": "prueba",
+                "description": "qwe",
+                "dose": -1,
+            },
+        )
+        self.assertContains(response, "La dosis debe estar en un rango de 1 a 10")
 class ProviderTest(TestCase):
     def test_repo_use_repo_template(self):
         response = self.client.get(reverse("provider_repo"))

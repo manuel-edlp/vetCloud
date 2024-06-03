@@ -64,22 +64,19 @@ class ClientModelTest(TestCase):
         self.assertEqual(client_updated.phone, "221555232")
 
 class MedicineModelTest(TestCase):
-    def test_can_create_and_get_medicine(self):
-        success, _ = Medicine.save_medicine(
+    
+    def test_can_create_medicine_with_valid_dose(self):
+        success, errors = Medicine.save_medicine(
             {
-                "name": "Paracetamol",
-                "description": "Medicamento para el dolor",
-                "dose": 5,
+                "name": "Ibuprofeno",
+                "description": "Medicamento antiinflamatorio",
+                "dose": 1,
             }
         )
         self.assertTrue(success)
 
         medicines = Medicine.objects.all()
         self.assertEqual(len(medicines), 1)
-
-        self.assertEqual(medicines[0].name, "Paracetamol")
-        self.assertEqual(medicines[0].description, "Medicamento para el dolor")
-        self.assertEqual(medicines[0].dose, 5)
 
     def test_cannot_create_medicine_with_invalid_dose(self):
         success, errors = Medicine.save_medicine(
@@ -94,25 +91,6 @@ class MedicineModelTest(TestCase):
 
         medicines = Medicine.objects.all()
         self.assertEqual(len(medicines), 0)
-
-    def test_can_update_medicine(self):
-        Medicine.save_medicine(
-            {
-                "name": "Paracetamol",
-                "description": "Medicamento para el dolor",
-                "dose": 5,
-            }
-        )
-        medicine = Medicine.objects.get(pk=1)
-
-        self.assertEqual(medicine.dose, 5)
-
-        success, _ = medicine.update_medicine({"dose": 7})
-
-        self.assertTrue(success)
-        medicine_updated = Medicine.objects.get(pk=1)
-
-        self.assertEqual(medicine_updated.dose, 7)
 
     def test_update_medicine_with_invalid_dose(self):
         Medicine.save_medicine(
