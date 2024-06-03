@@ -191,6 +191,11 @@ def validate_pet(data):
     
     if birthday == "":
         errors["birthday"] = "Por favor ingrese una fecha de nacimiento"
+
+        
+    if weight == "" or int(weight) < 0:
+        errors["weight"] = "Por favor ingrese un peso correcto (debe ser mayor a cero)" 
+    
     else:
         try:
             birth = datetime.strptime(birthday, "%Y-%m-%d").date()
@@ -198,16 +203,6 @@ def validate_pet(data):
                 errors["birthday"] = "La fecha de nacimiento debe ser menor a la fecha actual"
         except ValueError:
             errors["birthday"] = "Formato de fecha inválido. Por favor ingrese la fecha en el formato correcto (YYYY-MM-DD)"
-
-    if weight == "":
-        errors["weight"] = "Por favor ingrese un peso"
-    else:
-        try:
-            float_weight = float(weight)
-            if float_weight <= 0:
-                errors["weight"] = "El peso debe ser mayor a cero"
-        except ValueError:
-            errors["weight"] = "El peso debe ser un número válido"
 
     return errors
 
@@ -217,7 +212,7 @@ class Pet(models.Model):
     breed = models.CharField(max_length=40)
 
     birthday = models.CharField(max_length=40,default='')
-    weight = models.FloatField()
+    weight = models.IntegerField()
 
     birthday = models.DateField()
     
