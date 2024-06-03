@@ -251,7 +251,7 @@ class Pet(models.Model):
         if len(errors.keys()) > 0:
             print("Retorno false")
             return False, errors
-        print("guardo")
+
         self.name = pet_data.get("name", "") or self.name
         self.breed = pet_data.get("breed", "") or self.breed
         self.birthday = pet_data.get("birthday", "") or self.birthday

@@ -56,7 +56,7 @@
                         id="birthday"
                         name="birthday"
                         class="form-control {% if errors.birthday %}is-invalid{% endif %}"
-                        value="{{ pet.birthday|date:'Y-m-d' }}"
+                        value="{% if request.POST.birthday %}{{ request.POST.birthday }}{% elif pet.birthday %}{{ pet.birthday|date:'Y-m-d' }}{% endif %}"
                         required/>
 
                     {% if errors.birthday %}
