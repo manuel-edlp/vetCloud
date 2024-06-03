@@ -59,7 +59,7 @@ def provider_form(request, id=None):
             saved, errors = Provider.save_provider(request.POST)
         else:
             provider = get_object_or_404(Provider, pk=provider_id)
-            provider.update_provider(request.POST)
+            saved, errors = provider.update_provider(request.POST)
 
         if saved:
             return redirect(reverse("provider_repo"))

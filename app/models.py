@@ -2,6 +2,7 @@ from django.db import models
 from datetime import datetime
 
 
+
 def validate_client(data):
     errors = {}
 
@@ -61,6 +62,7 @@ def validate_provider(data):
 
     name = data.get("name", "")
     email = data.get("email", "")
+    address = data.get("address", "")
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
@@ -69,6 +71,9 @@ def validate_provider(data):
         errors["email"] = "Por favor ingrese un email"
     elif email.count("@") == 0:
         errors["email"] = "Por favor ingrese un email valido"
+    
+    if address == "":
+        errors["address"] = "Por favor, ingrese una direccion"
 
     return errors
 
@@ -76,7 +81,7 @@ def validate_provider(data):
 class Provider(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
-    address = models.CharField(max_length=100, blank=True)
+    address = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
@@ -97,11 +102,20 @@ class Provider(models.Model):
         return True, None
 
     def update_provider(self, provider_data):
+        errors = validate_provider(provider_data)
+
+        if len(errors) > 0:
+            return False, errors
+
         self.name = provider_data.get("name", "") or self.name
         self.email = provider_data.get("email", "") or self.email
         self.address = provider_data.get("address", "") or self.address
 
-        self.save()
+        try:
+            self.save()
+            return True, None
+        except:
+            return False, errors
 
 
 
@@ -119,15 +133,23 @@ def validate_product(data):
         errors["product_type"] = "Por favor ingrese un tipo de producto"
 
     if price == "":
-        errors["price"] = "Por favor ingrese un precio válido"
-
+        errors["price"] = "Por favor ingrese un precio"
+    else:
+        try:
+            float_price = float(price)
+            if float_price <= 0:
+                errors["price"] = "El precio debe ser mayor que cero"
+        except ValueError:
+            errors["price"] = "El precio debe ser un número válido"
+    
     return errors
+
 
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
     product_type = models.CharField(max_length=15)
-    price = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     
     def __str__(self):
             return self.name
@@ -160,6 +182,7 @@ def validate_pet(data):
     name = data.get("name", "")
     breed = data.get("breed", "")
     birthday = data.get("birthday", "")
+    weight = data.get("weight", "")
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
 
@@ -168,6 +191,11 @@ def validate_pet(data):
     
     if birthday == "":
         errors["birthday"] = "Por favor ingrese una fecha de nacimiento"
+
+        
+    if weight == "" or int(weight) < 0:
+        errors["weight"] = "Por favor ingrese un peso correcto (debe ser mayor a cero)" 
+    
     else:
         try:
             birth = datetime.strptime(birthday, "%Y-%m-%d").date()
@@ -182,6 +210,10 @@ def validate_pet(data):
 class Pet(models.Model):
     name = models.CharField(max_length=40)
     breed = models.CharField(max_length=40)
+
+    birthday = models.CharField(max_length=40,default='')
+    weight = models.IntegerField()
+
     birthday = models.DateField()
     
     def __str__(self):
@@ -198,6 +230,7 @@ class Pet(models.Model):
             name=pet_data.get("name"),
             breed=pet_data.get("breed"),
             birthday=pet_data.get("birthday"),
+            weight=pet_data.get("weight"),
         )
 
         return True, None
@@ -211,6 +244,12 @@ class Pet(models.Model):
         self.name = pet_data.get("name", "") or self.name
         self.breed = pet_data.get("breed", "") or self.breed
         self.birthday = pet_data.get("birthday", "") or self.birthday
+        self.weight = pet_data.get("weight", "") or self.weight
+
+        errors = validate_pet(pet_data)
+    
+        if len(errors.keys()) > 0:
+            return False, errors
         
         self.save()
         return True, None
