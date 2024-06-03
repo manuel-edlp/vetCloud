@@ -20,7 +20,7 @@ class PlaywrightTestCase(StaticLiveServerTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.browser: Browser = playwright.chromium.launch(
-            headless=headless, slow_mo=int(slow_mo)
+            headless=headless, slow_mo=int(slow_mo),
         )
 
     @classmethod
@@ -104,7 +104,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
 
         add_client_action = self.page.get_by_role(
-            "link", name="Nuevo cliente", exact=False
+            "link", name="Nuevo cliente", exact=False,
         )
         expect(add_client_action).to_have_attribute("href", reverse("clients_form"))
 
@@ -120,7 +120,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
 
         edit_action = self.page.get_by_role("link", name="Editar")
         expect(edit_action).to_have_attribute(
-            "href", reverse("clients_edit", kwargs={"id": client.id})
+            "href", reverse("clients_edit", kwargs={"id": client.id}),
         )
 
     def test_should_show_client_delete_action(self):
@@ -134,7 +134,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
 
         edit_form = self.page.get_by_role(
-            "form", name="Formulario de eliminación de cliente"
+            "form", name="Formulario de eliminación de cliente",
         )
         client_id_input = edit_form.locator("input[name=client_id]")
 
@@ -207,11 +207,11 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
 
         expect(self.page.get_by_text("Por favor ingrese un nombre")).not_to_be_visible()
         expect(
-            self.page.get_by_text("Por favor ingrese un teléfono")
+            self.page.get_by_text("Por favor ingrese un teléfono"),
         ).not_to_be_visible()
 
         expect(
-            self.page.get_by_text("Por favor ingrese un email valido")
+            self.page.get_by_text("Por favor ingrese un email valido"),
         ).to_be_visible()
 
     def test_should_be_able_to_edit_a_client(self):
@@ -244,7 +244,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
 
         edit_action = self.page.get_by_role("link", name="Editar")
         expect(edit_action).to_have_attribute(
-            "href", reverse("clients_edit", kwargs={"id": client.id})
+            "href", reverse("clients_edit", kwargs={"id": client.id}),
         )
 
 
@@ -292,7 +292,7 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
         self.page.goto(f"{self.live_server_url}{reverse('provider_repo')}")
 
         add_provider_action = self.page.get_by_role(
-            "link", name="Nuevo Proveedor", exact=False
+            "link", name="Nuevo Proveedor", exact=False,
         )
         expect(add_provider_action).to_have_attribute("href", reverse("provider_form"))
 
@@ -317,11 +317,11 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("Por favor ingrese un nombre")).not_to_be_visible()
 
         expect(
-            self.page.get_by_text("Por favor ingrese un email valido")
+            self.page.get_by_text("Por favor ingrese un email valido"),
         ).not_to_be_visible()
 
         expect(
-            self.page.get_by_text("Por favor, ingrese una direccion")
+            self.page.get_by_text("Por favor, ingrese una direccion"),
         ).to_be_visible()
 
     def test_should_be_able_to_edit_a_provider(self):
@@ -351,7 +351,7 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
 
         edit_action = self.page.get_by_role("link", name="Editar")
         expect(edit_action).to_have_attribute(
-            "href", reverse("provider_edit", kwargs={"id": provider.id})
+            "href", reverse("provider_edit", kwargs={"id": provider.id}),
         )
         
   
@@ -440,7 +440,7 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
 
         # Verificar que el mensaje de error "El peso debe ser mayor que cero" sea visible
         expect(
-            self.page.get_by_text("El peso debe ser mayor a cero")
+            self.page.get_by_text("El peso debe ser mayor a cero"),
         ).to_be_visible()
 
 # Pruebas de unidad para verificar la creación exitosa de un nuevo producto
@@ -486,10 +486,10 @@ class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
 # Verificar que los mensajes de error para ingresar el nombre y el tipo no sean visibles
         expect(self.page.get_by_text("Por favor ingrese su nombre")).not_to_be_visible()
         expect(
-            self.page.get_by_text("Por favor ingrese un tipo")
+            self.page.get_by_text("Por favor ingrese un tipo"),
         ).not_to_be_visible()
 
 # Verificar que el mensaje de error "El precio debe ser mayor que cero" sea visible
         expect(
-            self.page.get_by_text("El precio debe ser mayor que cero")
+            self.page.get_by_text("El precio debe ser mayor que cero"),
         ).to_be_visible()
