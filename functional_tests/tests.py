@@ -332,6 +332,64 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
             "link", name="Nuevo Proveedor", exact=False
         )
         expect(add_provider_action).to_have_attribute("href", reverse("provider_form"))
+
+    #Agrego e2e que utilicen el atributo address
+    def test_should_view_errors_if_form_is_invalid(self):
+        self.page.goto(f"{self.live_server_url}{reverse('provider_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("Por favor ingrese un nombre")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese un email")).to_be_visible()
+        expect(self.page.get_by_text("Por favor, ingrese una direccion")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill("Juan Roman Riquelme")
+        self.page.get_by_label("Email").fill("senor10@gmail.com")
+        self.page.get_by_label("Direccion").fill("")
+        
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("Por favor ingrese un nombre")).not_to_be_visible()
+
+        expect(
+            self.page.get_by_text("Por favor ingrese un email valido")
+        ).not_to_be_visible()
+
+        expect(
+            self.page.get_by_text("Por favor, ingrese una direccion")
+        ).to_be_visible()
+
+    def test_should_be_able_to_edit_a_provider(self):
+        provider = Provider.objects.create(
+            name="Juan Roman Riquelme",
+            email="senor10@hotmail.com",
+            address="13 y 44",
+        )
+
+        path = reverse("provider_edit", kwargs={"id": provider.id})
+        self.page.goto(f"{self.live_server_url}{path}")
+
+        self.page.get_by_label("Nombre").fill("Martin Palermo")
+        self.page.get_by_label("Email").fill("titan@gmail.com")
+        self.page.get_by_label("Direccion").fill("124 y 60")
+        
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("Juan Roman Riquelme")).not_to_be_visible()
+        expect(self.page.get_by_text("senor10@hotmail.com")).not_to_be_visible()
+        expect(self.page.get_by_text("13 y 44")).not_to_be_visible()
+
+        expect(self.page.get_by_text("Martin Palermo")).to_be_visible()
+        expect(self.page.get_by_text("titan@gmail.com")).to_be_visible()
+        expect(self.page.get_by_text("124 y 60")).to_be_visible()
+
+        edit_action = self.page.get_by_role("link", name="Editar")
+        expect(edit_action).to_have_attribute(
+            "href", reverse("provider_edit", kwargs={"id": provider.id})
+        )
         
   
 class PetFormCreateValidationTestCase(PlaywrightTestCase):
