@@ -56,12 +56,29 @@
                         id="birthday"
                         name="birthday"
                         class="form-control {% if errors.birthday %}is-invalid{% endif %}"
-                        value="{{ pet.birthday }}"
+                        value="{{ pet.birthday|date:'Y-m-d' }}"
                         required/>
 
                     {% if errors.birthday %}
                         <div class="invalid-feedback">
                             {{ errors.birthday }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="weight" class="form-label">Peso</label>
+                    <input type="number"
+                        id="weight"
+                        name="weight"
+                        class="form-control"
+                        value="{{ pet.weight }}"
+                        required
+                        min="0"
+                        step="1"/>
+
+                    {% if errors.weight %}
+                        <div class="invalid-feedback">
+                            {{ errors.weight }}
                         </div>
                     {% endif %}
                 </div>
