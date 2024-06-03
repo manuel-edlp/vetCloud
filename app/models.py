@@ -1,5 +1,7 @@
 from django.db import models
 from datetime import datetime
+import re
+from django.core.exceptions import ValidationError
 
 
 
@@ -18,8 +20,11 @@ def validate_client(data):
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
-    elif email.count("@") == 0:
-        errors["email"] = "Por favor ingrese un email valido"
+    elif not email.endswith("@vetsoft.com"):
+        errors["email"] = "El email debe ser de la forma 'usuario@vetsoft.com'"
+
+
+
 
     return errors
 
@@ -50,12 +55,21 @@ class Client(models.Model):
         return True, None
 
     def update_client(self, client_data):
+        errors = validate_client(client_data)
+
+        if len(errors) > 0:
+            return False, errors
+        
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
         self.address = client_data.get("address", "") or self.address
 
-        self.save()
+        try:
+            self.save()
+            return True, None
+        except:
+            return False, errors
 
 def validate_provider(data):
     errors = {}
