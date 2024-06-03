@@ -428,7 +428,7 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("Por favor ingrese un nombre")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese una raza")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese una fecha de nacimiento")).to_be_visible()
-        expect(self.page.get_by_text("El peso debe ser mayor a cero")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese un peso")).to_be_visible()
 
         # Completar el formulario con un peso negativo y enviarlo
         self.page.get_by_label("Nombre").fill("Frida")
