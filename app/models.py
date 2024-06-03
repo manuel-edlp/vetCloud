@@ -183,6 +183,7 @@ def validate_pet(data):
     breed = data.get("breed", "")
     birthday = data.get("birthday", "")
     weight = data.get("weight", "")
+
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
 
@@ -215,12 +216,9 @@ def validate_pet(data):
 class Pet(models.Model):
     name = models.CharField(max_length=40)
     breed = models.CharField(max_length=40)
-
-    birthday = models.CharField(max_length=40,default='')
+    birthday = models.DateField()
     weight = models.FloatField()
 
-    birthday = models.DateField()
-    
     def __str__(self):
             return self.name
 
@@ -265,6 +263,10 @@ def validate_veterinary(data):
     name = data.get("name", "")
     email = data.get("email", "")
     phone = data.get("phone", "")
+
+
+    if name == "":
+        errors["name"] = "Por favor ingrese un nombre"
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
