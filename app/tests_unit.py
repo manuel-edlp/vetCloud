@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from django.test import TestCase
 from app.models import Client,Pet,validate_pet,Provider, Product,Medicine
 from django.utils import timezone
@@ -203,8 +204,8 @@ class ProductModelTest(TestCase):
         success, message_or_errors = Product.save_product({
             "name": "Test Product",
             "product_type": "Test Type",
-            "price": "0"
-        })
+           "price": "0"
+         })
 
         self.assertFalse(success)
         self.assertIn("price", message_or_errors)
@@ -213,12 +214,13 @@ class ProductModelTest(TestCase):
     def test_create_product_with_invalid_price_negative(self):
         success, message_or_errors = Product.save_product({
             "name": "Test Product",
-            "product_type": "Test Type",
-            "price": "-10"
+          "product_type": "Test Type",
+           "price": "-10"
         })
 
         self.assertFalse(success)
         self.assertIn("price", message_or_errors)
         self.assertEqual(message_or_errors["price"], "El precio debe ser mayor que cero")
+
     
-    
+ 
