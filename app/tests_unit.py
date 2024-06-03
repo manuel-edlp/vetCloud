@@ -3,11 +3,6 @@ from django.test import TestCase
 from app.models import Client,Pet,validate_pet,Provider, Product,Medicine
 from django.utils import timezone
 
-
-
-
-
-
 class ClientModelTest(TestCase):
     def test_can_create_and_get_client(self):
         Client.save_client(
@@ -149,7 +144,7 @@ class PetModelTest(TestCase):
             "name": "Frida",
             "breed": "negrita",
             "birthday": "2013-01-01",  # Fecha de nacimiento válida
-            "weight": 4,
+            "weight": "22",
         }
         self.assertEqual(validate_pet(valid_data), {})  # La validación debería pasar sin errores
         future_date = timezone.now().date() + timezone.timedelta(days=1)
@@ -157,7 +152,7 @@ class PetModelTest(TestCase):
             "name": "Frida",
             "breed": "negrita",
             "birthday": future_date.strftime("%Y-%m-%d"),  # Fecha de nacimiento en el futuro
-            "weight": 4,
+            "weight": "22",
         }
         expected_error = {"birthday": "La fecha de nacimiento debe ser menor a la fecha actual"}
         self.assertEqual(validate_pet(invalid_data), expected_error)  # La validación debería dar error
@@ -187,7 +182,7 @@ class PetModelTest(TestCase):
 
         self.assertFalse(success)
         self.assertIn("weight", message_or_errors)
-        self.assertEqual(message_or_errors["weight"], "Por favor ingrese un peso correcto (debe ser mayor a cero)")
+        self.assertEqual(message_or_errors["weight"], "El peso debe ser mayor a cero")
 
 class ProductModelTest(TestCase):
     def test_create_product_with_valid_price(self):
@@ -222,5 +217,3 @@ class ProductModelTest(TestCase):
         self.assertIn("price", message_or_errors)
         self.assertEqual(message_or_errors["price"], "El precio debe ser mayor que cero")
 
-    
- 

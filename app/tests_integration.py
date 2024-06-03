@@ -245,7 +245,7 @@ class PetsTest(TestCase):
                 "name": "Frida",
                 "breed": "negrita",
                 "birthday": "2017-01-01",
-                "weight": "-10" # Peso inválido
+                "weight": "-10", # Peso inválido
             },
         )
 
@@ -254,7 +254,8 @@ class PetsTest(TestCase):
         self.assertEqual(len(pets), 0)
 
         # Verificar que se muestra un mensaje de error en la respuesta
-        self.assertContains(response, "Por favor ingrese un peso correcto (debe ser mayor a cero)")
+        self.assertContains(response, "El peso debe ser mayor a cero")
+        
           
     def test_create_pet_with_valid_birthday(self):
         # Crear una mascota con fecha de nacimiento válida
@@ -264,7 +265,7 @@ class PetsTest(TestCase):
                 "name": "Frida",
                 "breed": "negrita",
                 "birthday": "2013-01-01",  # Fecha de nacimiento válida
-                "weight": 4,
+                "weight": "4",
             },
         )
 
