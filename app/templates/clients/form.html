@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-lg-6 offset-lg-3">
             <form class="vstack gap-3 {% if errors %}was-validated{% endif %}"
-                aria-label="Formulario de creacion de cliente"
+                aria-label="Formulario de creacion del cliente"
                 method="POST"
                 action="{% url 'clients_form' %}"
                 novalidate>
@@ -37,7 +37,7 @@
                 </div>
                 <div>
                     <label for="phone" class="form-label">Teléfono</label>
-                    <input type="text"
+                    <input type="number"
                         id="phone"
                         name="phone"
                         class="form-control"
@@ -49,14 +49,13 @@
                             {{ errors.phone }}
                         </div>
                     {% endif %}
-                </div>
                 <div>
                     <label for="email" class="form-label">Email</label>
                     <input type="email"
                         id="email"
                         name="email"
                         class="form-control"
-                        value="{{ client.email }}"
+                        value="{{client.email}}"
                         required/>
 
                     {% if errors.email %}
@@ -66,16 +65,19 @@
                     {% endif %}
                 </div>
                 <div>
-                    <label for="address" class="form-label">Dirección</label>
+                    <label for="address" class="form-label">Direccion</label>
                     <input type="text"
                         id="address"
                         name="address"
-                        value="{{client.address}}"
-                        class="form-control" />
+                        class="form-control {% if errors.address %}is-invalid{% endif %}"
+                        value="{{ provider.address }}"
+                        />
 
-                    <div class="invalid-feedback">
-                        La dirrección es opcional
-                    </div>
+                    {% if errors.address %}
+                        <div class="invalid-feedback">
+                            {{ errors.address }}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <button class="btn btn-primary">Guardar</button>
