@@ -1,4 +1,3 @@
-from django.forms import ValidationError
 from django.test import TestCase
 from app.models import Client,Pet,validate_pet,Provider, Product,Medicine
 from django.utils import timezone
@@ -11,7 +10,7 @@ class ClientModelTest(TestCase):
                 "phone": "221555232",
                 "address": "13 y 44",
                 "email": "brujita75@hotmail.com",
-            }
+            },
         )
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
@@ -28,7 +27,7 @@ class ClientModelTest(TestCase):
                 "phone": "221555232",
                 "address": "13 y 44",
                 "email": "brujita75@hotmail.com",
-            }
+            },
         )
         client = Client.objects.get(pk=1)
 
@@ -47,7 +46,7 @@ class ClientModelTest(TestCase):
                 "phone": "221555232",
                 "address": "13 y 44",
                 "email": "brujita75@hotmail.com",
-            }
+            },
         )
         client = Client.objects.get(pk=1)
 
@@ -67,7 +66,7 @@ class MedicineModelTest(TestCase):
                 "name": "Ibuprofeno",
                 "description": "Medicamento antiinflamatorio",
                 "dose": 1,
-            }
+            },
         )
         self.assertTrue(success)
 
@@ -80,7 +79,7 @@ class MedicineModelTest(TestCase):
                 "name": "Ibuprofeno",
                 "description": "Medicamento antiinflamatorio",
                 "dose": 11,
-            }
+            },
         )
         self.assertFalse(success)
         self.assertIn("dose", errors)
@@ -94,7 +93,7 @@ class MedicineModelTest(TestCase):
                 "name": "Paracetamol",
                 "description": "Medicamento para el dolor",
                 "dose": 5,
-            }
+            },
         )
         medicine = Medicine.objects.get(pk=1)
 
@@ -115,7 +114,7 @@ class  ProviderModelTest(TestCase):
                 "name": "Juan Roman Riquelme",
                 "email": "senor10@gmail.com",
                 "address": "13 y 44",
-            }
+            },
         )
         providers = Provider.objects.all()
         self.assertEqual(len(providers), 1)
@@ -132,7 +131,7 @@ class  ProviderModelTest(TestCase):
                 "name": "Juan Roman Riquelme",
                 "email": "senor10@gmail.com",
                 "address": addres, #guardo proveedor con direccion especifica
-            }
+            },
         )
         provider = Provider.objects.get(address=addres) #recupero proveedor segun la direccion (supongo que no van a haber dos proveedores con esa direccion)
         self.assertEqual(provider.address, addres) #verifica que la direccion recuperada coincida con la especifica
@@ -166,7 +165,7 @@ class PetModelTest(TestCase):
             "name": "Frida",
             "breed": "negrita",
             "birthday": "2017-01-01",
-            "weight": "4" # Peso válido
+            "weight": "4", # Peso válido
         })
 
         self.assertTrue(success)
@@ -177,7 +176,7 @@ class PetModelTest(TestCase):
             "name": "Frida",
             "breed": "negrita",
             "birthday": "2017-01-01",
-            "weight": "-1" # Peso inválido
+            "weight": "-1", # Peso inválido
         })
 
         self.assertFalse(success)
@@ -189,7 +188,7 @@ class ProductModelTest(TestCase):
         success, message_or_errors = Product.save_product({
             "name": "Test Product",
             "product_type": "Test Type",
-            "price": "100"
+            "price": "100",
         })
 
         self.assertTrue(success)
@@ -199,7 +198,7 @@ class ProductModelTest(TestCase):
         success, message_or_errors = Product.save_product({
             "name": "Test Product",
             "product_type": "Test Type",
-           "price": "0"
+           "price": "0",
          })
 
         self.assertFalse(success)
@@ -210,7 +209,7 @@ class ProductModelTest(TestCase):
         success, message_or_errors = Product.save_product({
             "name": "Test Product",
           "product_type": "Test Type",
-           "price": "-10"
+           "price": "-10",
         })
 
         self.assertFalse(success)
