@@ -4,6 +4,9 @@ from datetime import datetime
 
 
 def validate_client(data):
+    """
+    Esta función valida los datos del cliente.
+    """
     errors = {}
 
     name = data.get("name", "")
@@ -31,10 +34,16 @@ class Client(models.Model):
     address = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
+        """
+        Devuelve la representación de cadena de cliente.
+        """
         return self.name
 
     @classmethod
     def save_client(cls, client_data):
+        """ 
+        Esta función guarda el cliente. 
+        """
         errors = validate_client(client_data)
 
         if len(errors.keys()) > 0:
@@ -50,6 +59,9 @@ class Client(models.Model):
         return True, None
 
     def update_client(self, client_data):
+        """ 
+        Esta función actualiza el cliente. 
+        """
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
@@ -58,6 +70,9 @@ class Client(models.Model):
         self.save()
 
 def validate_provider(data):
+    """
+    Esta función valida los datos del proovedor.
+    """
     errors = {}
 
     name = data.get("name", "")
@@ -84,10 +99,16 @@ class Provider(models.Model):
     address = models.CharField(max_length=100)
 
     def __str__(self):
+        """
+        Devuelve la representación de cadena de proovedor.
+        """
         return self.name
 
     @classmethod
     def save_provider(cls, provider_data):
+        """
+        Esta función guarda el proveedor en la base de datos.
+        """
         errors = validate_provider(provider_data)
 
         if len(errors.keys()) > 0:
@@ -102,6 +123,9 @@ class Provider(models.Model):
         return True, None
 
     def update_provider(self, provider_data):
+        """
+        Esta función actualiza el proveedor.
+        """
         errors = validate_provider(provider_data)
 
         if len(errors) > 0:
@@ -117,6 +141,9 @@ class Provider(models.Model):
 
 
 def validate_product(data):
+    """
+    Esta función valida los datos del producto.
+    """
     errors = {}
 
     name = data.get("name", "")
@@ -149,10 +176,16 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     
     def __str__(self):
+            """
+            Devuelve la representación de cadena de producto.
+            """
             return self.name
 
     @classmethod
     def save_product(cls, product_data):
+        """
+        Esta función guarda el producto en la base de datos.
+        """
         errors = validate_product(product_data)
 
         if len(errors.keys()) > 0:
@@ -168,6 +201,9 @@ class Product(models.Model):
 
 
     def update_product(self, product_data):
+        """
+        Esta función actualiza el producto.
+        """
 
 
         errors = validate_product(product_data)
@@ -182,6 +218,9 @@ class Product(models.Model):
         return True, None
 
 def validate_pet(data):
+    """
+    Esta función valida los datos de mascota.
+    """
     errors = {}
 
     name = data.get("name", "")
@@ -225,10 +264,16 @@ class Pet(models.Model):
     weight = models.FloatField()
 
     def __str__(self):
+            """
+            Devuelve la representación de cadena de mascota.
+            """
             return self.name
 
     @classmethod
     def save_pet(cls, pet_data):
+        """
+        Esta función guarda la mascota en la base de datos.
+        """
         errors = validate_pet(pet_data)
     
         if len(errors.keys()) > 0:
@@ -244,6 +289,9 @@ class Pet(models.Model):
         return True, None
     
     def update_pet(self, pet_data):
+        """
+        Esta función actualiza los datos de mascota.
+        """
         errors = validate_pet(pet_data)
         if len(errors.keys()) > 0:
             print("Retorno false")
@@ -263,6 +311,9 @@ class Pet(models.Model):
         return True, None
 
 def validate_veterinary(data):
+    """
+    Esta función valida los datos del veterinario.
+    """
     errors = {}
 
     name = data.get("name", "")
@@ -291,10 +342,16 @@ class Veterinary(models.Model):
     
     
     def __str__(self):
+        """
+        Devuelve la representación de cadena de veterinario.
+        """
         return self.name
 
     @classmethod
     def save_veterinary(cls, veterinary_data):
+        """
+        Esta función guarda los datos de veterinario.
+        """
         errors = validate_veterinary(veterinary_data)
 
         if len(errors.keys()) > 0:
@@ -310,6 +367,9 @@ class Veterinary(models.Model):
         return True, None
 
     def update_veterinary(self, veterinary_data):
+        """
+        Esta función actualiza los datos de veterinario.
+        """
         self.name = veterinary_data.get("name", "") or self.name
         self.email = veterinary_data.get("email", "") or self.email
         self.phone = veterinary_data.get("phone", "") or self.phone
@@ -318,6 +378,9 @@ class Veterinary(models.Model):
 
 
 def validate_medicine(data):
+    """
+    Esta  función valida los datos de medicina.
+    """
     errors = {}
 
     name = data.get("name", "")
@@ -346,10 +409,16 @@ class Medicine(models.Model):
     dose = models.IntegerField()
 
     def __str__(self):
+        """
+        Devuelve la representación de cadena de medicina.
+        """
         return self.name
 
     @classmethod
     def save_medicine(cls, medicine_data):
+        """
+        Esta función guarda los datos de medicina.
+        """
         errors = validate_medicine(medicine_data)
 
         if len(errors.keys()) > 0:
@@ -363,6 +432,9 @@ class Medicine(models.Model):
 
         return True, None
     def update_medicine(self, medicine_data):
+        """
+        Esta función actualiza los datos de medicina.
+        """
         errors = validate_medicine(medicine_data)
 
         if len(errors) > 0:
