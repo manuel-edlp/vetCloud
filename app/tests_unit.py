@@ -1,9 +1,11 @@
-from django.forms import ValidationError
 from django.test import TestCase
 from app.models import Client,Pet,validate_pet,Provider, Product,Medicine
 from django.utils import timezone
 
 class ClientModelTest(TestCase):
+    """
+    Pruebas para el modelo Cliente.
+    """
     def test_can_create_and_get_client(self):
         Client.save_client(
             {
@@ -60,6 +62,9 @@ class ClientModelTest(TestCase):
         self.assertEqual(client_updated.phone, "221555232")
 
 class MedicineModelTest(TestCase):
+    """
+    Pruebas para el modelo Medicina.
+    """
     
     def test_can_create_medicine_with_valid_dose(self):
         success, errors = Medicine.save_medicine(
@@ -109,6 +114,10 @@ class MedicineModelTest(TestCase):
         self.assertEqual(medicine_updated.dose, 5)
 
 class  ProviderModelTest(TestCase):
+    """
+    Pruebas para el modelo Provedor.
+    """
+    
     def test_can_create_and_get_provider(self):
         Provider.save_provider(
             {
@@ -138,6 +147,9 @@ class  ProviderModelTest(TestCase):
         self.assertEqual(provider.address, addres) #verifica que la direccion recuperada coincida con la especifica
 
 class PetModelTest(TestCase):
+    """
+    Pruebas para el modelo Pet.
+    """
     def test_validate_pet_birthday(self):
         # Probamos la validación de fecha de nacimiento para una mascota
         valid_data = {
@@ -185,6 +197,9 @@ class PetModelTest(TestCase):
         self.assertEqual(message_or_errors["weight"], "El peso debe ser mayor a cero")
 
 class ProductModelTest(TestCase):
+    """
+    Pruebas para el modelo Producto.
+    """
     def test_create_product_with_valid_price(self):
         success, message_or_errors = Product.save_product({
             "name": "Test Product",
