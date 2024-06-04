@@ -2,7 +2,7 @@ name: ci
 
 on:
     pull_request:
-        branch: [main]
+        branches: [main]
 
 jobs:
     tests:
@@ -18,10 +18,11 @@ jobs:
               with:
                   python-version: '3.10'
                   cache: 'pip'
-            - run: pip install -r requirements-dev.txt
+            - run: pip install -r requirements.txt
 
             - name: Install playwright
-              run: python -m playwright install --with-deps firefox
+              run: playwright install
+              
 
             - name: Run static test
               run: ruff check

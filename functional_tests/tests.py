@@ -396,6 +396,7 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
     def test_should_be_able_to_create_a_new_pet_goto(self):
         self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
 
+
     # Pruebas para peso de la mascota
     def test_should_be_able_to_create_a_new_pet(self):
         self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")

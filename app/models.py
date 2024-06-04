@@ -390,4 +390,3 @@ class Medicine(models.Model):
             return True, None
         except (IntegrityError, ValidationError) as e:
             return False, {"error": str(e)}
-    
