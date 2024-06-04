@@ -28,7 +28,7 @@ class Client(models.Model):
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     email = models.EmailField()
-    ciudad = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return self.name
@@ -44,7 +44,7 @@ class Client(models.Model):
             name=client_data.get("name"),
             phone=client_data.get("phone"),
             email=client_data.get("email"),
-            ciudad=client_data.get("ciudad"),
+            city=client_data.get("city"),
         )
 
         return True, None
@@ -53,7 +53,7 @@ class Client(models.Model):
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
-        self.ciudad = client_data.get("ciudad", "") or self.ciudad
+        self.city = client_data.get("city", "") or self.city
 
         self.save()
 
