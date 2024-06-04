@@ -8,12 +8,18 @@ from app.models import Product
 
 
 class HomePageTest(TestCase):
+    """
+    Pruebas para la página de inicio.
+    """
     def test_use_home_template(self):
         response = self.client.get(reverse("home"))
         self.assertTemplateUsed(response, "home.html")
 
 
 class ClientsTest(TestCase):
+    """
+    Pruebas para el repositorio de clientes.
+    """
     def test_repo_use_repo_template(self):
         response = self.client.get(reverse("clients_repo")) 
         self.assertTemplateUsed(response, "clients/repository.html")
@@ -99,6 +105,7 @@ class ClientsTest(TestCase):
         self.assertEqual(editedClient.email, client.email)
 
 class MedicineIntegrationTest(TestCase):
+    """Pruebas de integración para el modelo de Medicina. """
     def test_can_create_medicine(self):
         response = self.client.post(
             reverse("medicine_form"),
@@ -160,6 +167,9 @@ class MedicineIntegrationTest(TestCase):
         )
         self.assertContains(response, "La dosis debe estar en un rango de 1 a 10")
 class ProviderTest(TestCase):
+    """
+    Pruebas para el repositorio de proveedores.
+    """
     def test_repo_use_repo_template(self):
         response = self.client.get(reverse("provider_repo"))
         self.assertTemplateUsed(response, "providers/repository.html")
@@ -212,6 +222,9 @@ class ProviderTest(TestCase):
 
 
 class PetsTest(TestCase):
+    """
+    Pruebas para el modelo de mascotas.
+    """
     def test_create_pet_with_valid_weight(self):
         # Crear un mascota con peso válido
         response = self.client.post(
@@ -302,14 +315,17 @@ class PetsTest(TestCase):
         # Verificar que se muestra un mensaje de error en la respuesta
         self.assertContains(response, "La fecha de nacimiento debe ser menor a la fecha actual")
 
-
 class ProductsTest(TestCase):
+    """
+    Pruebas para el modelo de productos.
+    """
     def test_create_product_with_valid_price(self):
         # Crear un producto con precio válido
         response = self.client.post(
             reverse("product_form"), 
             data={
                 "name": "Producto Test",
+
                 "product_type": "Tipo Test",
                 "price": "10.00",  # Precio válido
             },
