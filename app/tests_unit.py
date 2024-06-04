@@ -10,7 +10,7 @@ class ClientModelTest(TestCase):
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
                 "address": "13 y 44",
-                "email": "brujita75@hotmail.com",
+                "email": "brujita75@vetsoft.com",
             }
         )
         clients = Client.objects.all()
@@ -19,7 +19,7 @@ class ClientModelTest(TestCase):
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
         self.assertEqual(clients[0].phone, "221555232")
         self.assertEqual(clients[0].address, "13 y 44")
-        self.assertEqual(clients[0].email, "brujita75@hotmail.com")
+        self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
 
     def test_can_update_client(self):
         Client.save_client(
@@ -27,14 +27,18 @@ class ClientModelTest(TestCase):
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
                 "address": "13 y 44",
-                "email": "brujita75@hotmail.com",
+                "email": "brujita75@vetsoft.com",
             }
         )
         client = Client.objects.get(pk=1)
 
         self.assertEqual(client.phone, "221555232")
 
-        client.update_client({"phone": "221555233"})
+        client.update_client(
+                {"name": "Juan Sebastian Veron",
+                "phone": "221555233",
+                "address": "13 y 44",
+                "email": "brujita75@vetsoft.com"})
 
         client_updated = Client.objects.get(pk=1)
 
@@ -46,7 +50,7 @@ class ClientModelTest(TestCase):
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
                 "address": "13 y 44",
-                "email": "brujita75@hotmail.com",
+                "email": "brujita75@vetsoft.com",
             }
         )
         client = Client.objects.get(pk=1)
@@ -59,6 +63,24 @@ class ClientModelTest(TestCase):
 
         self.assertEqual(client_updated.phone, "221555232")
 
+    def test_update_client_with_email_null(self): #nuevo test verificando que no pueda hacer update con email nulo
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@vetsoft.com",
+            }
+        )
+        client = Client.objects.get(pk=1)
+
+        self.assertEqual(client.phone, "221555232")
+
+        client.update_client({"email": ""})
+
+        client_updated = Client.objects.get(pk=1)
+
+        self.assertEqual(client_updated.email, "brujita75@vetsoft.com")
 class MedicineModelTest(TestCase):
     
     def test_can_create_medicine_with_valid_dose(self):
