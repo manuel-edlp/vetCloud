@@ -6,7 +6,7 @@ from datetime import datetime
 from django.utils import timezone
 from django.urls import reverse
 
-from app.models import Client, Provider, Medicine, Pet
+from app.models import Client, Provider
 
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
@@ -16,6 +16,9 @@ slow_mo = os.environ.get("SLOW_MO", 0)
 
 
 class PlaywrightTestCase(StaticLiveServerTestCase):
+    """
+    Clase base para pruebas funcionales utilizando Playwright.
+    """
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -38,6 +41,9 @@ class PlaywrightTestCase(StaticLiveServerTestCase):
 
 
 class HomeTestCase(PlaywrightTestCase):
+    """
+    Pruebas funcionales para la página de inicio.
+    """
     def test_should_have_navbar_with_links(self):
         self.page.goto(self.live_server_url)
 
@@ -66,6 +72,10 @@ class HomeTestCase(PlaywrightTestCase):
 
 
 class ClientsRepoTestCase(PlaywrightTestCase):
+    """
+    Pruebas funcionales para la vista de repositorio de clientes.
+    """
+
     def test_should_show_message_if_table_is_empty(self):
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
 
@@ -170,6 +180,9 @@ class ClientsRepoTestCase(PlaywrightTestCase):
 
 
 class ClientCreateEditTestCase(PlaywrightTestCase):
+    """
+    Pruebas funcionales para crear y editar un cliente.
+    """
     def test_should_be_able_to_create_a_new_client(self):
         self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
 
@@ -249,6 +262,9 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
 
 
 class MedicineCreateEditTestCase(PlaywrightTestCase):
+    """
+    Pruebas para crear y editar medicamentos.
+    """
     def test_should_show_error_for_dose_greater_than_10(self):
         self.page.goto(f"{self.live_server_url}{reverse('medicine_form')}")
 
@@ -276,6 +292,9 @@ class MedicineCreateEditTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("La dosis debe estar en un rango de 1 a 10")).to_be_visible()
 
 class ProvidersRepoTestCase(PlaywrightTestCase):
+    """
+    Pruebas para verificar el comportamiento del repositorio de proveedores.
+    """
     def test_should_show_message_if_table_is_empty(self):
         self.page.goto(f"{self.live_server_url}{reverse('provider_repo')}")
 
@@ -356,10 +375,14 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
         
   
 class PetFormCreateValidationTestCase(PlaywrightTestCase):
+    """
+    Pruebas para validar la creación de una mascota en el formulario.
+    """
     def test_should_show_error_for_future_birth_date(self):
         self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
+        
 
         # Introduce una fecha de nacimiento no valida
         future_date = datetime.now().date() + timezone.timedelta(days=7)  # Ejemplo: 7 días en el futuro
@@ -393,7 +416,6 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
         # Verifica si se muestra el mensaje de error esperado
         expect(self.page.get_by_text("La fecha de nacimiento debe ser menor a la fecha actual")).to_be_visible()     
 
-    def test_should_be_able_to_create_a_new_pet(self):
         self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
 
     # Pruebas para peso de la mascota
@@ -446,6 +468,9 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
 # Pruebas de unidad para verificar la creación exitosa de un nuevo producto
 
 class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
+    """
+    Pruebas para verificar la creación de un nuevo producto con un precio mayor que cero.
+    """
     def test_should_be_able_to_create_a_new_product(self):
         self.page.goto(f"{self.live_server_url}{reverse('product_form')}")
 
