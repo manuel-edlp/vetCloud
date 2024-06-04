@@ -54,6 +54,7 @@
                     <input type="email"
                         id="email"
                         name="email"
+                        pattern="\w+@vetsoft.com"
                         class="form-control"
                         value="{{client.email}}"
                         required/>
@@ -70,8 +71,8 @@
                         id="address"
                         name="address"
                         class="form-control {% if errors.address %}is-invalid{% endif %}"
-                        value="{{ provider.address }}"
-                        />
+                        value="{{ client.address }}"
+                        required/>
 
                     {% if errors.address %}
                         <div class="invalid-feedback">
