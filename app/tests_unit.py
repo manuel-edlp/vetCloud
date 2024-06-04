@@ -1,6 +1,8 @@
 from django.test import TestCase
-from app.models import Client,Pet,validate_pet,Provider, Product,Medicine
 from django.utils import timezone
+
+from app.models import Client, Medicine, Pet, Product, Provider, validate_pet
+
 
 class ClientModelTest(TestCase):
     def test_can_create_and_get_client(self):
