@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import datetime
-import re
+from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 
 
@@ -65,8 +65,8 @@ class Client(models.Model):
         try:
             self.save()
             return True, None
-        except:
-            return False, errors
+        except (IntegrityError, ValidationError) as e:
+            return False, {"error": str(e)}
 
 def validate_provider(data):
     errors = {}
@@ -125,9 +125,8 @@ class Provider(models.Model):
         try:
             self.save()
             return True, None
-        except:
-            return False, errors
-
+        except (IntegrityError, ValidationError) as e:
+            return False, {"error": str(e)}
 
 
 def validate_product(data):
@@ -389,6 +388,6 @@ class Medicine(models.Model):
         try:
             self.save()
             return True, None
-        except:
-            return False, errors
+        except (IntegrityError, ValidationError) as e:
+            return False, {"error": str(e)}
     
