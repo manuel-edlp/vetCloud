@@ -74,14 +74,14 @@ class ClientsRepoTestCase(PlaywrightTestCase):
     def test_should_show_clients_data(self):
         Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
+            city="13 y 44",
             phone="221555232",
             email="brujita75@hotmail.com",
         )
 
         Client.objects.create(
             name="Guido Carrillo",
-            address="1 y 57",
+            city="1 y 57",
             phone="221232555",
             email="goleador@gmail.com",
         )
@@ -111,7 +111,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
     def test_should_show_client_edit_action(self):
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
+            city="13 y 44",
             phone="221555232",
             email="brujita75@hotmail.com",
         )
@@ -126,7 +126,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
     def test_should_show_client_delete_action(self):
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
+            city="13 y 44",
             phone="221555232",
             email="brujita75@hotmail.com",
         )
@@ -147,7 +147,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
     def test_should_can_be_able_to_delete_a_client(self):
         Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
+            city="13 y 44",
             phone="221555232",
             email="brujita75@hotmail.com",
         )
@@ -178,7 +178,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
         self.page.get_by_label("Teléfono").fill("221555232")
         self.page.get_by_label("Email").fill("brujita75@hotmail.com")
-        self.page.get_by_label("Dirección").fill("13 y 44")
+        self.page.get_by_label("Ciudad").fill("13 y 44")
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -201,7 +201,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
         self.page.get_by_label("Teléfono").fill("221555232")
         self.page.get_by_label("Email").fill("brujita75")
-        self.page.get_by_label("Dirección").fill("13 y 44")
+        self.page.get_by_label("Ciudad").fill("13 y 44")
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -217,7 +217,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
     def test_should_be_able_to_edit_a_client(self):
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
+            city="13 y 44",
             phone="221555232",
             email="brujita75@hotmail.com",
         )
@@ -228,7 +228,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Guido Carrillo")
         self.page.get_by_label("Teléfono").fill("221232555")
         self.page.get_by_label("Email").fill("goleador@gmail.com")
-        self.page.get_by_label("Dirección").fill("1 y 57")
+        self.page.get_by_label("Ciudad").fill("1 y 57")
 
         self.page.get_by_role("button", name="Guardar").click()
 
