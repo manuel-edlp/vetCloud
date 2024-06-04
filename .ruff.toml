@@ -26,10 +26,11 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
-    "migrations"
+    "migrations",
+    "app/test_*.py"
 ]
 
-# Same as Black.
+#Same as Black.
 line-length = 88
 indent-width = 4
 
@@ -38,7 +39,7 @@ target-version = "py38"
 
 [lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
-select = ["E4", "E7", "E9", "F"]
+select = ["E4", "E7", "E9", "F", "D101"]
 ignore = []
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
