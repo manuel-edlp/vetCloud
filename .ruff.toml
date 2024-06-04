@@ -27,7 +27,7 @@ exclude = [
     "site-packages",
     "venv",
     "migrations",
-    "app/test_*.py"
+   
 ]
 
 #Same as Black.
