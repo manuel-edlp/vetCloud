@@ -1,10 +1,10 @@
-from django.test import TestCase
-from django.shortcuts import reverse
-from app.models import Client,Pet,Provider,Medicine
 from datetime import datetime
-from django.utils import timezone 
-from app.models import Product
 
+from django.shortcuts import reverse
+from django.test import TestCase
+from django.utils import timezone
+
+from app.models import Client, Medicine, Pet, Product, Provider
 
 
 class HomePageTest(TestCase):
