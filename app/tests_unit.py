@@ -4,6 +4,9 @@ from django.utils import timezone
 
 class ClientModelTest(TestCase):
     def test_can_create_and_get_client(self):
+        """
+        Prueba la creación y recuperación de un cliente.
+        """
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
@@ -21,6 +24,9 @@ class ClientModelTest(TestCase):
         self.assertEqual(clients[0].email, "brujita75@hotmail.com")
 
     def test_can_update_client(self):
+        """
+        Prueba la actualización de un cliente.
+        """
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
@@ -40,6 +46,9 @@ class ClientModelTest(TestCase):
         self.assertEqual(client_updated.phone, "221555233")
 
     def test_update_client_with_error(self):
+        """
+        Prueba la actualización de un cliente con un error.
+        """
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
@@ -61,6 +70,9 @@ class ClientModelTest(TestCase):
 class MedicineModelTest(TestCase):
     
     def test_can_create_medicine_with_valid_dose(self):
+        """
+        Prueba la creación de un medicamento con una dosis válida.
+        """
         success, errors = Medicine.save_medicine(
             {
                 "name": "Ibuprofeno",
@@ -74,6 +86,9 @@ class MedicineModelTest(TestCase):
         self.assertEqual(len(medicines), 1)
 
     def test_cannot_create_medicine_with_invalid_dose(self):
+        """
+        Prueba la creación de un medicamento con una dosis inválida.
+        """
         success, errors = Medicine.save_medicine(
             {
                 "name": "Ibuprofeno",
@@ -88,6 +103,9 @@ class MedicineModelTest(TestCase):
         self.assertEqual(len(medicines), 0)
 
     def test_update_medicine_with_invalid_dose(self):
+        """
+        Prueba la actualización de un medicamento con una dosis inválida.
+        """        
         Medicine.save_medicine(
             {
                 "name": "Paracetamol",
@@ -109,6 +127,9 @@ class MedicineModelTest(TestCase):
 
 class  ProviderModelTest(TestCase):
     def test_can_create_and_get_provider(self):
+        """
+        Prueba la creación y recuperación de un proveedor.
+        """
         Provider.save_provider(
             {
                 "name": "Juan Roman Riquelme",
@@ -125,6 +146,9 @@ class  ProviderModelTest(TestCase):
 
     #Agrego test unitario especifico de la issue de provider
     def test_provider_address(self):
+        """
+        Prueba la recuperación de un proveedor por dirección específica.
+        """
         addres = "calle 13 y 44"
         Provider.save_provider(
             {
@@ -138,6 +162,9 @@ class  ProviderModelTest(TestCase):
 
 class PetModelTest(TestCase):
     def test_validate_pet_birthday(self):
+        """
+        Prueba la validación de la fecha de nacimiento de una mascota.
+        """
         # Probamos la validación de fecha de nacimiento para una mascota
         valid_data = {
             "name": "Frida",
@@ -161,6 +188,9 @@ class PetModelTest(TestCase):
     # Validacion de peso mascota
 
     def test_create_pet_with_valid_weight(self):
+        """
+        Prueba la creación de una mascota con un peso válido.
+        """
         success, message_or_errors = Pet.save_pet({
             "name": "Frida",
             "breed": "negrita",
@@ -172,6 +202,9 @@ class PetModelTest(TestCase):
         self.assertEqual(message_or_errors, None)
 
     def test_create_pet_with_invalid_weight_negative(self):
+        """
+        Prueba la creación de una mascota con un peso negativo.
+        """
         success, message_or_errors = Pet.save_pet({
             "name": "Frida",
             "breed": "negrita",
@@ -185,6 +218,9 @@ class PetModelTest(TestCase):
 
 class ProductModelTest(TestCase):
     def test_create_product_with_valid_price(self):
+        """
+        Prueba la creación de un producto con un precio válido.
+        """
         success, message_or_errors = Product.save_product({
             "name": "Test Product",
             "product_type": "Test Type",
@@ -195,6 +231,9 @@ class ProductModelTest(TestCase):
         self.assertEqual(message_or_errors, "Producto creado exitosamente")
 
     def test_create_product_with_invalid_price_zero(self):
+        """
+        Prueba la creación de un producto con un precio de cero.
+        """
         success, message_or_errors = Product.save_product({
             "name": "Test Product",
             "product_type": "Test Type",
@@ -206,6 +245,9 @@ class ProductModelTest(TestCase):
         self.assertEqual(message_or_errors["price"], "El precio debe ser mayor que cero")
 
     def test_create_product_with_invalid_price_negative(self):
+        """
+        Prueba la creación de un producto con un precio negativo.
+        """
         success, message_or_errors = Product.save_product({
             "name": "Test Product",
           "product_type": "Test Type",
