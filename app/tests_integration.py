@@ -1,10 +1,10 @@
-from django.test import TestCase
-from django.shortcuts import reverse
-from app.models import Client,Pet,Provider,Medicine
 from datetime import datetime
-from django.utils import timezone 
-from app.models import Product
 
+from django.shortcuts import reverse
+from django.test import TestCase
+from django.utils import timezone
+
+from app.models import Client, Medicine, Pet, Product, Provider
 
 
 class HomePageTest(TestCase):
@@ -51,18 +51,17 @@ class ClientsTest(TestCase):
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron",
-                "phone": "221555232",
-                "address": "13 y 44",
+                "phone": "54221555232",
                 "email": "brujita75@vetsoft.com",
+                "city": "La Plata",
             },
         )
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
-
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
-        self.assertEqual(clients[0].phone, "221555232")
-        self.assertEqual(clients[0].address, "13 y 44")
+        self.assertEqual(clients[0].phone, "54221555232")
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
+        self.assertEqual(clients[0].city, "La Plata")
 
         self.assertRedirects(response, reverse("clients_repo"))
 
@@ -78,6 +77,7 @@ class ClientsTest(TestCase):
         self.assertContains(response, "Por favor ingrese un nombre")
         self.assertContains(response, "Por favor ingrese un teléfono")
         self.assertContains(response, "Por favor ingrese un email")
+        self.assertContains(response, "Por favor ingrese una ciudad")
 
     def test_should_response_with_404_status_if_client_doesnt_exists(self):
         """
@@ -95,31 +95,32 @@ class ClientsTest(TestCase):
             data={
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-                "email": "brujita75@gmail.com",
-                "address": "13 y 44",
+                "city": "La Plata",
+                "email": "brujita75",
             },
         )
         self.assertContains(response, "El email debe ser de la forma @vetsoft.com")
 
-    def test_edit_user_with_valid_data(self):
-        """
-        Esta función testea que se pueda editar el usuario datos validos.
+    def test_edit_user_with_valid_data_test(self):
+        """"
+        test para editar un cliente con datos validos.
         """
         client = Client.objects.create(
-            name="Juan Sebastián Veron",
-            address="13 y 44",
-            phone="221555232",
-            email="brujita75@vetsoft.com",
+            name="Guido Carrillo",
+            city="La Plata",
+            phone="54221555232",
+            email="guido@vetsoft.com",
         )
 
         response = self.client.post(
             reverse("clients_form"),
-            data={
+              data={
                 "id": client.id,
-                "name": "Guido Carrillo",
-                "address": "13 y 44",
-                "phone":"221555232",
-                "email": "brujita75@vetsoft.com"
+                "name": "Juan Sebastian Veron",
+                "phone": "221456789",
+                "email": "brujita71@vetsoft.com",
+                "city": "Berisso",
+
             },
         )
 
@@ -127,10 +128,35 @@ class ClientsTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
         editedClient = Client.objects.get(pk=client.id)
-        self.assertEqual(editedClient.name, "Guido Carrillo")
-        self.assertEqual(editedClient.phone, client.phone)
-        self.assertEqual(editedClient.address, client.address)
-        self.assertEqual(editedClient.email, client.email)
+        self.assertEqual(editedClient.name, "Juan Sebastian Veron")
+        self.assertEqual(editedClient.email, "brujita71@vetsoft.com")
+        self.assertEqual(editedClient.phone, "221456789")
+        self.assertEqual(editedClient.city, "Berisso")
+
+    def test_edit_user_with_invalid_data_test_city(self):
+
+        client = Client.objects.create(
+            name="Guido Carrillo",
+            city="La Plata",
+            phone="221456789",
+            email="brujita75@vetsoft.com",
+        )
+    
+
+        self.client.post(
+            reverse("clients_form"),
+            data={
+                "id": client.id,
+                "name": "Juan Sebastian Veron",
+                "phone": "221456789",
+                "city": "Rosario",
+                "email": "brujita75@vetsoft.com",
+            },
+        )
+
+        # redirect after post
+        editedClient = Client.objects.get(pk=client.id)
+        self.assertEqual(editedClient.city, "La Plata")
 
 class MedicineIntegrationTest(TestCase):
     def test_can_create_medicine(self):

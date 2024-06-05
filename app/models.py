@@ -1,18 +1,16 @@
-from django.db import models
 from datetime import datetime
-from django.db import IntegrityError
+
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError, models
 
-def validate_client(data):
-    """
-    Valida los datos del cliente.
 
-    Args:
-        data (dict): Datos del cliente.
+class CityEnum(models.TextChoices):
+    LA_PLATA = 'La Plata',
+    BERISSO = 'Berisso',
+    ENSENADA = 'Ensenada',
 
-    Returns:
-        dict: Diccionario de errores encontrados.
-    """
+    
+
 def validate_client(data):
     """
     Esta función valida los datos del cliente.
@@ -22,6 +20,7 @@ def validate_client(data):
     name = data.get("name", "")
     phone = data.get("phone", "")
     email = data.get("email", "")
+    city = data.get("city", "")
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
@@ -34,13 +33,18 @@ def validate_client(data):
     elif "@vetsoft.com" not in email:
         errors["email"] = "El email debe ser de la forma @vetsoft.com"
 
+    if city == "" or city is None:
+        errors["city"] = "Por favor ingrese una ciudad"
+    elif city not in dict(CityEnum.choices):
+        errors["city"] = "Por favor ingrese una ciudad valida"
+
     return errors
 
 class Client(models.Model):
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     email = models.EmailField()
-    address = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=35, choices=CityEnum.choices)
 
     def __str__(self):
         """
@@ -70,13 +74,12 @@ class Client(models.Model):
             name=client_data.get("name"),
             phone=client_data.get("phone"),
             email=client_data.get("email"),
-            address=client_data.get("address"),
+            city=client_data.get("city"),
         )
 
         return True, None
 
     def update_client(self, client_data):
-
         """
         Actualiza los datos de un cliente existente.
 
@@ -86,20 +89,21 @@ class Client(models.Model):
         Esta función actualiza el cliente. 
         """
         errors = validate_client(client_data)
-
+   
         if len(errors) > 0:
             return False, errors
 
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
-        self.address = client_data.get("address", "") or self.address
+        self.city = client_data.get("city", "") or self.city
 
         try:
             self.save()
             return True, None
         except (IntegrityError, ValidationError) as e:
             return False, {"error": str(e)}
+
 
 def validate_provider(data):
     """
