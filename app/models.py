@@ -6,7 +6,10 @@ from django.db import IntegrityError, models
 
 
 class CityEnum(models.TextChoices):
-    LA_PLATA = 'La Plata',
+    """
+     Enumeracion de la Ciudad
+    """
+    LA_PLATA = 'La Plata', 
     BERISSO = 'Berisso',
     ENSENADA = 'Ensenada',
 
@@ -47,6 +50,9 @@ def validate_client(data):
     return errors
 
 class Client(models.Model):
+    """
+    Modelo que representa a un cliente en el sistema.
+    """
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     email = models.EmailField()
@@ -147,6 +153,9 @@ def validate_provider(data):
     return errors
 
 class Provider(models.Model):
+    """
+    Modelo que representa a un cliente en el sistema.
+    """
     name = models.CharField(max_length=100)
     email = models.EmailField()
     address = models.CharField(max_length=100)
@@ -201,8 +210,19 @@ class Provider(models.Model):
         self.name = provider_data.get("name", "") or self.name
         self.email = provider_data.get("email", "") or self.email
         self.address = provider_data.get("address", "") or self.address
+        
+
+        try:
+            self.save()
+            return True, None
+        except Exception as e:
+            return False, e
+
+
+
         self.save()
         return True, None
+
 
 def validate_product(data):
     """
@@ -240,6 +260,9 @@ def validate_product(data):
     return errors
 
 class Product(models.Model):
+    """
+    Modelo que representa a un producto en el sistema.
+    """
     name = models.CharField(max_length=100)
     product_type = models.CharField(max_length=15)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -344,6 +367,9 @@ def validate_pet(data):
     return errors
 
 class Pet(models.Model):
+    """
+    Modelo que representa a una mascota en el sistema.
+    """
     name = models.CharField(max_length=40)
     breed = models.CharField(max_length=40)
     birthday = models.DateField()
@@ -440,6 +466,9 @@ def validate_veterinary(data):
     return errors
 
 class Veterinary(models.Model):
+    """
+    Modelo que representa a un veterinario en el sistema.
+    """
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=15)
@@ -530,6 +559,9 @@ def validate_medicine(data):
     return errors
 
 class Medicine(models.Model):
+    """
+    Modelo que representa una medicina en el sistema.
+    """
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255)
     dose = models.IntegerField()
@@ -585,5 +617,14 @@ class Medicine(models.Model):
         self.name = medicine_data.get("name", "") or self.name
         self.description = medicine_data.get("description", "") or self.description
         self.dose = medicine_data.get("dose", "") or self.dose
+       
+
+        try:
+            self.save()
+            return True, None
+        except Exception as e:
+            return False, {"errors": str(e)}
+
         self.save()
         return True, None
+      

@@ -8,6 +8,9 @@ from app.models import Client, Medicine, Pet, Product, Provider
 
 
 class HomePageTest(TestCase):
+    """
+    Pruebas para la página de inicio.
+    """
     def test_use_home_template(self):
         """
         Esta funcion testea que el template del home funcione.
@@ -19,6 +22,9 @@ class HomePageTest(TestCase):
         """
 
 class ClientsTest(TestCase):
+    """
+    Pruebas para el repositorio de clientes.
+    """
     def test_repo_use_repo_template(self):
         """
         Esta función testea que el template del repo funcione.
@@ -247,6 +253,7 @@ class ClientsTest(TestCase):
 
 
 class MedicineIntegrationTest(TestCase):
+    """Pruebas de integración para el modelo de Medicina. """
     def test_can_create_medicine(self):
         """
         Esta función testea si pudo crear una medicina.
@@ -323,6 +330,9 @@ class MedicineIntegrationTest(TestCase):
         )
         self.assertContains(response, "La dosis debe estar en un rango de 1 a 10")
 class ProviderTest(TestCase):
+    """
+    Pruebas para el repositorio de proveedores.
+    """
     def test_repo_use_repo_template(self):
         """
         Esta función verifica que un repositorio está utilizando una plantilla de repositorio específica.
@@ -387,6 +397,9 @@ class ProviderTest(TestCase):
 
 
 class PetsTest(TestCase):
+    """
+    Pruebas para el modelo de mascotas.
+    """
     def test_create_pet_with_valid_weight(self):
         """
         Esta función verifica que un sistema permita la creación de una mascota con un peso válido.
@@ -489,8 +502,10 @@ class PetsTest(TestCase):
         # Verificar que se muestra un mensaje de error en la respuesta
         self.assertContains(response, "La fecha de nacimiento debe ser menor a la fecha actual")
 
-
 class ProductsTest(TestCase):
+    """
+    Pruebas para el modelo de productos.
+    """
     def test_create_product_with_valid_price(self):
         # Crear un producto con precio válido
         """
@@ -500,6 +515,7 @@ class ProductsTest(TestCase):
             reverse("product_form"), 
             data={
                 "name": "Producto Test",
+
                 "product_type": "Tipo Test",
                 "price": "10.00",  # Precio válido
             },
