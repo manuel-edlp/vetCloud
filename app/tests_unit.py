@@ -84,7 +84,7 @@ class ClientModelTest(TestCase):
                 "phone": "221555232",
                 "address": "13 y 44",
                 "email": "brujita75@vetsoft.com",
-            }
+            },
         )
         client = Client.objects.get(pk=1)
 
