@@ -510,11 +510,7 @@ class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
 
 # Verificar que los mensajes de error para ingresar el nombre y el tipo no sean visibles
         expect(self.page.get_by_text("Por favor ingrese su nombre")).not_to_be_visible()
-        expect(
-            self.page.get_by_text("Por favor ingrese un tipo")
-        ).not_to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese un tipo")).not_to_be_visible()
 
 # Verificar que el mensaje de error "El precio debe ser mayor que cero" sea visible
-        expect(
-            self.page.get_by_text("El precio debe ser mayor que cero")
-        ).to_be_visible()
+        expect(self.page.get_by_text("El precio debe ser mayor que cero")).to_be_visible()
