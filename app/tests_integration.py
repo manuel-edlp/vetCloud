@@ -137,20 +137,20 @@ class ClientsTest(TestCase):
               data={
                 "id": client.id,
                 "name": "Juan Sebastian Veron",
-                "phone": "221456789",
+                "phone": "54221456789",
                 "email": "brujita71@vetsoft.com",
                 "city": "Berisso",
             },
         )
 
         # redirect after post
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 
         editedClient = Client.objects.get(pk=client.id)
 
         self.assertEqual(editedClient.name, "Juan Sebastian Veron")
         self.assertEqual(editedClient.email, "brujita71@vetsoft.com")
-        self.assertEqual(editedClient.phone, "221456789")
+        self.assertEqual(editedClient.phone, "54221456789")
         self.assertEqual(editedClient.city, "Berisso")
 
     def test_edit_user_with_invalid_data_test_city(self):
@@ -161,7 +161,7 @@ class ClientsTest(TestCase):
         client = Client.objects.create(
             name="Guido Carrillo",
             city="La Plata",
-            phone="221456789",
+            phone="54221456789",
             email="brujita75@vetsoft.com",
         )
     
@@ -171,7 +171,7 @@ class ClientsTest(TestCase):
             data={
                 "id": client.id,
                 "name": "Juan Sebastian Veron",
-                "phone": "221456789",
+                "phone": "54221456789",
                 "city": "Rosario",
                 "email": "brujita75@vetsoft.com",
             },
@@ -189,8 +189,8 @@ class ClientsTest(TestCase):
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron 11",
-                "phone": "221555232",
-                "address": "13 y 44",
+                "phone": "54221555232",
+                "city": "La Plata",
                 "email": "brujita75@hotmail.com",
             },
         )
@@ -203,7 +203,7 @@ class ClientsTest(TestCase):
         """
         client=Client.objects.create(
             name="Juan Sebastian Veron",
-            phone="221555232",
+            phone="54221555232",
             city="La Plata",
             email="brujita75@hotmail.com",
         )
@@ -227,7 +227,7 @@ class ClientsTest(TestCase):
         """
         client=Client.objects.create(
             name="Juan Sebastian Veron",
-            phone="221555232",
+            phone="54221555232",
             city="La Plata",
             email="brujita75@hotmail.com",
         )
