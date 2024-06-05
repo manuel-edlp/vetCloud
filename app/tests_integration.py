@@ -8,6 +8,9 @@ from app.models import Product
 
 
 class HomePageTest(TestCase):
+    """
+    Pruebas para la página de inicio.
+    """
     def test_use_home_template(self):
         """
         Esta funcion testea que el template del home funcione.
@@ -119,7 +122,7 @@ class ClientsTest(TestCase):
                 "name": "Guido Carrillo",
                 "address": "13 y 44",
                 "phone":"221555232",
-                "email": "brujita75@vetsoft.com"
+                "email": "brujita75@vetsoft.com",
             },
         )
 
