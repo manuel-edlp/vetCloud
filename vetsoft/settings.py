@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-p)^5i@33!)v)l7*c#q)%j(g5d+**-yo%)6l*vg!gs_w-e=^_ig
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['vet-soft-1-4.onrender.com','100.20.92.101','44.225.181.72','44.227.217.144','127.0.0.1'] 
+ALLOWED_HOSTS = ['vet-soft-1-4.onrender.com','100.20.92.101','44.225.181.72','44.227.217.144','127.0.0.1']
 
 CSRF_TRUSTED_ORIGINGS = ['https://vet-soft-1-4.onrender.com']
 # Application definition
@@ -79,7 +79,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
+    },
 }
 
 
