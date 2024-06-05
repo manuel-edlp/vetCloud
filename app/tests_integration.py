@@ -9,44 +9,82 @@ from app.models import Product
 
 class HomePageTest(TestCase):
     def test_use_home_template(self):
+        """
+        Esta funcion testea que el template del home funcione.
+        """
         response = self.client.get(reverse("home"))
         self.assertTemplateUsed(response, "home.html")
-
+        """
+        Esta función compara que el response y el home sean iguales.
+        """
 
 class ClientsTest(TestCase):
     def test_repo_use_repo_template(self):
+        """
+        Esta función testea que el template del repo funcione.
+        """
         response = self.client.get(reverse("clients_repo")) 
         self.assertTemplateUsed(response, "clients/repository.html")
+        """
+        Esta función compara que el response y el repo sean iguales.
+        """
 
     def test_repo_display_all_clients(self):
+        """
+        Esta función muestra todos los clientes del repo.
+        """
         response = self.client.get(reverse("clients_repo"))
         self.assertTemplateUsed(response, "clients/repository.html")
 
     def test_form_use_form_template(self):
+        """
+        Esta función testea el formulario que utiliza una plantilla específica.
+        """
         response = self.client.get(reverse("clients_form"))
         self.assertTemplateUsed(response, "clients/form.html")
 
     def test_can_create_client(self):
+<<<<<<< refactor/Cliente-cambiar-campo-address
 
+=======
+        """
+        Esta función verifica si se puede crear un cliente correctamente.
+        """
+>>>>>>> main
         response = self.client.post(
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron",
+<<<<<<< refactor/Cliente-cambiar-campo-address
                 "phone": "54221555232",
                 "email": "brujita75@vetsoft.com",
                 "city": "La Plata",
+=======
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@vetsoft.com",
+>>>>>>> main
             },
         )
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
+<<<<<<< refactor/Cliente-cambiar-campo-address
         self.assertEqual(clients[0].phone, "54221555232")
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
         self.assertEqual(clients[0].city, "La Plata")
+=======
+        self.assertEqual(clients[0].phone, "221555232")
+        self.assertEqual(clients[0].address, "13 y 44")
+        self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
+>>>>>>> main
 
         self.assertRedirects(response, reverse("clients_repo"))
 
     def test_validation_errors_create_client(self):
+        """
+        Esta función testea la validacion de errores creados en cliente.
+        """
         response = self.client.post(
             reverse("clients_form"),
             data={},
@@ -58,22 +96,33 @@ class ClientsTest(TestCase):
         self.assertContains(response, "Por favor ingrese una ciudad")
 
     def test_should_response_with_404_status_if_client_doesnt_exists(self):
+        """
+        Esta función testea que si el cliente no existe, se genera un error 404.
+        """
         response = self.client.get(reverse("clients_edit", kwargs={"id": 100}))
         self.assertEqual(response.status_code, 404)
 
     def test_validation_invalid_email(self):
+        """
+        Esta función testea la validación de emails invalidos.
+        """
         response = self.client.post(
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
+<<<<<<< refactor/Cliente-cambiar-campo-address
                 "city": "La Plata",
                 "email": "brujita75",
+=======
+                "email": "brujita75@gmail.com",
+                "address": "13 y 44",
+>>>>>>> main
             },
         )
+        self.assertContains(response, "El email debe ser de la forma @vetsoft.com")
 
-        self.assertContains(response, "Por favor ingrese un email valido")
-
+<<<<<<< refactor/Cliente-cambiar-campo-address
     def test_edit_user_with_valid_data_test(self):
         """"
         test para editar un cliente con datos validos.
@@ -83,16 +132,34 @@ class ClientsTest(TestCase):
             city="La Plata",
             phone="54221555232",
             email="guido@vetsoft.com",
+=======
+    def test_edit_user_with_valid_data(self):
+        """
+        Esta función testea que se pueda editar el usuario datos validos.
+        """
+        client = Client.objects.create(
+            name="Juan Sebastián Veron",
+            address="13 y 44",
+            phone="221555232",
+            email="brujita75@vetsoft.com",
+>>>>>>> main
         )
 
         response = self.client.post(
             reverse("clients_form"),
               data={
                 "id": client.id,
+<<<<<<< refactor/Cliente-cambiar-campo-address
                 "name": "Juan Sebastian Veron",
                 "phone": "221456789",
                 "email": "brujita71@vetsoft.com",
                 "city": "Berisso",
+=======
+                "name": "Guido Carrillo",
+                "address": "13 y 44",
+                "phone":"221555232",
+                "email": "brujita75@vetsoft.com"
+>>>>>>> main
             },
         )
 
@@ -132,6 +199,9 @@ class ClientsTest(TestCase):
 
 class MedicineIntegrationTest(TestCase):
     def test_can_create_medicine(self):
+        """
+        Esta función testea si pudo crear una medicina.
+        """
         response = self.client.post(
             reverse("medicine_form"),
             data={
@@ -150,6 +220,9 @@ class MedicineIntegrationTest(TestCase):
         self.assertRedirects(response, reverse("medicine_repo"))
 
     def test_validation_errors_create_medicine(self):
+        """
+        Esta función testea la validacion de errores de medicinas creadas.
+        """
         response = self.client.post(
             reverse("medicine_form"),
             data={},
@@ -160,6 +233,9 @@ class MedicineIntegrationTest(TestCase):
         self.assertContains(response, "Por favor ingrese una dosis")
 
     def test_validation_valid_dose(self):
+        """
+        Esta función testea la validación de dosis validas.
+        """
         response = self.client.post(
             reverse("medicine_form"),
             data={
@@ -171,6 +247,9 @@ class MedicineIntegrationTest(TestCase):
         self.assertEqual(response.status_code, 302) # verificamos medicina creada tras la redireccion
 
     def test_validation_invalid_dose_is_greater_than_10(self):
+        """
+        Esta función testea la validación de una dosis que debe ser menor o igual a 10. 
+        """
         response = self.client.post(
             reverse("medicine_form"),
             data={
@@ -182,6 +261,9 @@ class MedicineIntegrationTest(TestCase):
         self.assertContains(response, "La dosis debe estar en un rango de 1 a 10")
         
     def test_validation_invalid_dose_is_less_than_1(self):
+        """
+        Esta función testea la validación de una dosis que debe ser mayor o igual a 1.
+        """
         response = self.client.post(
             reverse("medicine_form"),
             data={
@@ -193,10 +275,16 @@ class MedicineIntegrationTest(TestCase):
         self.assertContains(response, "La dosis debe estar en un rango de 1 a 10")
 class ProviderTest(TestCase):
     def test_repo_use_repo_template(self):
+        """
+        Esta función verifica que un repositorio está utilizando una plantilla de repositorio específica.
+        """
         response = self.client.get(reverse("provider_repo"))
         self.assertTemplateUsed(response, "providers/repository.html")
 
     def test_can_create_provider(self):
+        """
+        Esta función prueba la creación de un proveedor en una aplicación.
+        """
         response = self.client.post(
             reverse("provider_form"),
             data={
@@ -215,6 +303,9 @@ class ProviderTest(TestCase):
         self.assertRedirects(response, reverse("provider_repo"))
     
     def test_validation_invalid_email(self): #Agrego una función ajena a la funcionalidad agregada para mayor calidad.
+        """
+        Esta función verifica que el sistema maneje adecuadamente la validación de correos electrónicos inválidos.
+        """
         response = self.client.post(
             reverse("provider_form"),
             data={
@@ -228,6 +319,9 @@ class ProviderTest(TestCase):
 
     def test_validation_address_null(self): #Agrego una función especifica del issue
         #La modificacion es que la direccion es obligatoria. Comprueba que al poner una direccion vacia devuelva el mensaje de error
+        """
+        Esta función verifica que el sistema maneje adecuadamente la validación de direcciones nulas.
+        """
         response = self.client.post(
             reverse("provider_form"),
             data={
@@ -245,6 +339,9 @@ class ProviderTest(TestCase):
 
 class PetsTest(TestCase):
     def test_create_pet_with_valid_weight(self):
+        """
+        Esta función verifica que un sistema permita la creación de una mascota con un peso válido.
+        """
         # Crear un mascota con peso válido
         response = self.client.post(
             reverse("pet_form"), 
@@ -252,7 +349,7 @@ class PetsTest(TestCase):
                 "name": "Frida",
                 "breed": "negrita",
                 "birthday": "2017-01-01",
-                "weight": "4" # Peso válido
+                "weight": "4", # Peso válido
             },
         )
 
@@ -271,6 +368,9 @@ class PetsTest(TestCase):
 
     def test_create_product_with_invalid_weight(self):
         # Intentar crear una mascota con precio negativo
+        """
+        Esta función testea la creación de una mascota con un precio invalido.
+        """
         response = self.client.post(
             reverse("pet_form"),
             data={
@@ -291,6 +391,9 @@ class PetsTest(TestCase):
           
     def test_create_pet_with_valid_birthday(self):
         # Crear una mascota con fecha de nacimiento válida
+        """
+        Esta función testea la creación de una mascota con una fecha de nacimiento valido.
+        """
         response = self.client.post(
             reverse("pet_form"), 
             data={
@@ -316,6 +419,9 @@ class PetsTest(TestCase):
 
     def test_create_pet_with_invalid_birthday(self):
         # Intentar crear una mascota con fecha de nacimiento en el futuro
+        """
+        Esta función testea la creación de una mascota con una fecha de nacimiento invalida.
+        """
         future_date = datetime.now().date() + timezone.timedelta(days=1)
         response = self.client.post(
             reverse("pet_form"),
@@ -338,6 +444,9 @@ class PetsTest(TestCase):
 class ProductsTest(TestCase):
     def test_create_product_with_valid_price(self):
         # Crear un producto con precio válido
+        """
+        Esta función verifica la creación de un producto con un precio valido.
+        """
         response = self.client.post(
             reverse("product_form"), 
             data={
@@ -361,6 +470,9 @@ class ProductsTest(TestCase):
 
     def test_create_product_with_invalid_price(self):
         # Intentar crear un producto con precio negativo
+        """
+        Esta función verifica la creación de un producto con un precio invalido
+        """
         response = self.client.post(
             reverse("product_form"),
             data={
@@ -379,6 +491,9 @@ class ProductsTest(TestCase):
 
     def test_create_product_with_non_numeric_price(self):
         # Intentar crear un producto con precio no numérico
+        """
+        Esta función testea la creación de un producto con precio no numérico.
+        """
         response = self.client.post(
             reverse("product_form"),
             data={

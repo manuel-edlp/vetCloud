@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-lg-6 offset-lg-3">
             <form class="vstack gap-3 {% if errors %}was-validated{% endif %}"
-                aria-label="Formulario de creacion de cliente"
+                aria-label="Formulario de creacion del cliente"
                 method="POST"
                 action="{% url 'clients_form' %}"
                 novalidate>
@@ -49,14 +49,14 @@
                             {{ errors.phone }}
                         </div>
                     {% endif %}
-                </div>
                 <div>
                     <label for="email" class="form-label">Email</label>
                     <input type="email"
                         id="email"
                         name="email"
+                        pattern="\w+@vetsoft.com"
                         class="form-control"
-                        value="{{ client.email }}"
+                        value="{{client.email}}"
                         required/>
 
                     {% if errors.email %}
@@ -66,6 +66,7 @@
                     {% endif %}
                 </div>
                 <div>
+<<<<<<< refactor/Cliente-cambiar-campo-address
                     <label for="city" class="form-label">Ciudad</label>
                     <select id="city" name="city" class="form-select" required>
                         <option value="" disabled selected>Seleccione una ciudad</option>
@@ -77,6 +78,20 @@
                     </select>
                     {% if errors.city %}
                     <div class="invalid-feedback">{{ errors.city }}</div>
+=======
+                    <label for="address" class="form-label">Direccion</label>
+                    <input type="text"
+                        id="address"
+                        name="address"
+                        class="form-control {% if errors.address %}is-invalid{% endif %}"
+                        value="{{ client.address }}"
+                        required/>
+
+                    {% if errors.address %}
+                        <div class="invalid-feedback">
+                            {{ errors.address }}
+                        </div>
+>>>>>>> main
                     {% endif %}
                 </div>
 
