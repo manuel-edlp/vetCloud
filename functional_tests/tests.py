@@ -98,14 +98,15 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         Client.objects.create(
             name="Juan Sebastián Veron",
             city="La Plata",
-            phone="221555232",
+            phone="54221555232",
             email="brujita75@vetsoft.com",
+
         )
 
         Client.objects.create(
             name="Guido Carrillo",
             city="Berisso",
-            phone="221232555",
+            phone="54221232555",
             email="goleador@vetsoft.com",
         )
 
@@ -114,14 +115,16 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("No existen clientes")).not_to_be_visible()
 
         expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
+
         expect(self.page.get_by_text("La Plata")).to_be_visible()
 
-        expect(self.page.get_by_text("221555232")).to_be_visible()
+        expect(self.page.get_by_text("54221555232")).to_be_visible()
+        
         expect(self.page.get_by_text("brujita75@vetsoft.com")).to_be_visible()
 
         expect(self.page.get_by_text("Guido Carrillo")).to_be_visible()
         expect(self.page.get_by_text("Berisso")).to_be_visible()
-        expect(self.page.get_by_text("221232555")).to_be_visible()
+        expect(self.page.get_by_text("54221232555")).to_be_visible()
         expect(self.page.get_by_text("goleador@vetsoft.com")).to_be_visible()
 
     def test_should_show_add_client_action(self):
@@ -142,7 +145,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         client = Client.objects.create(
             name="Juan Sebastián Veron",
             city="La Plata",
-            phone="221555232",
+            phone="54221555232",
             email="brujita75@vetsoft.com",
         )
 
@@ -160,7 +163,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         client = Client.objects.create(
             name="Juan Sebastián Veron",
             city="La Plata",
-            phone="221555232",
+            phone="54221555232",
             email="brujita75@vetsoft.com",
         )
 
@@ -184,7 +187,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         Client.objects.create(
             name="Juan Sebastian Veron",
             city="La Plata",
-            phone="221555232",
+            phone="54221555232",
             email="brujita75@vetsoft.com",
         )
 
@@ -218,7 +221,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         expect(self.page.get_by_role("form")).to_be_visible()
 
         self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
-        self.page.get_by_label("Teléfono").fill("221555232")
+        self.page.get_by_label("Teléfono").fill("54221555232")
         self.page.get_by_label("Email").fill("brujita75@vetsoft.com")
         self.page.get_by_label("Ciudad").select_option("La Plata")
 
@@ -226,7 +229,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
-        expect(self.page.get_by_text("221555232")).to_be_visible()
+        expect(self.page.get_by_text("54221555232")).to_be_visible()
         expect(self.page.get_by_text("brujita75@vetsoft.com")).to_be_visible()
         expect(self.page.get_by_text("La Plata")).to_be_visible()
 
@@ -281,6 +284,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Teléfono").fill("54221232555")
         self.page.get_by_label("Email").fill("goleador@vetsoft.com")
         self.page.get_by_label("Ciudad").select_option("Berisso")
+
 
         self.page.get_by_role("button", name="Guardar").click()
 

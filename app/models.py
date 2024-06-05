@@ -30,6 +30,9 @@ def validate_client(data):
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
+    elif not phone.startswith("54"):
+        errors["phone"] = "El telefono debe comenzar con 54"
+            
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
@@ -82,6 +85,7 @@ class Client(models.Model):
 
         return True, None
 
+      
     def update_client(self, client_data):
         """
         Actualiza los datos de un cliente existente.
@@ -91,10 +95,13 @@ class Client(models.Model):
 
         Esta función actualiza el cliente. 
         """
+    
+        
         errors = validate_client(client_data)
    
         if len(errors) > 0:
             return False, errors
+
 
 
         self.name = client_data.get("name", "") or self.name
