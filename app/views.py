@@ -9,18 +9,21 @@ def clients_repository(request):
     clients = Client.objects.all()
     return render(request, "clients/repository.html", {"clients": clients})
 
-
 def clients_form(request, id=None):
     if request.method == "POST":
         client_id = request.POST.get("id", "")
         errors = {}
-        saved = True
+        saved = False
 
         if client_id == "":
             saved, errors = Client.save_client(request.POST)
         else:
             client = get_object_or_404(Client, pk=client_id)
-            client.update_client(request.POST)
+            update_result = client.update_client(request.POST)
+            if update_result is not None:
+                saved, errors = update_result
+            else:
+                saved = True
 
         if saved:
             return redirect(reverse("clients_repo"))

@@ -20,8 +20,8 @@ def validate_client(data):
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
-    elif email.count("@") == 0:
-        errors["email"] = "Por favor ingrese un email valido"
+    elif "@vetsoft.com" not in email:
+        errors["email"] = "El email debe ser de la forma @vetsoft.com"
 
     return errors
 
@@ -52,12 +52,21 @@ class Client(models.Model):
         return True, None
 
     def update_client(self, client_data):
+        errors = validate_client(client_data)
+
+        if len(errors) > 0:
+            return False, errors
+        
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
         self.address = client_data.get("address", "") or self.address
 
-        self.save()
+        try:
+            self.save()
+            return True, None
+        except (IntegrityError, ValidationError) as e:
+            return False, {"error": str(e)}
 
 def validate_provider(data):
     errors = {}
@@ -118,7 +127,6 @@ class Provider(models.Model):
             return True, None
         except (IntegrityError, ValidationError) as e:
             return False, {"error": str(e)}
-
 
 
 def validate_product(data):
