@@ -5,9 +5,9 @@ from django.db import IntegrityError, models
 
 
 class CityEnum(models.TextChoices):
-    """""
-    Enumeracion de la Ciudad
-    """""
+    """
+     Enumeracion de la Ciudad
+    """
     LA_PLATA = 'La Plata', 
     BERISSO = 'Berisso',
     ENSENADA = 'Ensenada',
