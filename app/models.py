@@ -1,5 +1,7 @@
 from django.db import models
 from datetime import datetime
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 
 def validate_client(data):
     """
@@ -10,6 +12,10 @@ def validate_client(data):
 
     Returns:
         dict: Diccionario de errores encontrados.
+    """
+def validate_client(data):
+    """
+    Esta función valida los datos del cliente.
     """
     errors = {}
 
@@ -27,8 +33,8 @@ def validate_client(data):
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
-    elif email.count("@") == 0:
-        errors["email"] = "Por favor ingrese un email valido"
+    elif "@vetsoft.com" not in email:
+        errors["email"] = "El email debe ser de la forma @vetsoft.com"
 
     return errors
 
@@ -39,6 +45,9 @@ class Client(models.Model):
     address = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
+        """
+        Devuelve la representación de cadena de cliente.
+        """
         return self.name
 
     @classmethod
@@ -51,6 +60,8 @@ class Client(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
+      
+        Esta función guarda el cliente. 
         """
         errors = validate_client(client_data)
 
@@ -72,13 +83,23 @@ class Client(models.Model):
 
         Args:
             client_data (dict): Datos actualizados del cliente.
+
+        Esta función actualiza el cliente. 
         """
+        errors = validate_client(client_data)
+
+        if len(errors) > 0:
+            return False, errors
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
         self.address = client_data.get("address", "") or self.address
 
-        self.save()
+        try:
+            self.save()
+            return True, None
+        except (IntegrityError, ValidationError) as e:
+            return False, {"error": str(e)}
 
 def validate_provider(data):
     """
@@ -89,6 +110,8 @@ def validate_provider(data):
 
     Returns:
         dict: Diccionario de errores encontrados.
+
+    Esta función valida los datos del proovedor.
     """
     errors = {}
 
@@ -115,6 +138,9 @@ class Provider(models.Model):
     address = models.CharField(max_length=100)
 
     def __str__(self):
+        """
+        Devuelve la representación de cadena de proovedor.
+        """
         return self.name
 
     @classmethod
@@ -127,6 +153,8 @@ class Provider(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
+
+        Esta función guarda el proveedor en la base de datos.
         """
         errors = validate_provider(provider_data)
 
@@ -150,6 +178,7 @@ class Provider(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
+        Esta función actualiza el proveedor.
         """
         errors = validate_provider(provider_data)
 
@@ -159,19 +188,18 @@ class Provider(models.Model):
         self.name = provider_data.get("name", "") or self.name
         self.email = provider_data.get("email", "") or self.email
         self.address = provider_data.get("address", "") or self.address
-
         self.save()
         return True, None
 
 def validate_product(data):
     """
     Valida los datos del producto.
-
     Args:
         data (dict): Datos del producto.
 
     Returns:
         dict: Diccionario de errores encontrados.
+    Esta función valida los datos del producto.
     """
     errors = {}
 
@@ -203,6 +231,9 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     
     def __str__(self):
+            """
+            Devuelve la representación de cadena de producto.
+            """
             return self.name
 
     @classmethod
@@ -215,6 +246,7 @@ class Product(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
+        Esta función guarda el producto en la base de datos.
         """
         errors = validate_product(product_data)
 
@@ -232,7 +264,7 @@ class Product(models.Model):
     def update_product(self, product_data):
         """
         Actualiza los datos de un producto existente.
-
+        Esta función actualiza el producto.
         Args:
             product_data (dict): Datos actualizados del producto.
 
@@ -259,6 +291,7 @@ def validate_pet(data):
 
     Returns:
         dict: Diccionario de errores encontrados.
+    Esta función valida los datos de mascota.
     """
     errors = {}
 
@@ -302,6 +335,9 @@ class Pet(models.Model):
     weight = models.FloatField()
 
     def __str__(self):
+            """
+            Devuelve la representación de cadena de mascota.
+            """
             return self.name
 
     @classmethod
@@ -314,6 +350,7 @@ class Pet(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
+        Esta función guarda la mascota en la base de datos.
         """
         errors = validate_pet(pet_data)
     
@@ -338,6 +375,7 @@ class Pet(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
+        Esta función actualiza los datos de mascota.
         """
         errors = validate_pet(pet_data)
         if len(errors.keys()) > 0:
@@ -360,6 +398,7 @@ def validate_veterinary(data):
 
     Returns:
         dict: Diccionario de errores encontrados.
+    Esta función valida los datos del veterinario.
     """
     errors = {}
 
@@ -388,6 +427,9 @@ class Veterinary(models.Model):
     phone = models.IntegerField
     
     def __str__(self):
+        """
+        Devuelve la representación de cadena de veterinario.
+        """
         return self.name
 
     @classmethod
@@ -400,6 +442,7 @@ class Veterinary(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
+        Esta función guarda los datos de veterinario.
         """
         errors = validate_veterinary(veterinary_data)
 
@@ -420,6 +463,7 @@ class Veterinary(models.Model):
 
         Args:
             veterinary_data (dict): Datos actualizados del veterinario.
+        Esta función actualiza los datos de veterinario.
         """
         self.name = veterinary_data.get("name", "") or self.name
         self.email = veterinary_data.get("email", "") or self.email
@@ -436,6 +480,7 @@ def validate_medicine(data):
 
     Returns:
         dict: Diccionario de errores encontrados.
+    Esta  función valida los datos de medicina.
     """
     errors = {}
 
@@ -465,6 +510,9 @@ class Medicine(models.Model):
     dose = models.IntegerField()
 
     def __str__(self):
+        """
+        Devuelve la representación de cadena de medicina.
+        """
         return self.name
 
     @classmethod
@@ -477,6 +525,7 @@ class Medicine(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
+        Esta función guarda los datos de medicina.
         """
         errors = validate_medicine(medicine_data)
 
@@ -500,6 +549,7 @@ class Medicine(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
+        Esta función actualiza los datos de medicina.
         """
         errors = validate_medicine(medicine_data)
 
@@ -509,6 +559,5 @@ class Medicine(models.Model):
         self.name = medicine_data.get("name", "") or self.name
         self.description = medicine_data.get("description", "") or self.description
         self.dose = medicine_data.get("dose", "") or self.dose
-
         self.save()
         return True, None
