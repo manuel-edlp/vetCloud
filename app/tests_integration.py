@@ -183,7 +183,7 @@ class ClientsTest(TestCase):
         client=Client.objects.create(
             name="Juan Sebastian Veron",
             phone="221555232",
-            address="13 y 44",
+            city="La Plata",
             email="brujita75@hotmail.com",
         )
 
@@ -193,7 +193,7 @@ class ClientsTest(TestCase):
                 "id":client.id,
                 "name":"",
                 "phone":client.phone,
-                "address":client.address,
+                "city":client.city,
                 "email":client.email,
             },
         )
@@ -207,7 +207,7 @@ class ClientsTest(TestCase):
         client=Client.objects.create(
             name="Juan Sebastian Veron",
             phone="221555232",
-            address="13 y 44",
+            city="La Plata",
             email="brujita75@hotmail.com",
         )
 
@@ -217,7 +217,7 @@ class ClientsTest(TestCase):
                 "id":client.id,
                 "name":"Juan Sebastian Veron 11",
                 "phone":client.phone,
-                "address":client.address,
+                "city":client.city,
                 "email":client.email,
             },
         )
