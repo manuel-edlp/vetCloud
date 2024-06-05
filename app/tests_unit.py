@@ -20,6 +20,28 @@ class ClientModelTest(TestCase):
         self.assertEqual(clients[0].address, "13 y 44")
         self.assertEqual(clients[0].email, "brujita75@hotmail.com")
 
+    def test_cant_create_and_get_client_with_characters_in_phone_field(self):
+        # Simulamos el envío del formulario con datos inválidos
+        client_data = {
+            "name": "Juan Sebastian Veron",
+            "phone": "a221555232",
+            "address": "13 y 44",
+            "email": "brujita75@vetsoft.com",
+        }
+
+        # Llamamos al método save_client con los datos del formulario
+        success, errors = Client.save_client(client_data)
+        
+        # Verificamos que el cliente no se haya guardado correctamente
+        self.assertFalse(success)
+        
+        # Verificamos que el error esté relacionado con el campo 'phone'
+        self.assertIn("phone", errors)
+
+        # Verificamos que ningún cliente se haya creado en la base de datos
+        clients = Client.objects.all()
+        self.assertEqual(len(clients), 0)
+
     def test_can_update_client(self):
         Client.save_client(
             {
