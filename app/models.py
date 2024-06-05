@@ -9,6 +9,7 @@ class CityEnum(models.TextChoices):
     ENSENADA = 'Ensenada',
 
     
+
 def validate_client(data):
     """
     Esta función valida los datos del cliente.
