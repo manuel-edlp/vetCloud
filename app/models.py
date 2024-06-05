@@ -1,6 +1,7 @@
 from datetime import datetime
-from django.db import IntegrityError, models
+
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError, models
 
 
 def validate_client(data):
