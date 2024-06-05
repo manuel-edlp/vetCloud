@@ -1,7 +1,8 @@
-from django.db import models
 from datetime import datetime
-from django.db import IntegrityError
+
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError, models
+
 
 class CityEnum(models.TextChoices):
     LA_PLATA = 'La Plata',
