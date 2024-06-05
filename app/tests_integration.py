@@ -134,6 +134,9 @@ class ClientsTest(TestCase):
         self.assertEqual(editedClient.city, "Berisso")
 
     def test_edit_user_with_invalid_data_test_city(self):
+        """
+        Se testea la función editar con datos de ciudad invalido.
+        """
 
         client = Client.objects.create(
             name="Guido Carrillo",
