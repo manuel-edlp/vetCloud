@@ -3,23 +3,12 @@ from datetime import datetime
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 
-<<<<<<< refactor/Cliente-cambiar-campo-address
 class CityEnum(models.TextChoices):
     LA_PLATA = 'La Plata',
     BERISSO = 'Berisso',
     ENSENADA = 'Ensenada',
-=======
-def validate_client(data):
-    """
-    Valida los datos del cliente.
 
-    Args:
-        data (dict): Datos del cliente.
->>>>>>> main
-
-    Returns:
-        dict: Diccionario de errores encontrados.
-    """
+    
 def validate_client(data):
     """
     Esta función valida los datos del cliente.
@@ -89,12 +78,6 @@ class Client(models.Model):
         return True, None
 
     def update_client(self, client_data):
-<<<<<<< refactor/Cliente-cambiar-campo-address
-        errors = validate_client(client_data)
-
-        if len(errors.keys()) > 0:
-=======
-
         """
         Actualiza los datos de un cliente existente.
 
@@ -104,9 +87,8 @@ class Client(models.Model):
         Esta función actualiza el cliente. 
         """
         errors = validate_client(client_data)
-
+   
         if len(errors) > 0:
->>>>>>> main
             return False, errors
 
         self.name = client_data.get("name", "") or self.name
@@ -120,7 +102,6 @@ class Client(models.Model):
         except (IntegrityError, ValidationError) as e:
             return False, {"error": str(e)}
 
-        return True, None
 
 def validate_provider(data):
     """

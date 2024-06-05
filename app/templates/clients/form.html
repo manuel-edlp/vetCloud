@@ -66,7 +66,6 @@
                     {% endif %}
                 </div>
                 <div>
-<<<<<<< refactor/Cliente-cambiar-campo-address
                     <label for="city" class="form-label">Ciudad</label>
                     <select id="city" name="city" class="form-select" required>
                         <option value="" disabled selected>Seleccione una ciudad</option>
@@ -78,20 +77,6 @@
                     </select>
                     {% if errors.city %}
                     <div class="invalid-feedback">{{ errors.city }}</div>
-=======
-                    <label for="address" class="form-label">Direccion</label>
-                    <input type="text"
-                        id="address"
-                        name="address"
-                        class="form-control {% if errors.address %}is-invalid{% endif %}"
-                        value="{{ client.address }}"
-                        required/>
-
-                    {% if errors.address %}
-                        <div class="invalid-feedback">
-                            {{ errors.address }}
-                        </div>
->>>>>>> main
                     {% endif %}
                 </div>
 

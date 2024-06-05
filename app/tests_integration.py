@@ -44,40 +44,24 @@ class ClientsTest(TestCase):
         self.assertTemplateUsed(response, "clients/form.html")
 
     def test_can_create_client(self):
-<<<<<<< refactor/Cliente-cambiar-campo-address
-
-=======
         """
         Esta función verifica si se puede crear un cliente correctamente.
         """
->>>>>>> main
         response = self.client.post(
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron",
-<<<<<<< refactor/Cliente-cambiar-campo-address
                 "phone": "54221555232",
                 "email": "brujita75@vetsoft.com",
                 "city": "La Plata",
-=======
-                "phone": "221555232",
-                "address": "13 y 44",
-                "email": "brujita75@vetsoft.com",
->>>>>>> main
             },
         )
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
-<<<<<<< refactor/Cliente-cambiar-campo-address
         self.assertEqual(clients[0].phone, "54221555232")
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
         self.assertEqual(clients[0].city, "La Plata")
-=======
-        self.assertEqual(clients[0].phone, "221555232")
-        self.assertEqual(clients[0].address, "13 y 44")
-        self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
->>>>>>> main
 
         self.assertRedirects(response, reverse("clients_repo"))
 
@@ -111,18 +95,12 @@ class ClientsTest(TestCase):
             data={
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-<<<<<<< refactor/Cliente-cambiar-campo-address
                 "city": "La Plata",
                 "email": "brujita75",
-=======
-                "email": "brujita75@gmail.com",
-                "address": "13 y 44",
->>>>>>> main
             },
         )
         self.assertContains(response, "El email debe ser de la forma @vetsoft.com")
 
-<<<<<<< refactor/Cliente-cambiar-campo-address
     def test_edit_user_with_valid_data_test(self):
         """"
         test para editar un cliente con datos validos.
@@ -132,34 +110,16 @@ class ClientsTest(TestCase):
             city="La Plata",
             phone="54221555232",
             email="guido@vetsoft.com",
-=======
-    def test_edit_user_with_valid_data(self):
-        """
-        Esta función testea que se pueda editar el usuario datos validos.
-        """
-        client = Client.objects.create(
-            name="Juan Sebastián Veron",
-            address="13 y 44",
-            phone="221555232",
-            email="brujita75@vetsoft.com",
->>>>>>> main
         )
 
         response = self.client.post(
             reverse("clients_form"),
               data={
                 "id": client.id,
-<<<<<<< refactor/Cliente-cambiar-campo-address
                 "name": "Juan Sebastian Veron",
                 "phone": "221456789",
                 "email": "brujita71@vetsoft.com",
                 "city": "Berisso",
-=======
-                "name": "Guido Carrillo",
-                "address": "13 y 44",
-                "phone":"221555232",
-                "email": "brujita75@vetsoft.com"
->>>>>>> main
             },
         )
 
