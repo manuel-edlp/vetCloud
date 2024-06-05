@@ -1,8 +1,21 @@
 from django.test import TestCase
-from app.models import Client,Pet,validate_pet,Provider, Product,Medicine
 from django.utils import timezone
 
+from app.models import (
+    Client,
+    Medicine,
+    Pet,
+    Product,
+    Provider,
+    validate_client,
+    validate_pet,
+)
+
+
 class ClientModelTest(TestCase):
+    """
+    Pruebas para el modelo Cliente.
+    """
     def test_can_create_and_get_client(self):
         """
         Prueba la creación y recuperación de un cliente.
@@ -11,46 +24,41 @@ class ClientModelTest(TestCase):
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
-                "phone": "221555232",
-                "address": "13 y 44",
+                "phone": "54221555232",
+                "city": "La Plata",
                 "email": "brujita75@vetsoft.com",
             },
-
         )
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
-
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
-        self.assertEqual(clients[0].phone, "221555232")
-        self.assertEqual(clients[0].address, "13 y 44")
+        self.assertEqual(clients[0].phone, "54221555232")
+        self.assertEqual(clients[0].city, "La Plata")
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
 
     def test_can_update_client(self):
         """
-        Prueba la actualización de un cliente.
-        Esta función testea si se puede actualizar el cliente.
+        Se testea si se puede actualizar los datos del cliente.
         """
+
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
-                "phone": "221555232",
-                "address": "13 y 44",
+                "phone": "54221555232",
                 "email": "brujita75@vetsoft.com",
+                "city": "La Plata",
             },
         )
         client = Client.objects.get(pk=1)
 
-        self.assertEqual(client.phone, "221555232")
+        self.assertEqual(client.phone, "54221555232")
 
-        client.update_client(
-                {"name": "Juan Sebastian Veron",
-                "phone": "221555233",
-                "address": "13 y 44",
-                "email": "brujita75@vetsoft.com"})
+
+        client.update_client({"phone": "54221555234"})
 
         client_updated = Client.objects.get(pk=1)
 
-        self.assertEqual(client_updated.phone, "221555233")
+        self.assertEqual(client_updated.phone, "54221555232")
 
     def test_update_client_with_error(self):
         """
@@ -60,40 +68,131 @@ class ClientModelTest(TestCase):
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
-                "phone": "221555232",
-                "address": "13 y 44",
+                "phone": "54221555232",
+                "city": "La Plata",
                 "email": "brujita75@vetsoft.com",
             },
+
         )
         client = Client.objects.get(pk=1)
 
-        self.assertEqual(client.phone, "221555232")
+        self.assertEqual(client.phone, "54221555232")
 
-        client.update_client({"phone": ""})
+        client.update_client({
+                "name": "Juan Sebastian Veron",
+                "phone": "221555",
+                "city": "La Plata",
+                "email": "brujita75hotmail.com"})
 
         client_updated = Client.objects.get(pk=1)
 
-        self.assertEqual(client_updated.phone, "221555232")
+        self.assertEqual(client_updated.phone, "54221555232")
 
+
+    def test_validate_client_incorrect_name(self):
+        """
+        Prueba que verifica que si un nombre es ingresado con algún caracter que no sean letras minúsculas, mayúsculas o espacios devuelva el error
+        """
+
+        data = {
+            "name": "Juan Sebastian Veron 11",
+            "phone": "54221555232",
+            "city": "La Plata",
+            "email": "brujita75@hotmail.com",
+        }
+
+        result = validate_client(data)
+
+        self.assertIn("El nombre debe contener solo letras y espacios", result.values())
+
+    def test_validate_client_with_empty_name(self):
+        """
+        Prueba que verifica que no se pueda crear un cliente con el campo nombre vacío
+        """
+        data = {
+            "name": "",
+            "phone": "221555232",
+            "city": "La Plata",
+            "email": "brujita75@hotmail.com",
+        }
+
+        errors = validate_client(data)
+
+        self.assertIn("Por favor ingrese un nombre", errors.values())
+
+   
     def test_update_client_with_email_null(self): #nuevo test verificando que no pueda hacer update con email nulo
+        """
+        Esta funcion testea el cliente acutalizado con un email nulo
+        """
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
-                "phone": "221555232",
-                "address": "13 y 44",
+                "phone": "54221555232",
+                "city": "La Plata",
                 "email": "brujita75@vetsoft.com",
             },
         )
         client = Client.objects.get(pk=1)
 
-        self.assertEqual(client.phone, "221555232")
+        self.assertEqual(client.phone, "54221555232")
 
         client.update_client({"email": ""})
 
         client_updated = Client.objects.get(pk=1)
 
         self.assertEqual(client_updated.email, "brujita75@vetsoft.com")
+
+    def test_update_client_with_empty_name(self):
+        """
+        Prueba que verifica si se produce un error al intentar actualizar un cliente con un campo de nombre vacío.
+        """   
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "54221555232",
+                "city": "La Plata",
+                "email": "brujita75@vetsoft.com",
+            },
+        )
+        client = Client.objects.get(pk=1)
+
+        self.assertEqual(client.name, "Juan Sebastian Veron")
+
+        client.update_client({"name": ""})
+        client_updated = Client.objects.get(pk=1)
+
+        self.assertEqual(client_updated.name, "Juan Sebastian Veron")
+
+    def test_update_client_with_incorrect_name(self):
+        """
+        Prueba que verifica si se produce un error al intentar actualizar un cliente con un campo de nombre incorrecto.
+        """ 
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "54221555232",
+                "city": "La Plata",
+                "email": "brujita75@vetsoft.com",
+            },
+        )
+        client = Client.objects.get(pk=1)
+
+        self.assertEqual(client.name, "Juan Sebastian Veron")
+
+        client.update_client({
+                "name": "Juan Sebastian Veron 11",
+                "phone": "54221555232",
+                "city": "La Plata",
+                "email": "brujita75@vetsoft.com",})
+        client_updated = Client.objects.get(pk=1)
+
+        self.assertEqual(client_updated.name, "Juan Sebastian Veron")
+
 class MedicineModelTest(TestCase):
+    """
+    Pruebas para el modelo Medicina.
+    """
     
     def test_can_create_medicine_with_valid_dose(self):
         """
@@ -155,6 +254,10 @@ class MedicineModelTest(TestCase):
         self.assertEqual(medicine_updated.dose, 5)
 
 class  ProviderModelTest(TestCase):
+    """
+    Pruebas para el modelo Provedor.
+    """
+    
     def test_can_create_and_get_provider(self):
         """
         Prueba la creación y recuperación de un proveedor.
@@ -163,7 +266,7 @@ class  ProviderModelTest(TestCase):
         Provider.save_provider(
             {
                 "name": "Juan Roman Riquelme",
-                "email": "senor10@gmail.com",
+                "email": "senor10@vetsoft.com",
                 "address": "13 y 44",
             },
         )
@@ -172,7 +275,7 @@ class  ProviderModelTest(TestCase):
 
         self.assertEqual(providers[0].name, "Juan Roman Riquelme")
         self.assertEqual(providers[0].address, "13 y 44")
-        self.assertEqual(providers[0].email, "senor10@gmail.com")
+        self.assertEqual(providers[0].email, "senor10@vetsoft.com")
 
     #Agrego test unitario especifico de la issue de provider
     def test_provider_address(self):
@@ -185,7 +288,7 @@ class  ProviderModelTest(TestCase):
         Provider.save_provider(
             {
                 "name": "Juan Roman Riquelme",
-                "email": "senor10@gmail.com",
+                "email": "senor10@vetsoft.com",
                 "address": addres, #guardo proveedor con direccion especifica
             },
         )
@@ -193,6 +296,9 @@ class  ProviderModelTest(TestCase):
         self.assertEqual(provider.address, addres) #verifica que la direccion recuperada coincida con la especifica
 
 class PetModelTest(TestCase):
+    """
+    Pruebas para el modelo Pet.
+    """
     def test_validate_pet_birthday(self):
         """
         Prueba la validación de la fecha de nacimiento de una mascota.
@@ -254,6 +360,9 @@ class PetModelTest(TestCase):
         self.assertEqual(message_or_errors["weight"], "El peso debe ser mayor a cero")
 
 class ProductModelTest(TestCase):
+    """
+    Pruebas para el modelo Producto.
+    """
     def test_create_product_with_valid_price(self):
         """
         Prueba la creación de un producto con un precio válido.

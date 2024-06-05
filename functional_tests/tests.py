@@ -1,13 +1,12 @@
 import os
+from datetime import datetime
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from playwright.sync_api import sync_playwright, expect, Browser
-from datetime import datetime
-from django.utils import timezone
 from django.urls import reverse
+from django.utils import timezone
+from playwright.sync_api import Browser, expect, sync_playwright
 
 from app.models import Client, Provider
-
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 playwright = sync_playwright().start()
@@ -16,6 +15,9 @@ slow_mo = os.environ.get("SLOW_MO", 0)
 
 
 class PlaywrightTestCase(StaticLiveServerTestCase):
+    """
+    Clase base para pruebas funcionales utilizando Playwright.
+    """
     @classmethod
     def setUpClass(cls):
         """
@@ -50,6 +52,9 @@ class PlaywrightTestCase(StaticLiveServerTestCase):
 
 
 class HomeTestCase(PlaywrightTestCase):
+    """
+    Pruebas funcionales para la página de inicio.
+    """
     def test_should_have_navbar_with_links(self):
         """
         Esta función verifica que una página web tenga una barra de navegación (navbar) con enlaces (links) a otras páginas o secciones del sitio.
@@ -84,6 +89,10 @@ class HomeTestCase(PlaywrightTestCase):
 
 
 class ClientsRepoTestCase(PlaywrightTestCase):
+    """
+    Pruebas funcionales para la vista de repositorio de clientes.
+    """
+
     def test_should_show_message_if_table_is_empty(self):
         """
         Esta función verifica que un mensaje se muestre correctamente cuando una tabla está vacía en una aplicación web.
@@ -98,16 +107,17 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         """
         Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
-            phone="221555232",
-            email="brujita75@hotmail.com",
+            city="La Plata",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
+
         )
 
         Client.objects.create(
             name="Guido Carrillo",
-            address="1 y 57",
-            phone="221232555",
-            email="goleador@gmail.com",
+            city="Berisso",
+            phone="54221232555",
+            email="goleador@vetsoft.com",
         )
 
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
@@ -115,14 +125,17 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("No existen clientes")).not_to_be_visible()
 
         expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
-        expect(self.page.get_by_text("13 y 44")).to_be_visible()
-        expect(self.page.get_by_text("221555232")).to_be_visible()
-        expect(self.page.get_by_text("brujita75@hotmail.com")).to_be_visible()
+
+        expect(self.page.get_by_text("La Plata")).to_be_visible()
+
+        expect(self.page.get_by_text("54221555232")).to_be_visible()
+        
+        expect(self.page.get_by_text("brujita75@vetsoft.com")).to_be_visible()
 
         expect(self.page.get_by_text("Guido Carrillo")).to_be_visible()
-        expect(self.page.get_by_text("1 y 57")).to_be_visible()
-        expect(self.page.get_by_text("221232555")).to_be_visible()
-        expect(self.page.get_by_text("goleador@gmail.com")).to_be_visible()
+        expect(self.page.get_by_text("Berisso")).to_be_visible()
+        expect(self.page.get_by_text("54221232555")).to_be_visible()
+        expect(self.page.get_by_text("goleador@vetsoft.com")).to_be_visible()
 
     def test_should_show_add_client_action(self):
         """
@@ -141,9 +154,9 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         """
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
-            phone="221555232",
-            email="brujita75@hotmail.com",
+            city="La Plata",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
         )
 
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
@@ -159,9 +172,9 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         """
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
-            phone="221555232",
-            email="brujita75@hotmail.com",
+            city="La Plata",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
         )
 
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
@@ -182,15 +195,15 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         Esta función verifica que un cliente pueda ser eliminado correctamente a través de una solicitud POST al servidor.
         """
         Client.objects.create(
-            name="Juan Sebastián Veron",
-            address="13 y 44",
-            phone="221555232",
-            email="brujita75@hotmail.com",
+            name="Juan Sebastian Veron",
+            city="La Plata",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
         )
 
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
 
-        expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
 
         def is_delete_response(response):
             """
@@ -205,10 +218,13 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         response = response_info.value
         self.assertTrue(response.status < 400)
 
-        expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).not_to_be_visible()
 
 
 class ClientCreateEditTestCase(PlaywrightTestCase):
+    """
+    Pruebas funcionales para crear y editar un cliente.
+    """
     def test_should_be_able_to_create_a_new_client(self):
         """
         Esta función verifica que se pueda crear un nuevo cliente correctamente a través de una solicitud POST al servidor.
@@ -217,17 +233,19 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
 
         expect(self.page.get_by_role("form")).to_be_visible()
 
-        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
-        self.page.get_by_label("Teléfono").fill("221555232")
+        self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
+        self.page.get_by_label("Teléfono").fill("54221555232")
         self.page.get_by_label("Email").fill("brujita75@vetsoft.com")
-        self.page.get_by_label("Direccion").fill("13 y 44")
+        self.page.get_by_label("Ciudad").select_option("La Plata")
+
 
         self.page.get_by_role("button", name="Guardar").click()
 
-        expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
-        expect(self.page.get_by_text("221555232")).to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
+        expect(self.page.get_by_text("54221555232")).to_be_visible()
         expect(self.page.get_by_text("brujita75@vetsoft.com")).to_be_visible()
-        expect(self.page.get_by_text("13 y 44")).to_be_visible()
+        expect(self.page.get_by_text("La Plata")).to_be_visible()
+
 
     def test_should_view_errors_if_form_is_invalid(self):
         """
@@ -244,10 +262,11 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("Por favor ingrese un teléfono")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese un email")).to_be_visible()
 
-        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+        self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
         self.page.get_by_label("Teléfono").fill("221555232")
         self.page.get_by_label("Email").fill("brujita75")
-        self.page.get_by_label("Direccion").fill("13 y 44")
+        self.page.get_by_label("Ciudad").select_option("La Plata")
+
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -266,8 +285,8 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         """
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
-            phone="221555232",
+            city="La Plata",
+            phone="54221555232",
             email="brujita75@vetsoft.com",
         )
 
@@ -275,20 +294,21 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.goto(f"{self.live_server_url}{path}")
 
         self.page.get_by_label("Nombre").fill("Guido Carrillo")
-        self.page.get_by_label("Teléfono").fill("221232555")
+        self.page.get_by_label("Teléfono").fill("54221232555")
         self.page.get_by_label("Email").fill("goleador@vetsoft.com")
-        self.page.get_by_label("Direccion").fill("1 y 57")
+        self.page.get_by_label("Ciudad").select_option("Berisso")
+
 
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
-        expect(self.page.get_by_text("13 y 44")).not_to_be_visible()
-        expect(self.page.get_by_text("221555232")).not_to_be_visible()
+        expect(self.page.get_by_text("La Plata")).not_to_be_visible()
+        expect(self.page.get_by_text("54221555232")).not_to_be_visible()
         expect(self.page.get_by_text("brujita75@vetsoft.com")).not_to_be_visible()
 
         expect(self.page.get_by_text("Guido Carrillo")).to_be_visible()
-        expect(self.page.get_by_text("1 y 57")).to_be_visible()
-        expect(self.page.get_by_text("221232555")).to_be_visible()
+        expect(self.page.get_by_text("Berisso")).to_be_visible()
+        expect(self.page.get_by_text("54221232555")).to_be_visible()
         expect(self.page.get_by_text("goleador@vetsoft.com")).to_be_visible()
 
         edit_action = self.page.get_by_role("link", name="Editar")
@@ -297,7 +317,11 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         )
 
 
+
 class MedicineCreateEditTestCase(PlaywrightTestCase):
+    """
+    Pruebas para crear y editar medicamentos.
+    """
     def test_should_show_error_for_dose_greater_than_10(self):
         """
         Esta función verifica que se muestre un mensaje de error cuando se intenta 
@@ -333,6 +357,9 @@ class MedicineCreateEditTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("La dosis debe estar en un rango de 1 a 10")).to_be_visible()
 
 class ProvidersRepoTestCase(PlaywrightTestCase):
+    """
+    Pruebas para verificar el comportamiento del repositorio de proveedores.
+    """
     def test_should_show_message_if_table_is_empty(self):
         """
         Esta función verifica que se muestre un mensaje adecuado si una tabla en la interfaz de usuario está vacía.
@@ -430,6 +457,9 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
         
   
 class PetFormCreateValidationTestCase(PlaywrightTestCase):
+    """
+    Pruebas para validar la creación de una mascota en el formulario.
+    """
     def test_should_show_error_for_future_birth_date(self):
         """
         Esta función verifica que se muestre un mensaje de error cuando se intenta 
@@ -438,6 +468,7 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
         self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
+        
 
         # Introduce una fecha de nacimiento no valida
         future_date = datetime.now().date() + timezone.timedelta(days=7)  # Ejemplo: 7 días en el futuro
@@ -474,8 +505,13 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
 
         # Verifica si se muestra el mensaje de error esperado
         expect(self.page.get_by_text("La fecha de nacimiento debe ser menor a la fecha actual")).to_be_visible()     
+        
 
     def test_should_be_able_to_create_a_new_pet_goto(self):
+        """
+        Verifica si el test me permite crear una nueva masota.
+        """
+  
         self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
 
 
@@ -537,6 +573,9 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
 # Pruebas de unidad para verificar la creación exitosa de un nuevo producto
 
 class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
+    """
+    Pruebas para verificar la creación de un nuevo producto con un precio mayor que cero.
+    """
     def test_should_be_able_to_create_a_new_product(self):
         """
         Esta función verifica que se pueda crear un nuevo producto correctamente 
@@ -584,11 +623,7 @@ class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
 
 # Verificar que los mensajes de error para ingresar el nombre y el tipo no sean visibles
         expect(self.page.get_by_text("Por favor ingrese su nombre")).not_to_be_visible()
-        expect(
-            self.page.get_by_text("Por favor ingrese un tipo"),
-        ).not_to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese un tipo")).not_to_be_visible()
 
 # Verificar que el mensaje de error "El precio debe ser mayor que cero" sea visible
-        expect(
-            self.page.get_by_text("El precio debe ser mayor que cero"),
-        ).to_be_visible()
+        expect(self.page.get_by_text("El precio debe ser mayor que cero")).to_be_visible()
