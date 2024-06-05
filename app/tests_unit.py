@@ -8,8 +8,8 @@ class ClientModelTest(TestCase):
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-                "city": "13 y 44",
-                "email": "brujita75@hotmail.com",
+                "city": "La Plata",
+                "email": "brujita75@vetsoft.com",
             }
         )
         clients = Client.objects.all()
@@ -17,35 +17,41 @@ class ClientModelTest(TestCase):
 
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
         self.assertEqual(clients[0].phone, "221555232")
-        self.assertEqual(clients[0].city, "13 y 44")
-        self.assertEqual(clients[0].email, "brujita75@hotmail.com")
+        self.assertEqual(clients[0].city, "La Plata")
+        self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
 
     def test_can_update_client(self):
+
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-                "city": "13 y 44",
-                "email": "brujita75@hotmail.com",
-            }
+                "email": "brujita75@vetsoft.com",
+                "city": "La Plata",
+            },
         )
         client = Client.objects.get(pk=1)
 
-        self.assertEqual(client.phone, "221555232")
-
-        client.update_client({"phone": "221555233"})
+        client.update_client(  {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "email": "guido@vetsoft.com",
+                "city": "Berisso",
+            },)
 
         client_updated = Client.objects.get(pk=1)
 
-        self.assertEqual(client_updated.phone, "221555233")
+        self.assertEqual(client_updated.phone, "221555232")
+        self.assertEqual(client_updated.email, "guido@vetsoft.com")
+        self.assertEqual(client_updated.city, "Berisso")
 
     def test_update_client_with_error(self):
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-                "city": "13 y 44",
-                "email": "brujita75@hotmail.com",
+                "city": "La Plata",
+                "email": "brujita75@vetsoft.com",
             }
         )
         client = Client.objects.get(pk=1)
@@ -112,7 +118,7 @@ class  ProviderModelTest(TestCase):
         Provider.save_provider(
             {
                 "name": "Juan Roman Riquelme",
-                "email": "senor10@gmail.com",
+                "email": "senor10@vetsoft.com",
                 "address": "13 y 44",
             }
         )
@@ -121,7 +127,7 @@ class  ProviderModelTest(TestCase):
 
         self.assertEqual(providers[0].name, "Juan Roman Riquelme")
         self.assertEqual(providers[0].address, "13 y 44")
-        self.assertEqual(providers[0].email, "senor10@gmail.com")
+        self.assertEqual(providers[0].email, "senor10@vetsoft.com")
 
     #Agrego test unitario especifico de la issue de provider
     def test_provider_address(self):
@@ -129,7 +135,7 @@ class  ProviderModelTest(TestCase):
         Provider.save_provider(
             {
                 "name": "Juan Roman Riquelme",
-                "email": "senor10@gmail.com",
+                "email": "senor10@vetsoft.com",
                 "address": addres, #guardo proveedor con direccion especifica
             }
         )
