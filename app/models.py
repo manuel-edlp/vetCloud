@@ -1,18 +1,9 @@
-from django.db import models
 from datetime import datetime
-from django.db import IntegrityError
+
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError, models
 
-def validate_client(data):
-    """
-    Valida los datos del cliente.
 
-    Args:
-        data (dict): Datos del cliente.
-
-    Returns:
-        dict: Diccionario de errores encontrados.
-    """
 def validate_client(data):
     """
     Esta función valida los datos del cliente.
