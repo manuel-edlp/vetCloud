@@ -73,13 +73,16 @@ class ClientModelTest(TestCase):
         self.assertEqual(client_updated.phone, "221555232")
 
     def test_update_client_with_email_null(self): #nuevo test verificando que no pueda hacer update con email nulo
+        """
+        Esta funcion testea el cliente acutalizado con un email nulo
+        """
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
                 "address": "13 y 44",
                 "email": "brujita75@vetsoft.com",
-            }
+            },
         )
         client = Client.objects.get(pk=1)
 
