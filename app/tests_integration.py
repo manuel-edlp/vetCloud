@@ -222,7 +222,7 @@ class PetsTest(TestCase):
                 "name": "Frida",
                 "breed": "negrita",
                 "birthday": "2017-01-01",
-                "weight": "4" # Peso válido
+                "weight": "4", # Peso válido
             },
         )
 
