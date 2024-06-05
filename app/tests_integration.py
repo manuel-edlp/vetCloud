@@ -78,7 +78,7 @@ class ClientsTest(TestCase):
             name="Juan Sebastián Veron",
             address="13 y 44",
             phone="221555232",
-            email="brujita75@hotmail.com",
+            email="brujita75@vetsoft.com",
         )
 
         response = self.client.post(
@@ -86,6 +86,9 @@ class ClientsTest(TestCase):
             data={
                 "id": client.id,
                 "name": "Guido Carrillo",
+                "address": "13 y 44",
+                "phone":"221555232",
+                "email": "brujita75@vetsoft.com"
             },
         )
 
@@ -97,6 +100,70 @@ class ClientsTest(TestCase):
         self.assertEqual(editedClient.phone, client.phone)
         self.assertEqual(editedClient.address, client.address)
         self.assertEqual(editedClient.email, client.email)
+
+    def test_validation_invalid_name_client(self):
+        """
+        Prueba si se muestra un error de validación cuando se ingresa un nombre inválido.
+        """
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "name": "Juan Sebastian Veron 11",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
+
+    def test_user_cant_edit_client_with_empty_name(self):
+        """
+        Prueba que un usuario no pueda editar un cliente con un nombre vacío.
+        """
+        client=Client.objects.create(
+            name="Juan Sebastian Veron",
+            phone="221555232",
+            address="13 y 44",
+            email="brujita75@hotmail.com",
+        )
+
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id":client.id,
+                "name":"",
+                "phone":client.phone,
+                "address":client.address,
+                "email":client.email,
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un nombre")
+
+    def test_user_cant_edit_client_with_incorrect_name(self):
+        """
+        Prueba que un usuario no pueda editar un cliente con un nombre incorrecto.
+        """
+        client=Client.objects.create(
+            name="Juan Sebastian Veron",
+            phone="221555232",
+            address="13 y 44",
+            email="brujita75@hotmail.com",
+        )
+
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id":client.id,
+                "name":"Juan Sebastian Veron 11",
+                "phone":client.phone,
+                "address":client.address,
+                "email":client.email,
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
 
 class MedicineIntegrationTest(TestCase):
     def test_can_create_medicine(self):
