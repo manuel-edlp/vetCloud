@@ -1,8 +1,15 @@
 from django.test import TestCase
-
 from django.utils import timezone
 
-from app.models import Client, Medicine, Pet, Product, Provider, validate_client, validate_pet
+from app.models import (
+    Client,
+    Medicine,
+    Pet,
+    Product,
+    Provider,
+    validate_client,
+    validate_pet,
+)
 
 
 class ClientModelTest(TestCase):
@@ -118,6 +125,16 @@ class ClientModelTest(TestCase):
         """
         Esta funcion testea el cliente acutalizado con un email nulo
         """
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "city": "La Plata",
+                "email": "brujita75@vetsoft.com",
+            },
+        )
+        client = Client.objects.get(pk=1)
+
         self.assertEqual(client.phone, "221555232")
 
         client.update_client({"email": ""})
