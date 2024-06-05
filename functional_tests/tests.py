@@ -17,6 +17,9 @@ slow_mo = os.environ.get("SLOW_MO", 0)
 class PlaywrightTestCase(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
+        """
+        Esta función prepara el entorno necesario para la ejecución de un conjunto de pruebas dentro de una clase de pruebas.
+        """
         super().setUpClass()
         cls.browser: Browser = playwright.chromium.launch(
             headless=headless, slow_mo=int(slow_mo),
@@ -24,20 +27,32 @@ class PlaywrightTestCase(StaticLiveServerTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """
+        Esta función limpia y libera los recursos compartidos después de que todas las pruebas en la clase hayan sido ejecutadas.
+        """
         super().tearDownClass()
         cls.browser.close()
 
     def setUp(self):
+        """
+        Esta función prepara el entorno necesario antes de ejecutar cada prueba individual.
+        """
         super().setUp()
         self.page = self.browser.new_page()
 
     def tearDown(self):
+        """
+        Esta función limpia y libera los recursos después de que cada prueba individual haya sido ejecutada.
+        """
         super().tearDown()
         self.page.close()
 
 
 class HomeTestCase(PlaywrightTestCase):
     def test_should_have_navbar_with_links(self):
+        """
+        Esta función verifica que una página web tenga una barra de navegación (navbar) con enlaces (links) a otras páginas o secciones del sitio.
+        """
         self.page.goto(self.live_server_url)
 
         navbar_home_link = self.page.get_by_test_id("navbar-Inicio")
@@ -55,6 +70,9 @@ class HomeTestCase(PlaywrightTestCase):
         expect(navbar_clients_link).to_have_attribute("href", reverse("clients_repo"))
 
     def test_should_have_home_cards_with_links(self):
+        """
+        Esta función verifica que una página de inicio tenga tarjetas (cards) con enlaces (links) a otras partes del sitio.
+        """
         self.page.goto(self.live_server_url)
 
         home_clients_link = self.page.get_by_test_id("home-Clientes")
@@ -66,11 +84,17 @@ class HomeTestCase(PlaywrightTestCase):
 
 class ClientsRepoTestCase(PlaywrightTestCase):
     def test_should_show_message_if_table_is_empty(self):
+        """
+        Esta función verifica que un mensaje se muestre correctamente cuando una tabla está vacía en una aplicación web.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
 
         expect(self.page.get_by_text("No existen clientes")).to_be_visible()
 
     def test_should_show_clients_data(self):
+        """
+        Esta función verifica que los datos de los clientes se muestren correctamente en una determinada página de la aplicación web.
+        """
         Client.objects.create(
             name="Juan Sebastián Veron",
             address="13 y 44",
@@ -100,6 +124,9 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("goleador@gmail.com")).to_be_visible()
 
     def test_should_show_add_client_action(self):
+        """
+        Esta función verifica que la página de la lista de clientes incluya una acción para agregar un nuevo cliente.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
 
         add_client_action = self.page.get_by_role(
@@ -108,6 +135,9 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         expect(add_client_action).to_have_attribute("href", reverse("clients_form"))
 
     def test_should_show_client_edit_action(self):
+        """
+        Esta función verifica que la página de detalle de cliente incluya una acción para editar el cliente.
+        """
         client = Client.objects.create(
             name="Juan Sebastián Veron",
             address="13 y 44",
@@ -123,6 +153,9 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         )
 
     def test_should_show_client_delete_action(self):
+        """
+        Esta función verifica que la página de detalle de cliente incluya una acción para eliminar el cliente.
+        """
         client = Client.objects.create(
             name="Juan Sebastián Veron",
             address="13 y 44",
@@ -144,6 +177,9 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         expect(edit_form.get_by_role("button", name="Eliminar")).to_be_visible()
 
     def test_should_can_be_able_to_delete_a_client(self):
+        """
+        Esta función verifica que un cliente pueda ser eliminado correctamente a través de una solicitud POST al servidor.
+        """
         Client.objects.create(
             name="Juan Sebastián Veron",
             address="13 y 44",
@@ -156,6 +192,9 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
 
         def is_delete_response(response):
+            """
+            Esta función verifica si una respuesta HTTP es una respuesta de eliminación (código de estado 204 No Content).
+            """
             return response.url.find(reverse("clients_delete"))
 
         # verificamos que el envio del formulario fue exitoso
@@ -170,6 +209,9 @@ class ClientsRepoTestCase(PlaywrightTestCase):
 
 class ClientCreateEditTestCase(PlaywrightTestCase):
     def test_should_be_able_to_create_a_new_client(self):
+        """
+        Esta función verifica que se pueda crear un nuevo cliente correctamente a través de una solicitud POST al servidor.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
@@ -187,6 +229,10 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("13 y 44")).to_be_visible()
 
     def test_should_view_errors_if_form_is_invalid(self):
+        """
+        Esta función  verifica que se muestren los errores de validación en el 
+        formulario si se envían datos inválidos al intentar crear un nuevo cliente.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
@@ -214,6 +260,9 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         ).to_be_visible()
 
     def test_should_be_able_to_edit_a_client(self):
+        """
+        Esta función verifica que se pueda editar un cliente existente correctamente a través de una solicitud POST al servidor.
+        """
         client = Client.objects.create(
             name="Juan Sebastián Veron",
             address="13 y 44",
@@ -249,6 +298,10 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
 
 class MedicineCreateEditTestCase(PlaywrightTestCase):
     def test_should_show_error_for_dose_greater_than_10(self):
+        """
+        Esta función verifica que se muestre un mensaje de error cuando se intenta 
+        crear o editar un medicamento con una dosis mayor que 10.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('medicine_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
@@ -262,6 +315,10 @@ class MedicineCreateEditTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("La dosis debe estar en un rango de 1 a 10")).to_be_visible()
 
     def test_should_show_error_for_dose_less_than_1(self):
+        """
+        Esta función verifica que se muestre un mensaje de error cuando se intenta crear o 
+        editar un medicamento con una dosis menor que 1.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('medicine_form')}")
         
         expect(self.page.get_by_role("form")).to_be_visible()
@@ -276,11 +333,17 @@ class MedicineCreateEditTestCase(PlaywrightTestCase):
 
 class ProvidersRepoTestCase(PlaywrightTestCase):
     def test_should_show_message_if_table_is_empty(self):
+        """
+        Esta función verifica que se muestre un mensaje adecuado si una tabla en la interfaz de usuario está vacía.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('provider_repo')}")
 
         expect(self.page.get_by_text("No existen proveedores")).to_be_visible()
 
     def test_should_show_providers_data(self):
+        """
+        Esta función verifica que se muestren los datos de los proveedores en la interfaz de usuario.
+        """
         Provider.objects.create(
             name="Juan Roman Riquelme",
             email="senor10@hotmail.com",
@@ -288,6 +351,9 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
         )
 
     def test_should_show_add_provider_action(self):
+        """
+        Esta función verifica que en la interfaz de usuario se muestre una acción para agregar un nuevo proveedor.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('provider_repo')}")
 
         add_provider_action = self.page.get_by_role(
@@ -297,6 +363,10 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
 
     #Agrego e2e que utilicen el atributo address
     def test_should_view_errors_if_form_is_invalid(self):
+        """
+        Esta función verifica que se muestren los errores de validación en un 
+        formulario si se envían datos inválidos al servidor. 
+        """
         self.page.goto(f"{self.live_server_url}{reverse('provider_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
@@ -324,6 +394,10 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
         ).to_be_visible()
 
     def test_should_be_able_to_edit_a_provider(self):
+        """
+        Esta función verifica que se pueda editar un proveedor existente correctamente 
+        a través de una solicitud POST al servidor.
+        """
         provider = Provider.objects.create(
             name="Juan Roman Riquelme",
             email="senor10@hotmail.com",
@@ -356,6 +430,10 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
   
 class PetFormCreateValidationTestCase(PlaywrightTestCase):
     def test_should_show_error_for_future_birth_date(self):
+        """
+        Esta función verifica que se muestre un mensaje de error cuando se intenta 
+        ingresar una fecha de nacimiento en el futuro al crear o editar un cliente.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
@@ -374,6 +452,10 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("La fecha de nacimiento debe ser menor a la fecha actual")).to_be_visible()
 
     def test_should_show_error_for_present_birth_date(self):
+        """
+        Esta función verifica que se muestre un mensaje de error cuando se intenta ingresar una fecha de nacimiento 
+        que corresponde al día actual (o una fecha anterior al día actual) al crear o editar un cliente.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
@@ -398,6 +480,10 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
 
     # Pruebas para peso de la mascota
     def test_should_be_able_to_create_a_new_pet(self):
+        """
+        Esta función verifica que se pueda crear una nueva mascota correctamente 
+        a través de una solicitud POST al servidor. 
+        """
         self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
@@ -418,6 +504,10 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
 
         # Prueba para verificar si se muestran errores cuando el formulario es inválido con un peso menor que cero
     def test_should_view_errors_if_form_is_invalid_with_weight_less_than_zero(self): 
+        """
+        Esta función verifica que se muestren errores cuando se intenta 
+        enviar un formulario con un peso de mascota menor que cero.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('pet_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
@@ -447,6 +537,10 @@ class PetFormCreateValidationTestCase(PlaywrightTestCase):
 
 class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
     def test_should_be_able_to_create_a_new_product(self):
+        """
+        Esta función verifica que se pueda crear un nuevo producto correctamente 
+        a través de una solicitud POST al servidor.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('product_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
@@ -465,6 +559,10 @@ class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
 
 # Prueba para verificar si se muestran errores cuando el formulario es inválido con un precio menor que cero
     def test_should_view_errors_if_form_is_invalid_with_price_less_than_zero(self):
+        """
+        Esta función verifica que se muestren errores cuando se intenta enviar 
+        un formulario con un precio de producto menor que cero.
+        """
         self.page.goto(f"{self.live_server_url}{reverse('product_form')}")
 
         expect(self.page.get_by_role("form")).to_be_visible()
