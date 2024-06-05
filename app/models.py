@@ -196,7 +196,7 @@ class Provider(models.Model):
         self.name = provider_data.get("name", "") or self.name
         self.email = provider_data.get("email", "") or self.email
         self.address = provider_data.get("address", "") or self.address
-        refactor/D101
+        
 
         try:
             self.save()
@@ -208,7 +208,7 @@ class Provider(models.Model):
 
         self.save()
         return True, None
-       main
+
 
 def validate_product(data):
     """
@@ -603,7 +603,7 @@ class Medicine(models.Model):
         self.name = medicine_data.get("name", "") or self.name
         self.description = medicine_data.get("description", "") or self.description
         self.dose = medicine_data.get("dose", "") or self.dose
-        refactor/D101
+       
 
         try:
             self.save()
