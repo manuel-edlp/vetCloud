@@ -122,7 +122,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         
         expect(self.page.get_by_text("brujita75@vetsoft.com")).to_be_visible()
 
-    expect(self.page.get_by_text("Guido Carrillo")).to_be_visible()
+        expect(self.page.get_by_text("Guido Carrillo")).to_be_visible()
         expect(self.page.get_by_text("Berisso")).to_be_visible()
         expect(self.page.get_by_text("54221232555")).to_be_visible()
         expect(self.page.get_by_text("goleador@vetsoft.com")).to_be_visible()
