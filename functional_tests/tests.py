@@ -115,6 +115,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
 
         expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
         expect(self.page.get_by_text("La Plata")).to_be_visible()
+
         expect(self.page.get_by_text("221555232")).to_be_visible()
         expect(self.page.get_by_text("brujita75@vetsoft.com")).to_be_visible()
 
@@ -140,7 +141,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         """
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            city="13 y 44",
+            city="La Plata",
             phone="221555232",
             email="brujita75@vetsoft.com",
         )
@@ -158,7 +159,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         """
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            city="13 y 44",
+            city="La Plata",
             phone="221555232",
             email="brujita75@vetsoft.com",
         )
@@ -181,15 +182,15 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         Esta función verifica que un cliente pueda ser eliminado correctamente a través de una solicitud POST al servidor.
         """
         Client.objects.create(
-            name="Juan Sebastián Veron",
-            city="13 y 44",
+            name="Juan Sebastian Veron",
+            city="La Plata",
             phone="221555232",
             email="brujita75@vetsoft.com",
         )
 
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
 
-        expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
 
         def is_delete_response(response):
             """
@@ -204,7 +205,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         response = response_info.value
         self.assertTrue(response.status < 400)
 
-        expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).not_to_be_visible()
 
 
 class ClientCreateEditTestCase(PlaywrightTestCase):
@@ -216,7 +217,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
 
         expect(self.page.get_by_role("form")).to_be_visible()
 
-        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+        self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
         self.page.get_by_label("Teléfono").fill("221555232")
         self.page.get_by_label("Email").fill("brujita75@vetsoft.com")
         self.page.get_by_label("Ciudad").select_option("La Plata")
@@ -224,7 +225,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
 
         self.page.get_by_role("button", name="Guardar").click()
 
-        expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
         expect(self.page.get_by_text("221555232")).to_be_visible()
         expect(self.page.get_by_text("brujita75@vetsoft.com")).to_be_visible()
         expect(self.page.get_by_text("La Plata")).to_be_visible()
@@ -245,7 +246,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("Por favor ingrese un teléfono")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese un email")).to_be_visible()
 
-        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+        self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
         self.page.get_by_label("Teléfono").fill("221555232")
         self.page.get_by_label("Email").fill("brujita75")
         self.page.get_by_label("Ciudad").select_option("La Plata")

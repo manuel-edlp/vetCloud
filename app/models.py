@@ -1,3 +1,4 @@
+import re  # Importa el módulo de expresiones regulares
 from datetime import datetime
 
 from django.core.exceptions import ValidationError
@@ -24,6 +25,8 @@ def validate_client(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
@@ -92,6 +95,7 @@ class Client(models.Model):
    
         if len(errors) > 0:
             return False, errors
+
 
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
