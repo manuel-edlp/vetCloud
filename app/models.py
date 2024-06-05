@@ -5,7 +5,10 @@ from django.db import IntegrityError, models
 
 
 class CityEnum(models.TextChoices):
-    LA_PLATA = 'La Plata',
+    """""
+    Enumeracion de la Ciudad
+    """""
+    LA_PLATA = 'La Plata', 
     BERISSO = 'Berisso',
     ENSENADA = 'Ensenada',
 
@@ -613,4 +616,4 @@ class Medicine(models.Model):
 
         self.save()
         return True, None
-        main
+      
