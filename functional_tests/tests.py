@@ -182,7 +182,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         Esta función verifica que un cliente pueda ser eliminado correctamente a través de una solicitud POST al servidor.
         """
         Client.objects.create(
-            name="Juan Sebastián Veron",
+            name="Juan Sebastian Veron",
             city="La Plata",
             phone="221555232",
             email="brujita75@vetsoft.com",
