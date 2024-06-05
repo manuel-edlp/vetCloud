@@ -1,5 +1,7 @@
 from django.db import models
 from datetime import datetime
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 
 
 
@@ -18,8 +20,8 @@ def validate_client(data):
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
-    elif email.count("@") == 0:
-        errors["email"] = "Por favor ingrese un email valido"
+    elif "@vetsoft.com" not in email:
+        errors["email"] = "El email debe ser de la forma @vetsoft.com"
 
     return errors
 
@@ -50,12 +52,21 @@ class Client(models.Model):
         return True, None
 
     def update_client(self, client_data):
+        errors = validate_client(client_data)
+
+        if len(errors) > 0:
+            return False, errors
+        
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
         self.address = client_data.get("address", "") or self.address
 
-        self.save()
+        try:
+            self.save()
+            return True, None
+        except (IntegrityError, ValidationError) as e:
+            return False, {"error": str(e)}
 
 def validate_provider(data):
     errors = {}
@@ -111,9 +122,11 @@ class Provider(models.Model):
         self.email = provider_data.get("email", "") or self.email
         self.address = provider_data.get("address", "") or self.address
 
-        self.save()
-        return True, None
-
+        try:
+            self.save()
+            return True, None
+        except (IntegrityError, ValidationError) as e:
+            return False, {"error": str(e)}
 
 
 def validate_product(data):
@@ -372,6 +385,8 @@ class Medicine(models.Model):
         self.description = medicine_data.get("description", "") or self.description
         self.dose = medicine_data.get("dose", "") or self.dose
 
-        self.save()
-        return True, None
-    
+        try:
+            self.save()
+            return True, None
+        except (IntegrityError, ValidationError) as e:
+            return False, {"error": str(e)}
