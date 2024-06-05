@@ -12,69 +12,36 @@ class ClientModelTest(TestCase):
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-<<<<<<< refactor/Cliente-cambiar-campo-address
                 "city": "La Plata",
                 "email": "brujita75@vetsoft.com",
-            }
-=======
-                "address": "13 y 44",
-                "email": "brujita75@vetsoft.com",
             },
-
->>>>>>> main
         )
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
 
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
         self.assertEqual(clients[0].phone, "221555232")
-<<<<<<< refactor/Cliente-cambiar-campo-address
         self.assertEqual(clients[0].city, "La Plata")
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
 
     def test_can_update_client(self):
 
-=======
-        self.assertEqual(clients[0].address, "13 y 44")
-        self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
-
-    def test_can_update_client(self):
-        """
-        Prueba la actualización de un cliente.
-        Esta función testea si se puede actualizar el cliente.
-        """
->>>>>>> main
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-<<<<<<< refactor/Cliente-cambiar-campo-address
                 "email": "brujita75@vetsoft.com",
                 "city": "La Plata",
-=======
-                "address": "13 y 44",
-                "email": "brujita75@vetsoft.com",
->>>>>>> main
             },
         )
         client = Client.objects.get(pk=1)
 
-<<<<<<< refactor/Cliente-cambiar-campo-address
         client.update_client(  {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
                 "email": "guido@vetsoft.com",
                 "city": "Berisso",
             },)
-=======
-        self.assertEqual(client.phone, "221555232")
-
-        client.update_client(
-                {"name": "Juan Sebastian Veron",
-                "phone": "221555233",
-                "address": "13 y 44",
-                "email": "brujita75@vetsoft.com"})
->>>>>>> main
 
         client_updated = Client.objects.get(pk=1)
 
@@ -91,15 +58,9 @@ class ClientModelTest(TestCase):
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-<<<<<<< refactor/Cliente-cambiar-campo-address
                 "city": "La Plata",
                 "email": "brujita75@vetsoft.com",
-            }
-=======
-                "address": "13 y 44",
-                "email": "brujita75@vetsoft.com",
             },
->>>>>>> main
         )
         client = Client.objects.get(pk=1)
 
@@ -118,7 +79,7 @@ class ClientModelTest(TestCase):
                 "phone": "221555232",
                 "address": "13 y 44",
                 "email": "brujita75@vetsoft.com",
-            }
+            },
         )
         client = Client.objects.get(pk=1)
 
