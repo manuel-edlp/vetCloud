@@ -105,6 +105,9 @@ class ClientsTest(TestCase):
 
 
     def test_validation_invalid_phone(self):
+        """
+        Testear telefono invalido
+        """
         response = self.client.post(
             reverse("clients_form"),
             data={
@@ -117,12 +120,7 @@ class ClientsTest(TestCase):
 
         self.assertContains(response, "El telefono debe comenzar con 54")    
 
-    def test_edit_user_with_valid_data(self):
-        client = Client.objects.create(
-            name="Juan Sebastian Veron",
-            address="13 y 44",
-            phone="54221555232",
-            email="brujita75@hotmail.com",)
+  
     def test_edit_user_with_valid_data_test(self):
         """"
         test para editar un cliente con datos validos.
