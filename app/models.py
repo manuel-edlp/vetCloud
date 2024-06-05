@@ -1,5 +1,7 @@
 from django.db import models
 from datetime import datetime
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 
 
 
@@ -114,8 +116,8 @@ class Provider(models.Model):
         try:
             self.save()
             return True, None
-        except:
-            return False, errors
+        except (IntegrityError, ValidationError) as e:
+            return False, {"error": str(e)}
 
 
 
@@ -378,6 +380,5 @@ class Medicine(models.Model):
         try:
             self.save()
             return True, None
-        except:
-            return False, errors
-    
+        except (IntegrityError, ValidationError) as e:
+            return False, {"error": str(e)}
