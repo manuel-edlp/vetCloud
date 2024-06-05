@@ -34,7 +34,7 @@ def validate_client(data):
 
 class Client(models.Model):
     name = models.CharField(max_length=100)
-    phone = models.IntegerField
+    phone = models.IntegerField()
     email = models.EmailField()
     address = models.CharField(max_length=100, blank=True)
 
