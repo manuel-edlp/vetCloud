@@ -39,9 +39,9 @@ target-version = "py38"
 
 [lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
-select = ["E4", "E7", "E9", "F", "D101"]
 
-select = ["E4", "E7", "E9", "F", "COM812", "D102", "D103","I001"]
+
+select = ["E4", "E7", "E9", "F", "COM812", "D102", "D103","I001","D101"]
 
 ignore = []
 
