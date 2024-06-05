@@ -1,8 +1,9 @@
+import re  # Importa el módulo de expresiones regulares
 from datetime import datetime
 
-import re  # Importa el módulo de expresiones regulares
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
+
 
 class CityEnum(models.TextChoices):
     LA_PLATA = 'La Plata',
