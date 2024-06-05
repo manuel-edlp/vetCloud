@@ -1,5 +1,5 @@
 from django.test import TestCase
-from app.models import Client,Pet,validate_pet,Provider, Product,Medicine
+from app.models import Client,Pet,validate_pet,Provider, Product,Medicine,validate_client
 from django.utils import timezone
 
 class ClientModelTest(TestCase):
@@ -33,7 +33,11 @@ class ClientModelTest(TestCase):
 
         self.assertEqual(client.phone, "221555232")
 
-        client.update_client({"phone": "221555233"})
+        client.update_client({
+                "name": "Juan Sebastian Veron",
+                "phone": "221555233",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",})
 
         client_updated = Client.objects.get(pk=1)
 
@@ -57,6 +61,83 @@ class ClientModelTest(TestCase):
         client_updated = Client.objects.get(pk=1)
 
         self.assertEqual(client_updated.phone, "221555232")
+
+    def test_validate_client_incorrect_name(self):
+        """
+        Prueba que verifica que si un nombre es ingresado con algún caracter que no sean letras minúsculas, mayúsculas o espacios devuelva el error
+        """
+
+        data = {
+            "name": "Juan Sebastian Veron 11",
+            "phone": "221555232",
+            "address": "13 y 44",
+            "email": "brujita75@hotmail.com",
+        }
+
+        result = validate_client(data)
+
+        self.assertIn("El nombre debe contener solo letras y espacios", result.values())
+
+    def test_validate_client_with_empty_name(self):
+        """
+        Prueba que verifica que no se pueda crear un cliente con el campo nombre vacío
+        """
+        data = {
+            "name": "",
+            "phone": "221555232",
+            "address": "13 y 44",
+            "email": "brujita75@hotmail.com",
+        }
+
+        errors = validate_client(data)
+
+        self.assertIn("Por favor ingrese un nombre", errors.values())
+
+    def test_update_client_with_empty_name(self):
+        """
+        Prueba que verifica si se produce un error al intentar actualizar un cliente con un campo de nombre vacío.
+        """ 
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            },
+        )
+        client = Client.objects.get(pk=1)
+
+        self.assertEqual(client.name, "Juan Sebastian Veron")
+
+        client.update_client({"name": ""})
+        client_updated = Client.objects.get(pk=1)
+
+        self.assertEqual(client_updated.name, "Juan Sebastian Veron")
+
+    def test_update_client_with_incorrect_name(self):
+        """
+        Prueba que verifica si se produce un error al intentar actualizar un cliente con un campo de nombre incorrecto.
+        """ 
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            },
+        )
+        client = Client.objects.get(pk=1)
+
+        self.assertEqual(client.name, "Juan Sebastian Veron")
+
+        client.update_client({
+                "name": "Juan Sebastian Veron 11",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",})
+        client_updated = Client.objects.get(pk=1)
+
+        self.assertEqual(client_updated.name, "Juan Sebastian Veron")
 
 class MedicineModelTest(TestCase):
     
