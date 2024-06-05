@@ -27,6 +27,9 @@ class ClientModelTest(TestCase):
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
 
     def test_can_update_client(self):
+        """
+        Se testea si se puede actualizar los datos del cliente.
+        """
 
         Client.save_client(
             {
