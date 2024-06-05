@@ -67,16 +67,19 @@
                 </div>
                 <div>
                     <label for="city" class="form-label">Ciudad</label>
-                    <input type="text"
-                        id="city"
-                        name="city"
-                        value="{{client.city}}"
-                        class="form-control" />
-
-                    <div class="invalid-feedback">
-                        La dirrección es opcional
-                    </div>
+                    <select id="city" name="city" class="form-select" required>
+                        <option value="" disabled selected>Seleccione una ciudad</option>
+                        {% for id_city, city in ciudades %}
+                            <option value="{{ id_city }}" {% if client.city == id_city %}selected{% endif %}>
+                                {{ city }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if errors.city %}
+                    <div class="invalid-feedback">{{ errors.city }}</div>
+                    {% endif %}
                 </div>
+
 
                 <button class="btn btn-primary">Guardar</button>
             </form>
