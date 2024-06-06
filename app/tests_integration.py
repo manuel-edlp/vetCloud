@@ -66,15 +66,9 @@ class ClientsTest(TestCase):
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
-<<<<<<< refactor/campos-telefono-solo-numeros
-        self.assertEqual(str(clients[0].phone), "221555232")
-        self.assertEqual(clients[0].address, "13 y 44")
-=======
-        self.assertEqual(clients[0].phone, "54221555232")
->>>>>>> main
+        self.assertEqual(str(clients[0].phone), "54221555232")
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
         self.assertEqual(clients[0].city, "La Plata")
-
         self.assertRedirects(response, reverse("clients_repo"))
 
     def test_validation_errors_create_client(self):
@@ -106,15 +100,9 @@ class ClientsTest(TestCase):
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron",
-<<<<<<< refactor/campos-telefono-solo-numeros
-                "phone": 221555232,
-                "email": "brujita75@gmail.com",
-                "address": "13 y 44",
-=======
-                "phone": "221555232",
+                "phone": 54221555232,
                 "city": "La Plata",
                 "email": "brujita75",
->>>>>>> main
             },
         )
         self.assertContains(response, "El email debe ser de la forma @vetsoft.com")
@@ -162,18 +150,10 @@ class ClientsTest(TestCase):
 
         # redirect after post
         self.assertEqual(response.status_code, 302)
-
         editedClient = Client.objects.get(pk=client.id)
-<<<<<<< refactor/campos-telefono-solo-numeros
-        self.assertEqual(editedClient.name, "Guido Carrillo")
-        self.assertEqual(str(editedClient.phone), client.phone)
-        self.assertEqual(editedClient.address, client.address)
-        self.assertEqual(editedClient.email, client.email)
-=======
-
         self.assertEqual(editedClient.name, "Juan Sebastian Veron")
         self.assertEqual(editedClient.email, "brujita71@vetsoft.com")
-        self.assertEqual(editedClient.phone, "54221456789")
+        self.assertEqual(str(editedClient.phone), "54221456789")
         self.assertEqual(editedClient.city, "Berisso")
 
     def test_edit_user_with_invalid_data_test_city(self):
@@ -268,7 +248,6 @@ class ClientsTest(TestCase):
 
         self.assertContains(response, "El nombre debe contener solo letras y espacios")
 
->>>>>>> main
 
 class MedicineIntegrationTest(TestCase):
     """Pruebas de integración para el modelo de Medicina. """
