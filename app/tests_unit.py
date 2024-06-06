@@ -37,6 +37,10 @@ class ClientModelTest(TestCase):
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
 
     def test_cant_create_and_get_client_with_characters_in_phone_field(self):
+        """
+        Prueba la creación y recuperación de un cliente.
+        Esta función verifica que el sistema no permita la creación de un cliente y que no se pueda recuperardesde la base de datos.
+        """
         # Simulamos el envío del formulario con datos inválidos
         client_data = {
             "name": "Juan Sebastian Veron",

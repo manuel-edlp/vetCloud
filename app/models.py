@@ -33,14 +33,11 @@ def validate_client(data):
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
-<<<<<<< refactor/campos-telefono-solo-numeros
     elif not phone.isdigit():
         errors["phone"] = "El teléfono solo debe contener números"
-=======
     elif not phone.startswith("54"):
         errors["phone"] = "El telefono debe comenzar con 54"
             
->>>>>>> main
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
@@ -112,12 +109,6 @@ class Client(models.Model):
    
         if len(errors) > 0:
             return False, errors
-<<<<<<< refactor/campos-telefono-solo-numeros
-=======
-
-
-
->>>>>>> main
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
@@ -624,7 +615,4 @@ class Medicine(models.Model):
 
         self.save()
         return True, None
-<<<<<<< refactor/campos-telefono-solo-numeros
-=======
       
->>>>>>> main
