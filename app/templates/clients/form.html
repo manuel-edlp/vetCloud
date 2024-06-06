@@ -25,6 +25,7 @@
                     <input type="text"
                         id="name"
                         name="name"
+                        pattern="^[A-Za-z\s]+$"
                         value="{{client.name}}"
                         class="form-control"
                         required/>
@@ -40,7 +41,7 @@
                     <input type="number"
                         id="phone"
                         name="phone"
-                        class="form-control"
+                        class="form-control {% if errors.phone %}is-invalid{% endif %}"
                         value="{{client.phone}}"
                         required
                         step="1"/>
@@ -67,20 +68,20 @@
                     {% endif %}
                 </div>
                 <div>
-                    <label for="address" class="form-label">Direccion</label>
-                    <input type="text"
-                        id="address"
-                        name="address"
-                        class="form-control {% if errors.address %}is-invalid{% endif %}"
-                        value="{{ client.address }}"
-                        required/>
-
-                    {% if errors.address %}
-                        <div class="invalid-feedback">
-                            {{ errors.address }}
-                        </div>
+                    <label for="city" class="form-label">Ciudad</label>
+                    <select id="city" name="city" class="form-select" required>
+                        <option value="" disabled selected>Seleccione una ciudad</option>
+                        {% for id_city, city in ciudades %}
+                            <option value="{{ id_city }}" {% if client.city == id_city %}selected{% endif %}>
+                                {{ city }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if errors.city %}
+                    <div class="invalid-feedback">{{ errors.city }}</div>
                     {% endif %}
                 </div>
+
 
                 <button class="btn btn-primary">Guardar</button>
             </form>

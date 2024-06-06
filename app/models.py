@@ -1,18 +1,20 @@
-from django.db import models
+import re  # Importa el módulo de expresiones regulares
 from datetime import datetime
-from django.db import IntegrityError
+
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError, models
 
-def validate_client(data):
+
+class CityEnum(models.TextChoices):
     """
-    Valida los datos del cliente.
-
-    Args:
-        data (dict): Datos del cliente.
-
-    Returns:
-        dict: Diccionario de errores encontrados.
+     Enumeracion de la Ciudad
     """
+    LA_PLATA = 'La Plata', 
+    BERISSO = 'Berisso',
+    ENSENADA = 'Ensenada',
+
+    
+
 def validate_client(data):
     """
     Esta función valida los datos del cliente.
@@ -22,27 +24,44 @@ def validate_client(data):
     name = data.get("name", "")
     phone = data.get("phone", "")
     email = data.get("email", "")
+    city = data.get("city", "")
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
+<<<<<<< refactor/campos-telefono-solo-numeros
     elif not phone.isdigit():
         errors["phone"] = "El teléfono solo debe contener números"
+=======
+    elif not phone.startswith("54"):
+        errors["phone"] = "El telefono debe comenzar con 54"
+            
+>>>>>>> main
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
     elif "@vetsoft.com" not in email:
         errors["email"] = "El email debe ser de la forma @vetsoft.com"
 
+    if city == "" or city is None:
+        errors["city"] = "Por favor ingrese una ciudad"
+    elif city not in dict(CityEnum.choices):
+        errors["city"] = "Por favor ingrese una ciudad valida"
+
     return errors
 
 class Client(models.Model):
+    """
+    Modelo que representa a un cliente en el sistema.
+    """
     name = models.CharField(max_length=100)
     phone = models.IntegerField()
     email = models.EmailField()
-    address = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=35, choices=CityEnum.choices)
 
     def __str__(self):
         """
@@ -72,11 +91,12 @@ class Client(models.Model):
             name=client_data.get("name"),
             phone=client_data.get("phone"),
             email=client_data.get("email"),
-            address=client_data.get("address"),
+            city=client_data.get("city"),
         )
 
         return True, None
 
+      
     def update_client(self, client_data):
         """
         Actualiza los datos de un cliente existente.
@@ -86,20 +106,29 @@ class Client(models.Model):
 
         Esta función actualiza el cliente. 
         """
+    
+        
         errors = validate_client(client_data)
-
+   
         if len(errors) > 0:
             return False, errors
+<<<<<<< refactor/campos-telefono-solo-numeros
+=======
+
+
+
+>>>>>>> main
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
-        self.address = client_data.get("address", "") or self.address
+        self.city = client_data.get("city", "") or self.city
 
         try:
             self.save()
             return True, None
         except (IntegrityError, ValidationError) as e:
             return False, {"error": str(e)}
+
 
 def validate_provider(data):
     """
@@ -133,6 +162,9 @@ def validate_provider(data):
     return errors
 
 class Provider(models.Model):
+    """
+    Modelo que representa a un cliente en el sistema.
+    """
     name = models.CharField(max_length=100)
     email = models.EmailField()
     address = models.CharField(max_length=100)
@@ -188,8 +220,19 @@ class Provider(models.Model):
         self.name = provider_data.get("name", "") or self.name
         self.email = provider_data.get("email", "") or self.email
         self.address = provider_data.get("address", "") or self.address
+        
+
+        try:
+            self.save()
+            return True, None
+        except Exception as e:
+            return False, e
+
+
+
         self.save()
         return True, None
+
 
 def validate_product(data):
     """
@@ -226,6 +269,9 @@ def validate_product(data):
     return errors
 
 class Product(models.Model):
+    """
+    Modelo que representa a un producto en el sistema.
+    """
     name = models.CharField(max_length=100)
     product_type = models.CharField(max_length=15)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -329,6 +375,9 @@ def validate_pet(data):
     return errors
 
 class Pet(models.Model):
+    """
+    Modelo que representa a una mascota en el sistema.
+    """
     name = models.CharField(max_length=40)
     breed = models.CharField(max_length=40)
     birthday = models.DateField()
@@ -422,6 +471,9 @@ def validate_veterinary(data):
     return errors
 
 class Veterinary(models.Model):
+    """
+    Modelo que representa a un veterinario en el sistema.
+    """
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.IntegerField
@@ -505,6 +557,9 @@ def validate_medicine(data):
     return errors
 
 class Medicine(models.Model):
+    """
+    Modelo que representa una medicina en el sistema.
+    """
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255)
     dose = models.IntegerField()
@@ -559,5 +614,17 @@ class Medicine(models.Model):
         self.name = medicine_data.get("name", "") or self.name
         self.description = medicine_data.get("description", "") or self.description
         self.dose = medicine_data.get("dose", "") or self.dose
+       
+
+        try:
+            self.save()
+            return True, None
+        except Exception as e:
+            return False, {"errors": str(e)}
+
         self.save()
         return True, None
+<<<<<<< refactor/campos-telefono-solo-numeros
+=======
+      
+>>>>>>> main
