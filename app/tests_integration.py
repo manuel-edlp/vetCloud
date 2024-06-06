@@ -66,10 +66,9 @@ class ClientsTest(TestCase):
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
-        self.assertEqual(clients[0].phone, "54221555232")
+        self.assertEqual(str(clients[0].phone), "54221555232")
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
         self.assertEqual(clients[0].city, "La Plata")
-
         self.assertRedirects(response, reverse("clients_repo"))
 
     def test_validation_errors_create_client(self):
@@ -101,7 +100,7 @@ class ClientsTest(TestCase):
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron",
-                "phone": "221555232",
+                "phone": 54221555232,
                 "city": "La Plata",
                 "email": "brujita75",
             },
@@ -151,12 +150,10 @@ class ClientsTest(TestCase):
 
         # redirect after post
         self.assertEqual(response.status_code, 302)
-
         editedClient = Client.objects.get(pk=client.id)
-
         self.assertEqual(editedClient.name, "Juan Sebastian Veron")
         self.assertEqual(editedClient.email, "brujita71@vetsoft.com")
-        self.assertEqual(editedClient.phone, "54221456789")
+        self.assertEqual(str(editedClient.phone), "54221456789")
         self.assertEqual(editedClient.city, "Berisso")
 
     def test_edit_user_with_invalid_data_test_city(self):

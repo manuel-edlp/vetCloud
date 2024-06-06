@@ -43,7 +43,8 @@
                         name="phone"
                         class="form-control {% if errors.phone %}is-invalid{% endif %}"
                         value="{{client.phone}}"
-                        required/>
+                        required
+                        step="1"/>
 
                     {% if errors.phone %}
                         <div class="invalid-feedback">

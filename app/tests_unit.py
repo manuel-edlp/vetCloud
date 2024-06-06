@@ -32,9 +32,35 @@ class ClientModelTest(TestCase):
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
-        self.assertEqual(clients[0].phone, "54221555232")
+        self.assertEqual(str(clients[0].phone), "54221555232")
         self.assertEqual(clients[0].city, "La Plata")
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
+
+    def test_cant_create_and_get_client_with_characters_in_phone_field(self):
+        """
+        Prueba la creación y recuperación de un cliente.
+        Esta función verifica que el sistema no permita la creación de un cliente y que no se pueda recuperardesde la base de datos.
+        """
+        # Simulamos el envío del formulario con datos inválidos
+        client_data = {
+            "name": "Juan Sebastian Veron",
+            "phone": "a221555232",
+            "address": "13 y 44",
+            "email": "brujita75@hotmail.com",
+        }
+
+        # Llamamos al método save_client con los datos del formulario
+        success, errors = Client.save_client(client_data)
+        
+        # Verificamos que el cliente no se haya guardado correctamente
+        self.assertFalse(success)
+        
+        # Verificamos que el error esté relacionado con el campo 'phone'
+        self.assertIn("phone", errors)
+
+        # Verificamos que ningún cliente se haya creado en la base de datos
+        clients = Client.objects.all()
+        self.assertEqual(len(clients), 0)
 
     def test_can_update_client(self):
         """
@@ -51,14 +77,14 @@ class ClientModelTest(TestCase):
         )
         client = Client.objects.get(pk=1)
 
-        self.assertEqual(client.phone, "54221555232")
+        self.assertEqual(str(client.phone), "54221555232")
 
 
         client.update_client({"phone": "54221555234"})
 
         client_updated = Client.objects.get(pk=1)
 
-        self.assertEqual(client_updated.phone, "54221555232")
+        self.assertEqual(str(client_updated.phone), "54221555232")
 
     def test_update_client_with_error(self):
         """
@@ -76,7 +102,7 @@ class ClientModelTest(TestCase):
         )
         client = Client.objects.get(pk=1)
 
-        self.assertEqual(client.phone, "54221555232")
+        self.assertEqual(str(client.phone), "54221555232")
 
         client.update_client({
                 "name": "Juan Sebastian Veron",
@@ -86,7 +112,7 @@ class ClientModelTest(TestCase):
 
         client_updated = Client.objects.get(pk=1)
 
-        self.assertEqual(client_updated.phone, "54221555232")
+        self.assertEqual(str(client_updated.phone), "54221555232")
 
 
     def test_validate_client_incorrect_name(self):

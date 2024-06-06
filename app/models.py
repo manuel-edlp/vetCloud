@@ -33,6 +33,8 @@ def validate_client(data):
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
+    elif not phone.isdigit():
+        errors["phone"] = "El teléfono solo debe contener números"
     elif not phone.startswith("54"):
         errors["phone"] = "El telefono debe comenzar con 54"
             
@@ -54,7 +56,7 @@ class Client(models.Model):
     Modelo que representa a un cliente en el sistema.
     """
     name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=15)
+    phone = models.IntegerField()
     email = models.EmailField()
     city = models.CharField(max_length=35, choices=CityEnum.choices)
 
@@ -107,9 +109,6 @@ class Client(models.Model):
    
         if len(errors) > 0:
             return False, errors
-
-
-
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
@@ -131,6 +130,7 @@ def validate_provider(data):
 
     Returns:
         dict: Diccionario de errores encontrados.
+
     Esta función valida los datos del proovedor.
     """
     errors = {}
@@ -176,6 +176,7 @@ class Provider(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
+
         Esta función guarda el proveedor en la base de datos.
         """
         errors = validate_provider(provider_data)
@@ -227,7 +228,6 @@ class Provider(models.Model):
 def validate_product(data):
     """
     Valida los datos del producto.
-    
     Args:
         data (dict): Datos del producto.
 
@@ -301,7 +301,6 @@ class Product(models.Model):
     def update_product(self, product_data):
         """
         Actualiza los datos de un producto existente.
-
         Esta función actualiza el producto.
         Args:
             product_data (dict): Datos actualizados del producto.
@@ -391,7 +390,6 @@ class Pet(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
-
         Esta función guarda la mascota en la base de datos.
         """
         errors = validate_pet(pet_data)
@@ -417,9 +415,7 @@ class Pet(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
-
         Esta función actualiza los datos de mascota.
-
         """
         errors = validate_pet(pet_data)
         if len(errors.keys()) > 0:
@@ -442,9 +438,7 @@ def validate_veterinary(data):
 
     Returns:
         dict: Diccionario de errores encontrados.
-
     Esta función valida los datos del veterinario.
-
     """
     errors = {}
 
@@ -462,6 +456,8 @@ def validate_veterinary(data):
     
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
+    elif not phone.isdigit():
+        errors["phone"] = "El teléfono solo debe contener números"
 
     return errors
 
@@ -471,7 +467,7 @@ class Veterinary(models.Model):
     """
     name = models.CharField(max_length=100)
     email = models.EmailField()
-    phone = models.CharField(max_length=15)
+    phone = models.IntegerField
     
     def __str__(self):
         """
@@ -482,7 +478,6 @@ class Veterinary(models.Model):
     @classmethod
     def save_veterinary(cls, veterinary_data):
         """
-
         Guarda un veterinario en la base de datos.
 
         Args:
@@ -490,9 +485,7 @@ class Veterinary(models.Model):
 
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
-
         Esta función guarda los datos de veterinario.
-
         """
         errors = validate_veterinary(veterinary_data)
 
@@ -513,9 +506,7 @@ class Veterinary(models.Model):
 
         Args:
             veterinary_data (dict): Datos actualizados del veterinario.
-
         Esta función actualiza los datos de veterinario.
-
         """
         self.name = veterinary_data.get("name", "") or self.name
         self.email = veterinary_data.get("email", "") or self.email
@@ -532,9 +523,7 @@ def validate_medicine(data):
 
     Returns:
         dict: Diccionario de errores encontrados.
-
     Esta  función valida los datos de medicina.
-
     """
     errors = {}
 
@@ -607,7 +596,6 @@ class Medicine(models.Model):
         Returns:
             tuple: (bool, dict or None) Éxito de la operación y errores encontrados, si los hay.
         Esta función actualiza los datos de medicina.
-
         """
         errors = validate_medicine(medicine_data)
 
