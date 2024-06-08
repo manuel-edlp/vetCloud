@@ -161,7 +161,7 @@ class ClientModelTest(TestCase):
         )
         client = Client.objects.get(pk=1)
 
-        self.assertEqual(client.phone, "54221555232")
+        self.assertEqual(client.phone, 54221555232)
 
         client.update_client({"email": ""})
 
