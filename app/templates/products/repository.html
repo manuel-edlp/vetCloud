@@ -17,6 +17,7 @@
                 <th>Nombre</th>
                 <th>Tipo</th>
                 <th>Precio</th>
+                <th>Descripcion</th>
                 <th>Imagen</th>
                 <th></th>
             </tr>
@@ -26,8 +27,9 @@
             {% for product in products %}
             <tr>
                 <td>{{ product.name }}</td>
-                <td>{{ product.product_type }}</td>
+                <td>{{ product.type }}</td>
                 <td>{{ product.price }}</td>
+                <td>{{ product.description }}</td>
                 <td>
                     {% if product.image_url %}
                         {% with sas_token=product.image_url|generate_sas_token %}
