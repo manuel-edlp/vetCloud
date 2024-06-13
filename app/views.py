@@ -1,7 +1,12 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from .models import Client, Provider, Product, Pet, Medicine, Veterinary
-from django.core.files.storage import FileSystemStorage
+from django.http import JsonResponse
 
+from azure.cognitiveservices.vision.computervision import ComputerVisionClient
+from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
+from msrest.authentication import CognitiveServicesCredentials
+from io import BytesIO
+from PIL import Image
 
 
 def home(request):
@@ -91,6 +96,47 @@ def product_repository(request):
     products = Product.objects.all()
     return render(request, "products/repository.html", {"products": products})
 
+# Configurar las credenciales y el cliente para Azure Computer Vision
+KEY = '6cd151994fa843228f17ff671b3719e9'
+ENDPOINT = 'https://vet-vision.cognitiveservices.azure.com/'
+computervision_client = ComputerVisionClient(ENDPOINT, CognitiveServicesCredentials(KEY))
+
+def extract_text_from_image(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        try:
+            # Obtener la imagen del formulario
+            image_file = request.FILES['image']
+
+            # Leer los bytes de la imagen
+            img_bytes = image_file.read()
+
+            # Llamar al servicio de Computer Vision para extraer texto de la imagen
+            result = computervision_client.read_in_stream(BytesIO(img_bytes), raw=True)
+
+            # Obtener el ID de operación para hacer un seguimiento del estado
+            operation_location_remote = result.headers["Operation-Location"]
+            operation_id = operation_location_remote.split("/")[-1]
+
+            # Hacer un seguimiento del estado de la operación para obtener el texto extraído
+            while True:
+                get_text_results = computervision_client.get_read_result(operation_id)
+                if get_text_results.status not in [OperationStatusCodes.running]:
+                    break
+
+            # Procesar resultados y extraer texto
+            extracted_text = ""
+            for text_result in get_text_results.analyze_result.read_results:
+                for line in text_result.lines:
+                    extracted_text += line.text + " "
+
+            # Devolver el texto extraído como respuesta JSON
+            return JsonResponse({'extracted_text': extracted_text.strip()})
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    else:
+        return JsonResponse({'error': 'Se esperaba una imagen en la solicitud'}, status=400)
 
 def product_form(request, id=None):
     if request.method == "POST":
@@ -105,7 +151,7 @@ def product_form(request, id=None):
         else:
             product = get_object_or_404(Product, pk=product_id)
             product_image = request.FILES.get("image")
-            product.update_product(request.POST,product_image)  # Pasar request.FILES
+            saved,errors = product.update_product(request.POST,product_image)  # Pasar request.FILES
 
         if saved:
             return redirect(reverse("product_repo"))
