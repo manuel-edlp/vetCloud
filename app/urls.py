@@ -15,6 +15,7 @@ urlpatterns = [
     # Producto
     path("producto/", view=views.product_repository, name="product_repo"),
     path("producto/nuevo/", view=views.product_form, name="product_form"),
+    path('extract_text_from_image/', views.extract_text_from_image, name='extract_text_from_image'),
     path("producto/editar/<int:id>/", view=views.product_form, name="product_edit"),
     path("producto/eliminar/", view=views.product_delete, name="product_delete"),
     # Mascota
