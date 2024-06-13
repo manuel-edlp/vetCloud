@@ -1,8 +1,6 @@
 from django.db import models
-from datetime import datetime
 from django.conf import settings
 from azure.storage.blob import BlobServiceClient
-from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import UploadedFile
 
 def validate_client(data):
@@ -108,26 +106,31 @@ def validate_product(data):
     errors = {}
 
     name = data.get("name", "")
-    product_type = data.get("product_type", "")
+    type = data.get("type", "")
     price = data.get("price", "")
+    description = data.get("description", "")
 
     if name == "":
-        errors["name"] = "Por favor ingrese su nombre"
+        errors["name"] = "Por favor ingrese un nombre"
 
-    if product_type == "":
-        errors["type"] = "Por favor ingrese un tipo de producto"
+    if type == "":
+        errors["type"] = "Por favor ingrese un tipo"
 
     if price == "":
-        errors["price"] = "Por favor ingrese un precio válido"
+        errors["price"] = "Por favor ingrese un precio"
+
+    if description == "":
+        errors["description"] = "Por favor ingrese una descripcion"
 
     return errors
 
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    product_type = models.CharField(max_length=15)
+    type = models.CharField(max_length=15)
     price = models.CharField(max_length=15)
     image_url = models.URLField(null=True, blank=True)  # Campo para almacenar la URL de la imagen en Blob Storage
+    description = models.CharField(max_length=300)
 
     def __str__(self):
         return self.name
@@ -144,17 +147,25 @@ class Product(models.Model):
 
         Product.objects.create(
             name=product_data.get("name"),
-            product_type=product_data.get("product_type"),
+            type=product_data.get("type"),
             price=product_data.get("price"),
+            description=product_data.get("description"),
             image_url=image_url  # Guardar la URL de la imagen
         )
     
         return True, "Producto creado exitosamente"
 
     def update_product(self, product_data, product_image):
+        
+        errors = validate_product(product_data)
+
+        if len(errors.keys()) > 0:
+            return False, errors
+        
         self.name = product_data.get("name", "") or self.name
-        self.product_type = product_data.get("product_type", "") or self.product_type
+        self.type = product_data.get("type", "") or self.type
         self.price = product_data.get("price", "") or self.price
+        self.description = product_data.get("description", "") or self.description
 
         if product_image:  # Only update image if a new one is provided
             # Delete existing image if there was one
@@ -172,6 +183,7 @@ class Product(models.Model):
                 print(f"Error uploading new image!")  # Add logging for debugging
 
         self.save()
+        return True,None
         
     def delete(self, *args, **kwargs):
         # Eliminar la imagen de Azure Blob Storage
@@ -213,6 +225,9 @@ def delete_image_from_azure(image_url):
     # Eliminar el blob (archivo) del contenedor
     blob_client.delete_blob()
 
+
+
+# Mascota:
 def validate_pet(data):
     errors = {}
 
