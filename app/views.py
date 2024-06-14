@@ -231,7 +231,9 @@ def veterinary_form(request, id=None):
             saved, errors = Veterinary.save_veterinary(request.POST)
         else:
             veterinary = get_object_or_404(Veterinary, pk=veterinary_id)
-            veterinary.update_veterinary(request.POST)
+            saved, errors =  veterinary.update_veterinary(request.POST)
+          
+           
 
         if saved:
             return redirect(reverse("veterinary_repo"))
