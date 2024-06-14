@@ -54,10 +54,10 @@
                     <input type="number"
                         id="phone"
                         name="phone"
-                        class="form-control"
+                        class="form-control {% if errors.phone %}is-invalid{% endif %}"
                         value="{{veterinary.phone}}"
-                        required/>
-
+                        required
+                        step="1"/>
                     {% if errors.phone %}
                         <div class="invalid-feedback">
                             {{ errors.phone }}
@@ -70,3 +70,4 @@
     </div>
 </div>
 {% endblock %}
+
