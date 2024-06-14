@@ -448,6 +448,8 @@ def validate_veterinary(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"    
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
@@ -457,7 +459,7 @@ def validate_veterinary(data):
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
     elif not phone.isdigit():
-        errors["phone"] = "El teléfono solo debe contener números"
+        errors["phone"] = "El teléfono solo debe contener números enteros enteros"
 
     return errors
 
@@ -508,11 +510,145 @@ class Veterinary(models.Model):
             veterinary_data (dict): Datos actualizados del veterinario.
         Esta función actualiza los datos de veterinario.
         """
+ 
+        errors = validate_veterinary(veterinary_data)
+
+
+        if len(errors) > 0:
+            return False, errors
         self.name = veterinary_data.get("name", "") or self.name
         self.email = veterinary_data.get("email", "") or self.email
         self.phone = veterinary_data.get("phone", "") or self.phone
 
-        self.save()
+
+        try:
+            self.save()
+            return True, None
+        except (IntegrityError, ValidationError) as e:
+            return False, {"error": str(e)}
+        
+        
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def validate_medicine(data):
     """
