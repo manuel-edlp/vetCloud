@@ -72,14 +72,18 @@
                         id="image"
                         name="image"
                         class="form-control {% if errors.image_url %}is-invalid{% endif %}"
-                        accept="image/*"
-                        required/>
+                        accept="image/*"/>
 
                         {% if product.image_url %}
                         <div id="imagePreview" style="margin-top: 10px;">
                             {% with sas_token=product.image_url|generate_sas_token %}
-                                <img src="{{ product.image_url }}{{ sas_token }}" alt="{{ product.name }}" style="max-width: 150px; max-height: 150px;">
+                            <img src="{{ product.image_url }}{{ sas_token }}" alt="{{ product.name }}"
+                                style="max-width: 150px; max-height: 150px;">
                             {% endwith %}
+                        </div>
+                        {% else %}
+                        <div id="imagePreviewLocal" style="margin-top: 10px;">
+            
                         </div>
                         {% endif %}
                         
@@ -126,13 +130,47 @@
                     const descriptionTextarea = document.getElementById('description');
                     const imageInput = document.getElementById('image');
                     const imagePreviewDiv = document.getElementById('imagePreview');
+                    const imagePreviewDivLocal = document.getElementById('imagePreviewLocal');
+
+                    
+                    // Función para convertir una imagen en base64 y guardar en localStorage
+                    function convertirImagenABase64(url, callback) {
+                        var img = new Image();
+                        img.crossOrigin = 'Anonymous';
+                        img.onload = function () {
+                            var canvas = document.createElement('canvas');
+                            var ctx = canvas.getContext('2d');
+                            canvas.height = this.height;
+                            canvas.width = this.width;
+                            ctx.drawImage(this, 0, 0);
+                            var dataURL = canvas.toDataURL('image/png');
+                            callback(dataURL);
+                            canvas = null;
+                        };
+                        img.src = url;
+                    }                
+      
+
+                    var image_url = '{{ product.image_url }}';
+                    var sasToken = '{{ product.image_url|generate_sas_token }}';  // Utiliza el filtro para obtener el token SAS
+                    
+                    // Reemplazar &amp; por &
+                    sasToken = sasToken.replace(/&amp;/g, '&');
+
+                    // Construir la URL completa con el token SAS
+                    var url = image_url + sasToken;
+
+                    // Llamar a la función para convertir la imagen en base64 y guardar en localStorage
+                    convertirImagenABase64(url, function (base64Img) {
+                        localStorage.setItem('imagenProducto', base64Img);
+                    });
 
                     // Por defecto, el toggle está desactivado (no ejecuta la extracción de texto)
                     toggleAutoDescription.checked = false;
 
                     imageInput.addEventListener('change', function() {
                         showImagePreview();
-                        extractTextFromImage();  // Asegúrate de agregar la lógica correcta aquí si es necesario
+                        extractTextFromImage();  
                     });
                     
                     // Funcion para extraer el texto de la imagen y cargarlo a la descripcion del producto
@@ -176,14 +214,49 @@
                                 const imgElement = document.createElement('img');
                                 imgElement.setAttribute('src', event.target.result);
                                 imgElement.setAttribute('style', 'max-width: 150px; max-height: 150px;');
-                                imagePreviewDiv.innerHTML = '';
-                                imagePreviewDiv.appendChild(imgElement);
+                                
+                                if(imagePreviewDiv){
+                                    imagePreviewDiv.innerHTML = '';
+                                    imagePreviewDiv.appendChild(imgElement);
+                                }else{
+                                    imagePreviewDivLocal.innerHTML = '';
+                                    imagePreviewDivLocal.appendChild(imgElement);
+                                }
+                                
                             };
                             reader.readAsDataURL(file);
                         } else {
                             imagePreviewDiv.innerHTML = '';
                         }
                     }
+                
+                    // Obtener la imagen desde localStorage
+                    const storedImage = localStorage.getItem('imagenProducto');
+
+                    // obtengo los errores del form
+                    const errors = '{{errors}}'
+
+                    // Muestro la imagen del local storage solo si hubieron errores en el form
+                    if(errors.length>0){showImagePreviewLocal();}
+
+                    // muetra Preview de la imagen almacenada en el local storage
+                    function showImagePreviewLocal() {
+                    if (storedImage) {
+                        // Crear un elemento de imagen y establecer la fuente como la imagen en base64
+                        const imgElement = document.createElement('img');
+                        imgElement.setAttribute('src', storedImage);
+                        imgElement.setAttribute('style', 'max-width: 150px; max-height: 150px;');
+
+                        // Agregar la imagen al contenedor de vista previa
+                        imagePreviewDivLocal.appendChild(imgElement);
+
+                    }}
+
+
+                    
+                            
+
+
                 });
             </script>
 
