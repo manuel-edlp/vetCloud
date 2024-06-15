@@ -27,7 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['vet-soft-1-4.onrender.com','100.20.92.101','44.225.181.72','44.227.217.144','127.0.0.1']
 
-CSRF_TRUSTED_ORIGINGS = ['https://vet-soft-1-4.onrender.com']
+CSRF_TRUSTED_ORIGINS = [
+    'https://vet-soft-1-4.onrender.com',
+]
 # Application definition
 
 INSTALLED_APPS = [
