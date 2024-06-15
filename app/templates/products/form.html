@@ -131,7 +131,6 @@
                     const imageInput = document.getElementById('image');
                     const imagePreviewDiv = document.getElementById('imagePreview');
                     const imagePreviewDivLocal = document.getElementById('imagePreviewLocal');
-
                     
                     // Función para convertir una imagen en base64 y guardar en localStorage
                     function convertirImagenABase64(url, callback) {
@@ -150,7 +149,6 @@
                         img.src = url;
                     }                
       
-
                     var image_url = '{{ product.image_url }}';
                     var sasToken = '{{ product.image_url|generate_sas_token }}';  // Utiliza el filtro para obtener el token SAS
                     
@@ -160,7 +158,7 @@
                     // Construir la URL completa con el token SAS
                     var url = image_url + sasToken;
 
-                    // Llamar a la función para convertir la imagen en base64 y guardar en localStorage
+                    //  Convierte imagen ya guardada a base64 y guarda en local storage
                     convertirImagenABase64(url, function (base64Img) {
                         localStorage.setItem('imagenProducto', base64Img);
                     });
@@ -168,6 +166,7 @@
                     // Por defecto, el toggle está desactivado (no ejecuta la extracción de texto)
                     toggleAutoDescription.checked = false;
 
+                    // guarda imagen no subida en el local storage cuando se selecciona desde el input files
                     function saveImageToLocalStorage(file) {
                         const reader = new FileReader(); // Crear una nueva instancia de FileReader
 
@@ -182,6 +181,7 @@
                         reader.readAsDataURL(file); // Leer el archivo como una URL de datos
                     }
 
+                    // Funciones para cuando se selecciona otra imagen
                     imageInput.addEventListener('change', function() {
                         
                         localStorage.removeItem('imagenProducto'); // limpio local storage
@@ -327,6 +327,7 @@
 
                         return new Blob(byteArrays, { type: contentType });
                     }
+                    
                     // muetra Preview de la imagen almacenada en el local storage
                     function showImagePreviewLocal() {
                     if (storedImage) {
