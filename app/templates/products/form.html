@@ -168,8 +168,36 @@
                     // Por defecto, el toggle está desactivado (no ejecuta la extracción de texto)
                     toggleAutoDescription.checked = false;
 
+                    function saveImageToLocalStorage(file) {
+                        const reader = new FileReader(); // Crear una nueva instancia de FileReader
+
+                        reader.onload = function (event) {
+                            const base64Image = event.target.result; // Obtener la cadena Base64
+
+                            // Guardar la imagen en el local storage
+                            localStorage.setItem('imagenProducto', base64Image);
+
+                            console.log('Imagen guardada en el local storage.');
+                        };
+                        reader.readAsDataURL(file); // Leer el archivo como una URL de datos
+                    }
+
                     imageInput.addEventListener('change', function() {
+                        
+                        localStorage.removeItem('imagenProducto'); // limpio local storage
+                        localStorage.removeItem('imagenNombre'); // limpio local storage
+
+                        const file = this.files[0]; // Obtener el archivo seleccionado
+
+                        const fileName = this.files[0].name;  // obtengo el nombre
+
+                        // Guardar el nombre del archivo en el local storage
+                        localStorage.setItem('imagenNombre', fileName);
+
+                        saveImageToLocalStorage(file);
+
                         showImagePreview();
+
                         extractTextFromImage();  
                     });
                     
@@ -237,8 +265,68 @@
                     const errors = '{{errors}}'
 
                     // Muestro la imagen del local storage solo si hubieron errores en el form
-                    if(errors.length>0){showImagePreviewLocal();}
+                    if (errors.length > 0) {
+                        showImagePreviewLocal();
+                        if (storedImage) {
+                            simulateFileSelection(storedImage);
+                        }
+                    }
+                    // Función para simular la selección de archivo
+                    function simulateFileSelection(imageDataUrl) {
+                        const fileContent = imageDataUrl.split(',')[1]; // Extraer el contenido base64
 
+                        // Crear un Blob a partir de los datos base64
+                        const blob = b64toBlob(fileContent);
+
+                        // Obtener la nombre de la imagen desde localStorage
+                        const storedImageName = localStorage.getItem('imagenNombre');
+
+                        if (storedImageName==null) {
+                            // Crear un objeto File a partir del Blob
+                            const file = new File([blob],"", { type: 'image/jpeg' });
+                        }else{
+                            // Crear un objeto File a partir del Blob
+                            const file = new File([blob], storedImageName, { type: 'image/jpeg' });
+                        }
+                        
+
+                        // Obtener el elemento input de tipo file
+                        const fileInput = document.getElementById('image');
+
+                        // Crear un objeto DataTransfer
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+
+                        // Establecer los archivos del input file
+                        fileInput.files = dataTransfer.files;
+
+                        // Mostrar la vista previa (opcional)
+                        showImagePreview(imageDataUrl);
+
+                        // Disparar eventos de cambio e input para simular interacción del usuario
+                        fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        fileInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+
+                    // Función para convertir datos base64 en Blob
+                    function b64toBlob(b64Data, contentType = '', sliceSize = 512) {
+                        const byteCharacters = atob(b64Data);
+                        const byteArrays = [];
+
+                        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                            const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+                            const byteNumbers = new Array(slice.length);
+                            for (let i = 0; i < slice.length; i++) {
+                                byteNumbers[i] = slice.charCodeAt(i);
+                            }
+
+                            const byteArray = new Uint8Array(byteNumbers);
+                            byteArrays.push(byteArray);
+                        }
+
+                        return new Blob(byteArrays, { type: contentType });
+                    }
                     // muetra Preview de la imagen almacenada en el local storage
                     function showImagePreviewLocal() {
                     if (storedImage) {
