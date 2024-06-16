@@ -1,27 +1,23 @@
-FROM python:3.11-slim as builder
+# Utilizamos una imagen base adecuada para nuestra aplicación. En este caso, usaremos una imagen de Python.
+FROM python:3.10-slim
 
+# Establecemos el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
+# Copiamos el archivo de requerimientos de Python
 COPY requirements.txt .
 
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+# Instalamos las dependencias de la aplicación
+RUN pip install --no-cache-dir -r requirements.txt
 
-FROM python:3.11-slim
-
-WORKDIR /app
-
-COPY --from=builder /app/wheels /wheels
-COPY --from=builder /app/requirements.txt .
-
-RUN pip install --no-cache /wheels/*
-
+# Copiamos el código fuente de la aplicación al contenedor
 COPY . .
 
-RUN ["python", "manage.py", "migrate"]
+# Aplicamos migraciones
+RUN python manage.py migrate
 
+# Exponemos el puerto en el que se ejecuta la aplicación
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", ":8000", "--workers", "2", "vetsoft.wsgi"]
+# Comando para ejecutar la aplicación
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
