@@ -160,7 +160,7 @@
 
                     //  Convierte imagen ya guardada a base64 y guarda en local storage
                     convertirImagenABase64(url, function (base64Img) {
-                        localStorage.setItem('imagenProducto', base64Img);
+                        localStorage.setItem('imagen', base64Img);
                     });
 
                     // Por defecto, el toggle está desactivado (no ejecuta la extracción de texto)
@@ -174,7 +174,7 @@
                             const base64Image = event.target.result; // Obtener la cadena Base64
 
                             // Guardar la imagen en el local storage
-                            localStorage.setItem('imagenProducto', base64Image);
+                            localStorage.setItem('imagen', base64Image);
 
                             console.log('Imagen guardada en el local storage.');
                         };
@@ -184,7 +184,7 @@
                     // Funciones para cuando se selecciona otra imagen
                     imageInput.addEventListener('change', function() {
                         
-                        localStorage.removeItem('imagenProducto'); // limpio local storage
+                        localStorage.removeItem('imagen'); // limpio local storage
                         localStorage.removeItem('imagenNombre'); // limpio local storage
 
                         const file = this.files[0]; // Obtener el archivo seleccionado
@@ -259,7 +259,7 @@
                     }
                 
                     // Obtener la imagen desde localStorage
-                    const storedImage = localStorage.getItem('imagenProducto');
+                    const storedImage = localStorage.getItem('imagen');
 
                     // obtengo los errores del form
                     const errors = '{{errors}}'
@@ -281,12 +281,14 @@
                         // Obtener la nombre de la imagen desde localStorage
                         const storedImageName = localStorage.getItem('imagenNombre');
 
+                        let file;
+                        
                         if (storedImageName==null) {
                             // Crear un objeto File a partir del Blob
-                            const file = new File([blob],"", { type: 'image/jpeg' });
+                            file = new File([blob],"", { type: 'image/jpeg' });
                         }else{
                             // Crear un objeto File a partir del Blob
-                            const file = new File([blob], storedImageName, { type: 'image/jpeg' });
+                            file = new File([blob], storedImageName, { type: 'image/jpeg' });
                         }
                         
 
