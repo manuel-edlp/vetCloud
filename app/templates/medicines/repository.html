@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load filters %}
 {% block main %}
 <div class="container">
     <h1 class="mb-4">Medicamentos</h1>
@@ -17,6 +17,7 @@
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Dosis</th>
+                <th>Imagen</th>
                 <th></th>
             </tr>
         </thead>
@@ -27,6 +28,15 @@
                     <td>{{ medicine.name }}</td>
                     <td>{{ medicine.description }}</td>
                     <td>{{ medicine.dose }}</td>
+                    <td>
+                        {% if medicine.image_url %}
+                            {% with sas_token=medicine.image_url|generate_sas_token %}
+                                <img src="{{ medicine.image_url }}{{ sas_token }}" alt="{{ medicine.name }}" style="max-width: 100px; max-height: 100px;">
+                            {% endwith %}
+                        {% else %}
+                            No hay imagen
+                        {% endif %}        
+                    </td>
                     <td>
                         <a class="btn btn-outline-primary"
                            href="{% url 'medicine_edit' id=medicine.id %}"
@@ -50,5 +60,10 @@
             {% endfor %}
         </tbody>
     </table>
+    <script>
+        // Eliminar la imagen almacenada en localStorage con la clave 'imagen'
+        localStorage.removeItem('imagen');
+        localStorage.removeItem('imagenNombre');
+    </script>
 </div>
 {% endblock %}

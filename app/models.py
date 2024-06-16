@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from azure.storage.blob import BlobServiceClient
 from django.core.files.uploadedfile import UploadedFile
+import uuid
 
 def validate_client(data):
     errors = {}
@@ -195,6 +196,9 @@ def upload_image_to_azure(image_file):
     if not isinstance(image_file, UploadedFile) or image_file is None:
         return None
 
+    # Generar un nombre único para el archivo
+    unique_name = f"{uuid.uuid4()}"
+
     # Conectar al servicio de Blob Storage de Azure
     blob_service_client = BlobServiceClient.from_connection_string(settings.AZURE_BLOB_CONNECTION_STRING)
 
@@ -203,11 +207,11 @@ def upload_image_to_azure(image_file):
 
     # Subir la imagen al contenedor
     with image_file.open('rb') as data:
-        blob_client = container_client.get_blob_client(image_file.name)
+        blob_client = container_client.get_blob_client(unique_name)
         blob_client.upload_blob(data)
 
     # Construir y devolver la URL de la imagen
-    return f"https://vetstorage01.blob.core.windows.net/imagenes/{image_file.name}"
+    return f"https://vetstorage01.blob.core.windows.net/imagenes/{unique_name}"
 
 
 
@@ -347,31 +351,65 @@ def validate_medicine(data):
     
 class Medicine(models.Model):
     name = models.CharField(max_length=100)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=300)
     dose = models.IntegerField()
+    image_url = models.URLField(null=True, blank=True)  # Campo para almacenar la URL de la imagen en Blob Storage
 
     def __str__(self):
         return self.name
     
 
     @classmethod
-    def save_medicine(cls, medicine_data):
+    def save_medicine(cls, medicine_data,medicine_image):
+        
         errors = validate_medicine(medicine_data)
-
 
         if len(errors.keys()) > 0:
             return False, errors
+        
+        # Guardar la imagen en Azure Blob Storage
+        image_url = upload_image_to_azure(medicine_image)
 
         Medicine.objects.create(
             name=medicine_data.get("name"),
             description=medicine_data.get("description"),
             dose=medicine_data.get("dose"),
+            image_url=image_url,  # Guardar la URL de la imagen
         )
 
         return True, "Medicamento creado exitosamente"
     
-    def update_medicine(self, medicine_data):
+    def update_medicine(self, medicine_data,medicine_image):
+        
+        errors = validate_medicine(medicine_data)
+
+        if len(errors.keys()) > 0:
+            return False, errors
+        
         self.name = medicine_data.get("name", "") or self.name
         self.description = medicine_data.get("description", "") or self.description
         self.dose = medicine_data.get("dose", "") or self.dose
+        
+        if medicine_image:  # Only update image if a new one is provided
+            # Delete existing image if there was one
+            if self.image_url:
+                delete_image_from_azure(self.image_url)
+
+            # Upload new image and get the URL
+            new_image_url = upload_image_to_azure(medicine_image)
+
+            # Check if upload was successful before saving
+            if new_image_url:
+                self.image_url = new_image_url
+                print(f"New image uploaded successfully: {new_image_url}")  # Add logging for debugging
+            else:
+                print(f"Error uploading new image!")  # Add logging for debugging
+
         self.save()
+        return True,None
+    
+    def delete(self, *args, **kwargs):
+        # Eliminar la imagen de Azure Blob Storage
+        if self.image_url:
+            delete_image_from_azure(self.image_url)
+        super().delete(*args, **kwargs)

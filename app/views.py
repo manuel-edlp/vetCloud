@@ -159,7 +159,6 @@ def product_form(request, id=None):
         return render(
             request, "products/form.html", {"errors": errors, "product": request.POST}
         )
-
     product = None
     if id is not None:
         product = get_object_or_404(Product, pk=id)
@@ -264,16 +263,18 @@ def medicine_form(request, id=None):
         saved = True
 
         if medicine_id == "":
-            saved, errors = Medicine.save_medicine(request.POST)
+            medicine_image = request.FILES.get("image")
+            saved, errors = Medicine.save_medicine(request.POST,medicine_image)
         else:
             medicine = get_object_or_404(Medicine, pk=medicine_id)
-            medicine.update_medicine(request.POST)
+            medicine_image = request.FILES.get("image")
+            saved, errors = medicine.update_medicine(request.POST,medicine_image)
 
         if saved:
             return redirect(reverse("medicine_repo"))
 
         return render(
-            request, "medicines/form.html", {"errors": errors, "medicine": medicine}
+            request, "medicines/form.html", {"errors": errors, "medicine": request.POST}
         )
 
     medicine = None

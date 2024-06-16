@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load filters %}
 {% block main %}
 <div class="container">
     <div class="row">
@@ -14,6 +14,7 @@
                 aria-label="Formulario de creacion de medicamento"
                 method="POST"
                 action="{% url 'medicine_form' %}"
+                enctype="multipart/form-data"
                 novalidate>
 
                 {% csrf_token %}
@@ -35,19 +36,61 @@
                         </div>
                     {% endif %}
                 </div>
+
+                <div>
+                    <label for="image" class="form-label">Imagen</label>
+                    <input type="file"
+                        id="image"
+                        name="image"
+                        class="form-control {% if errors.image_url %}is-invalid{% endif %}"
+                        accept="image/*"/>
+
+                        {% if medicine.image_url %}
+                        <div id="imagePreview" style="margin-top: 10px;">
+                            {% with sas_token=medicine.image_url|generate_sas_token %}
+                            <img src="{{ medicine.image_url }}{{ sas_token }}" alt="{{ medicine.name }}"
+                                style="max-width: 150px; max-height: 150px;">
+                            {% endwith %}
+                        </div>
+                        {% else %}
+                        <div id="imagePreviewLocal" style="margin-top: 10px;">
+            
+                        </div>
+                        {% endif %}
+                        
+                    {% if errors.image_url %}
+                        <div class="invalid-feedback">
+                            {{ errors.image_url }}
+                        </div>
+                    {% endif %}
+                </div>
+    
+                <div id="toggleContainer">
+                    <label for="toggleAutoDescription">Descripción automática de la medicina</label>
+                    <input type="checkbox" id="toggleAutoDescription">
+                </div>
+
                 <div>
                     <label for="description" class="form-label">Descripción</label>
-                    <textarea id ="description"
-                        name="description"
-                        class="form-control"
-                        required>{{ medicine.description }}</textarea>
-
+                    <style>
+                        textarea {
+                            width: 100%; /* Ancho completo del contenedor */
+                            min-height: 100px; /* Altura mínima inicial */
+                            resize: vertical; /* Permite redimensionar verticalmente */
+                        }
+                    </style>
+                    <textarea id="description"
+                              name="description"
+                              class="form-control {% if errors.description %}is-invalid{% endif %}"
+                              required>{{ medicine.description }}</textarea>
+                
                     {% if errors.description %}
                         <div class="invalid-feedback">
                             {{ errors.description }}
                         </div>
                     {% endif %}
-                </div>
+                </div>   
+
                 <div>
                     <label for="dose" class="form-label">Dosis</label>
                     <input type="number"
@@ -65,6 +108,235 @@
                 </div>
                 <button class="btn btn-primary">Guardar</button>
             </form>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+
+                    // Obtener elementos del DOM
+                    const toggleAutoDescription = document.getElementById('toggleAutoDescription');
+                    const descriptionTextarea = document.getElementById('description');
+                    const imageInput = document.getElementById('image');
+                    const imagePreviewDiv = document.getElementById('imagePreview');
+                    const imagePreviewDivLocal = document.getElementById('imagePreviewLocal');
+                    
+                    // Función para convertir una imagen en base64 y guardar en localStorage
+                    function convertirImagenABase64(url, callback) {
+                        var img = new Image();
+                        img.crossOrigin = 'Anonymous';
+                        img.onload = function () {
+                            var canvas = document.createElement('canvas');
+                            var ctx = canvas.getContext('2d');
+                            canvas.height = this.height;
+                            canvas.width = this.width;
+                            ctx.drawImage(this, 0, 0);
+                            var dataURL = canvas.toDataURL('image/png');
+                            callback(dataURL);
+                            canvas = null;
+                        };
+                        img.src = url;
+                    }                
+      
+                    var image_url = '{{ medicine.image_url }}';
+                    var sasToken = '{{ medicine.image_url|generate_sas_token }}';  // Utiliza el filtro para obtener el token SAS
+                    
+                    // Reemplazar &amp; por &
+                    sasToken = sasToken.replace(/&amp;/g, '&');
+
+                    // Construir la URL completa con el token SAS
+                    var url = image_url + sasToken;
+
+                    //  Convierte imagen ya guardada a base64 y guarda en local storage
+                    convertirImagenABase64(url, function (base64Img) {
+                        localStorage.setItem('imagen', base64Img);
+                    });
+
+                    // Por defecto, el toggle está desactivado (no ejecuta la extracción de texto)
+                    toggleAutoDescription.checked = false;
+
+                    // guarda imagen no subida en el local storage cuando se selecciona desde el input files
+                    function saveImageToLocalStorage(file) {
+                        const reader = new FileReader(); // Crear una nueva instancia de FileReader
+
+                        reader.onload = function (event) {
+                            const base64Image = event.target.result; // Obtener la cadena Base64
+
+                            // Guardar la imagen en el local storage
+                            localStorage.setItem('imagen', base64Image);
+
+                            console.log('Imagen guardada en el local storage.');
+                        };
+                        reader.readAsDataURL(file); // Leer el archivo como una URL de datos
+                    }
+
+                    // Funciones para cuando se selecciona otra imagen
+                    imageInput.addEventListener('change', function() {
+                        
+                        localStorage.removeItem('imagen'); // limpio local storage
+                        localStorage.removeItem('imagenNombre'); // limpio local storage
+
+                        const file = this.files[0]; // Obtener el archivo seleccionado
+
+                        const fileName = this.files[0].name;  // obtengo el nombre
+
+                        // Guardar el nombre del archivo en el local storage
+                        localStorage.setItem('imagenNombre', fileName);
+
+                        saveImageToLocalStorage(file);
+
+                        showImagePreview();
+
+                        extractTextFromImage();  
+                    });
+                    
+                    // Funcion para extraer el texto de la imagen y cargarlo a la descripcion
+                    function extractTextFromImage(){
+
+                        if (toggleAutoDescription.checked==false) {
+
+                        }else{
+                            if (imageInput.files && imageInput.files.length > 0) {
+                                var formData = new FormData();
+                                formData.append('image', imageInput.files[0]);
+
+                                fetch('{% url "extract_text_from_image" %}', {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-CSRFToken': '{{ csrf_token }}'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.extracted_text) {
+                                        descriptionTextarea.value = data.extracted_text;
+                                    } else {
+                                        console.error("No se pudo extraer texto de la imagen.");
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Error al extraer texto:", error);
+                                });
+                            }else{console.log("No se selecciono una imagen aun.");}
+                        }
+                    }
+                    
+                    // Función para mostrar la vista previa de la imagen
+                    function showImagePreview() {
+                        const file = imageInput.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function (event) {
+                                const imgElement = document.createElement('img');
+                                imgElement.setAttribute('src', event.target.result);
+                                imgElement.setAttribute('style', 'max-width: 150px; max-height: 150px;');
+                                
+                                if(imagePreviewDiv){
+                                    imagePreviewDiv.innerHTML = '';
+                                    imagePreviewDiv.appendChild(imgElement);
+                                }else{
+                                    imagePreviewDivLocal.innerHTML = '';
+                                    imagePreviewDivLocal.appendChild(imgElement);
+                                }
+                                
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            imagePreviewDiv.innerHTML = '';
+                        }
+                    }
+                
+                    // Obtener la imagen desde localStorage
+                    const storedImage = localStorage.getItem('imagen');
+
+                    // obtengo los errores del form
+                    const errors = '{{errors}}'
+
+                    // Muestro la imagen del local storage solo si hubieron errores en el form
+                    if (errors.length > 0) {
+                        showImagePreviewLocal();
+                        if (storedImage) {
+                            simulateFileSelection(storedImage);
+                        }
+                    }
+                    // Función para simular la selección de archivo
+                    function simulateFileSelection(imageDataUrl) {
+                        const fileContent = imageDataUrl.split(',')[1]; // Extraer el contenido base64
+
+                        // Crear un Blob a partir de los datos base64
+                        const blob = b64toBlob(fileContent);
+
+                        // Obtener la nombre de la imagen desde localStorage
+                        const storedImageName = localStorage.getItem('imagenNombre');
+
+                        let file;
+
+                        if (storedImageName==null) {
+                            // Crear un objeto File a partir del Blob
+                            file = new File([blob],"", { type: 'image/jpeg' });
+                        }else{
+                            // Crear un objeto File a partir del Blob
+                            file = new File([blob], storedImageName, { type: 'image/jpeg' });
+                        }
+                        
+
+                        // Obtener el elemento input de tipo file
+                        const fileInput = document.getElementById('image');
+
+                        // Crear un objeto DataTransfer
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+
+                        // Establecer los archivos del input file
+                        fileInput.files = dataTransfer.files;
+
+                        // Mostrar la vista previa (opcional)
+                        showImagePreview(imageDataUrl);
+
+                        // Disparar eventos de cambio e input para simular interacción del usuario
+                        fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        fileInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+
+                    // Función para convertir datos base64 en Blob
+                    function b64toBlob(b64Data, contentType = '', sliceSize = 512) {
+                        const byteCharacters = atob(b64Data);
+                        const byteArrays = [];
+
+                        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                            const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+                            const byteNumbers = new Array(slice.length);
+                            for (let i = 0; i < slice.length; i++) {
+                                byteNumbers[i] = slice.charCodeAt(i);
+                            }
+
+                            const byteArray = new Uint8Array(byteNumbers);
+                            byteArrays.push(byteArray);
+                        }
+
+                        return new Blob(byteArrays, { type: contentType });
+                    }
+                    
+                    // muetra Preview de la imagen almacenada en el local storage
+                    function showImagePreviewLocal() {
+                    if (storedImage) {
+                        // Crear un elemento de imagen y establecer la fuente como la imagen en base64
+                        const imgElement = document.createElement('img');
+                        imgElement.setAttribute('src', storedImage);
+                        imgElement.setAttribute('style', 'max-width: 150px; max-height: 150px;');
+
+                        // Agregar la imagen al contenedor de vista previa
+                        imagePreviewDivLocal.appendChild(imgElement);
+
+                    }}
+
+
+                    
+                            
+
+
+                });
+            </script>
         </div>
     </div>
 </div>
