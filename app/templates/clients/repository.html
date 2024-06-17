@@ -30,17 +30,19 @@
                     <td>{{client.email}}</td>
                     <td>{{client.city}}</td>
                     <td>
-                        <a class="btn btn-outline-primary"
-                           href="{% url 'clients_edit' id=client.id %}"
-                        >Editar</a>
-                        <form method="POST"
-                            action="{% url 'clients_delete' %}"
-                            aria-label="Formulario de eliminación de cliente">
-                            {% csrf_token %}
+                        <div class="d-inline-flex gap-2">  
+                            <a class="btn btn-outline-primary"
+                            href="{% url 'clients_edit' id=client.id %}"
+                            >Editar</a>
+                            <form method="POST"
+                                action="{% url 'clients_delete' %}"
+                                aria-label="Formulario de eliminación de cliente">
+                                {% csrf_token %}
 
-                            <input type="hidden" name="client_id" value="{{ client.id }}" />
-                            <button class="btn btn-outline-danger">Eliminar</button>
-                        </form>
+                                <input type="hidden" name="client_id" value="{{ client.id }}" />
+                                <button class="btn btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
                     </td>
             </tr>
             {% empty %}

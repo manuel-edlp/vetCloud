@@ -38,17 +38,19 @@
                         {% endif %}        
                     </td>
                     <td>
-                        <a class="btn btn-outline-primary"
-                           href="{% url 'medicine_edit' id=medicine.id %}"
-                        >Editar</a>
-                        <form method="POST"
-                            action="{% url 'medicine_delete' %}"
-                            aria-label="Formulario de eliminación de medicamento">
-                            {% csrf_token %}
+                        <div class="d-inline-flex gap-2">  
+                            <a class="btn btn-outline-primary"
+                            href="{% url 'medicine_edit' id=medicine.id %}"
+                            >Editar</a>
+                            <form method="POST"
+                                action="{% url 'medicine_delete' %}"
+                                aria-label="Formulario de eliminación de medicamento">
+                                {% csrf_token %}
 
-                            <input type="hidden" name="medicine_id" value="{{ medicine.id }}" />
-                            <button class="btn btn-outline-danger">Eliminar</button>
-                        </form>
+                                <input type="hidden" name="medicine_id" value="{{ medicine.id }}" />
+                                <button class="btn btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
                     </td>
             </tr>
             {% empty %}

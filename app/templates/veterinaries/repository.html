@@ -28,17 +28,19 @@
                     <td>{{veterinary.email}}</td>
                     <td>{{veterinary.phone}}</td>
                     <td>
-                        <a class="btn btn-outline-primary"
-                           href="{% url 'veterinary_edit' id=veterinary.id %}"
-                        >Editar</a>
-                        <form method="POST"
-                            action="{% url 'veterinary_delete' %}"
-                            aria-label="Formulario de eliminación de Veterinario">
-                            {% csrf_token %}
+                        <div class="d-inline-flex gap-2">  
+                            <a class="btn btn-outline-primary"
+                            href="{% url 'veterinary_edit' id=veterinary.id %}"
+                            >Editar</a>
+                            <form method="POST"
+                                action="{% url 'veterinary_delete' %}"
+                                aria-label="Formulario de eliminación de Veterinario">
+                                {% csrf_token %}
 
-                            <input type="hidden" name="veterinary_id" value="{{ veterinary.id }}" />
-                            <button class="btn btn-outline-danger">Eliminar</button>
-                        </form>
+                                <input type="hidden" name="veterinary_id" value="{{ veterinary.id }}" />
+                                <button class="btn btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
                     </td>
             </tr>
             {% empty %}
