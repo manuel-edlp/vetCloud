@@ -272,6 +272,66 @@ def pet_delete(request):
 
     return redirect(reverse("pet_repo"))
 
+# Mascota Historial
+
+def pet_history(request, id):
+    pet = get_object_or_404(Pet.objects.prefetch_related("medicines", "veterinaries"), id=id)
+
+    context = {
+        "pet": pet,
+    }
+    return render(request, "pets/history.html", context)
+
+def pet_form_history(request, id):
+    veterinaries = Veterinary.objects.all()
+    medicines = Medicine.objects.all()
+    pet = get_object_or_404(Pet, id=id)
+
+    if request.method == 'POST':
+        pet_id = request.POST.get("id", "")
+        errors = {}
+        saved = True
+        
+        if pet_id == "":
+            saved, errors = Pet.save_pet(request.POST)
+            medicine_id = request.POST.get("medicines", "")
+            vet_id = request.POST.get("veterinaries", "")
+            
+            if medicine_id and vet_id:
+                pet.medicines.add(medicine_id)
+                pet.veterinaries.add(vet_id)
+                pet.save()
+        else:
+            pet = get_object_or_404(Pet, pk=pet_id)
+            pet.update_pet(request.POST)
+            
+            medicine_id = request.POST.get("medicines", "")
+            vet_id = request.POST.get("veterinaries", "")
+            
+            if medicine_id and vet_id:
+                pet.medicines.add(medicine_id)
+                pet.veterinaries.add(vet_id)
+                pet.save()
+        
+        if saved:
+            return redirect(reverse("pets_history", args=(id,)))
+
+        # Si no se guarda correctamente, debe retornar algo
+        return render(request, 'pets/history.html', {
+            'pet': pet,
+            'veterinaries': veterinaries,
+            'medicines': medicines,
+            'errors': errors,  # Muestra errores si hay
+        })
+    
+    # Manejo para solicitudes GET
+    return render(request, 'pets/form_history.html', {
+        'pet': pet,
+        'veterinaries': veterinaries,
+        'medicines': medicines,
+    })
+
+
 # Veterinario
 
 def veterinary_repository(request):

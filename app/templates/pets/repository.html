@@ -32,17 +32,22 @@
                     <td>{{pet.weight}}</td>
                     <td>{{pet.client}}</td>
                     <td>
-                        <a class="btn btn-outline-primary"
-                           href="{% url 'pet_edit' id=pet.id %}"
-                        >Editar</a>
-                        <form method="POST"
-                            action="{% url 'pet_delete' %}"
-                            aria-label="Formulario de eliminación de mascota">
-                            {% csrf_token %}
+                        <div class="d-inline-flex gap-2">  
+                            <a class="btn btn-outline-primary"
+                            href="{% url 'pet_edit' id=pet.id %}"
+                            >Editar</a>
+                            <a class="btn btn-outline-secondary"
+                            href="{% url 'pet_history' id=pet.id %}"
+                            >Ver Historial</a>
+                            <form method="POST"
+                                action="{% url 'pet_delete' %}"
+                                aria-label="Formulario de eliminación de mascota">
+                                {% csrf_token %}
 
-                            <input type="hidden" name="pet_id" value="{{ pet.id }}" />
-                            <button class="btn btn-outline-danger">Eliminar</button>
-                        </form>
+                                <input type="hidden" name="pet_id" value="{{ pet.id }}" />
+                                <button class="btn btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
                     </td>
             </tr>
             {% empty %}

@@ -448,6 +448,8 @@ class Pet(models.Model):
     birthday = models.DateField()
     weight = models.FloatField()
     client = models.ForeignKey("Client", on_delete=models.CASCADE, null=True, blank=True)
+    medicines = models.ManyToManyField("Medicine")
+    veterinaries = models.ManyToManyField("Veterinary", blank=True)
 
     def __str__(self):
             """
