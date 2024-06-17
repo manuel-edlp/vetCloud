@@ -332,7 +332,7 @@ class MedicineCreateEditTestCase(PlaywrightTestCase):
         expect(self.page.get_by_role("form")).to_be_visible()
 
         self.page.get_by_label("Nombre").fill("prueba")
-        self.page.get_by_label("Descripcion").fill("arbol")
+        self.page.get_by_label("Descripción", exact=True).fill("arbol")
         self.page.get_by_label("Dosis").fill("11")  # Introduce una dosis mayor
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -349,7 +349,7 @@ class MedicineCreateEditTestCase(PlaywrightTestCase):
         expect(self.page.get_by_role("form")).to_be_visible()
 
         self.page.get_by_label("Nombre").fill("prueba")
-        self.page.get_by_label("Descripcion").fill("arbol")
+        self.page.get_by_label("Descripción", exact=True).fill("arbol")
         self.page.get_by_label("Dosis").fill("-1")  # Introduce una dosis menor
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -589,6 +589,8 @@ class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Gentamicina")
         self.page.get_by_label("Tipo").fill("Antibiotico")
         self.page.get_by_label("Precio").fill("200")
+        self.page.get_by_label("Descripción", exact=True).fill("lorem ipsum")
+
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -596,6 +598,7 @@ class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("Gentamicina")).to_be_visible()
         expect(self.page.get_by_text("Antibiotico")).to_be_visible()
         expect(self.page.get_by_text("200")).to_be_visible()
+        expect(self.page.get_by_text("lorem ipsum")).to_be_visible()
 
 # Prueba para verificar si se muestran errores cuando el formulario es inválido con un precio menor que cero
     def test_should_view_errors_if_form_is_invalid_with_price_less_than_zero(self):
@@ -610,20 +613,23 @@ class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
         self.page.get_by_role("button", name="Guardar").click()
 
 # Verificar que se muestren mensajes de error para ingresar nombre, tipo y precio
-        expect(self.page.get_by_text("Por favor ingrese su nombre")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese un nombre")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese un tipo")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese un precio")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese una descripcion")).to_be_visible()
 
 # Completar el formulario con un precio negativo y enviarlo
         self.page.get_by_label("Nombre").fill("Gentamicina")
         self.page.get_by_label("Tipo").fill("Antibiótico")
         self.page.get_by_label("Precio").fill("-10")
+        self.page.get_by_label("Descripción", exact=True).fill("lorem ipsum")
 
         self.page.get_by_role("button", name="Guardar").click()
 
 # Verificar que los mensajes de error para ingresar el nombre y el tipo no sean visibles
         expect(self.page.get_by_text("Por favor ingrese su nombre")).not_to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese un tipo")).not_to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese una descripcion")).not_to_be_visible()
 
 # Verificar que el mensaje de error "El precio debe ser mayor que cero" sea visible
         expect(self.page.get_by_text("El precio debe ser mayor que cero")).to_be_visible()
