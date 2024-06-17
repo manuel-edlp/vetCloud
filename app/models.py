@@ -61,7 +61,7 @@ class Client(models.Model):
     Modelo que representa a un cliente en el sistema.
     """
     name = models.CharField(max_length=100)
-    phone = models.IntegerField()
+    phone = models.BigIntegerField()
     email = models.EmailField()
     city = models.CharField(max_length=35, choices=CityEnum.choices)
 
@@ -114,6 +114,7 @@ class Client(models.Model):
    
         if len(errors) > 0:
             return False, errors
+        
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
@@ -542,7 +543,7 @@ class Veterinary(models.Model):
     """
     name = models.CharField(max_length=100)
     email = models.EmailField()
-    phone = models.IntegerField()
+    phone = models.BigIntegerField()
     
     def __str__(self):
         """
