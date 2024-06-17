@@ -13,6 +13,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiamos el código fuente de la aplicación al contenedor
 COPY . .
 
+# Aplicamos migraciones
+RUN python manage.py migrate
+
 # Exponemos el puerto en el que se ejecuta la aplicación
 EXPOSE 8000
 

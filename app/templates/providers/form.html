@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-lg-6 offset-lg-3">
             <form class="vstack gap-3 {% if errors %}was-validated{% endif %}"
-                aria-label="Formulario de creacion de cliente"
+                aria-label="Formulario de creacion de proveedor"
                 method="POST"
                 action="{% url 'provider_form' %}"
                 novalidate>
@@ -41,7 +41,7 @@
                         id="email"
                         name="email"
                         class="form-control"
-                        value="{{ client.email }}"
+                        value="{{provider.email}}"
                         required/>
 
                     {% if errors.email %}
@@ -50,6 +50,22 @@
                         </div>
                     {% endif %}
                 </div>
+                <div>
+                    <label for="address" class="form-label">Direccion</label>
+                    <input type="text"
+                        id="address"
+                        name="address"
+                        class="form-control {% if errors.address %}is-invalid{% endif %}"
+                        value="{{ provider.address }}"
+                        required/>
+
+                    {% if errors.address %}
+                        <div class="invalid-feedback">
+                            {{ errors.address }}
+                        </div>
+                    {% endif %}
+                </div>
+
                 <button class="btn btn-primary">Guardar</button>
             </form>
         </div>

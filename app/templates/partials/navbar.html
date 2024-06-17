@@ -27,15 +27,15 @@
                    href="{{ link.href }}"
                    data-testid="navbar-{{ link.label }}">
 
-                    {% if link.icon %}
-                        <i class="{{link.icon}}" aria-hidden="true"></i>
-                    {% endif %}
+                  {% if link.icon %}
+                      <i class="{{link.icon}}" aria-hidden="true"></i>
+                  {% endif %}
 
-                    {{ link.label }}
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
-      </div>
+                  {{ link.label }}
+              </a>
+          </li>
+          {% endfor %}
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
