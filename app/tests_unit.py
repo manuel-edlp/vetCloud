@@ -1,3 +1,6 @@
+import os
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.utils import timezone
 
@@ -11,6 +14,18 @@ from app.models import (
     validate_pet,
 )
 
+# Obtengo ruta actual app
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Retrocedo a vetsoft
+project_dir = os.path.dirname(current_dir)
+
+# Armo ruta relativa para acceder a '/test_images/pipeta.png'
+relative_path = os.path.join(project_dir, 'test_images', 'pipeta.png')
+
+with open(relative_path, 'rb') as f:
+    image_data = f.read()
+    image_file = SimpleUploadedFile('pipeta.png', image_data, content_type='image/png')
 
 class ClientModelTest(TestCase):
     """
@@ -75,14 +90,14 @@ class ClientModelTest(TestCase):
                 "city": "La Plata",
             },
         )
-        client = Client.objects.get(pk=1)
+        
+        client = Client.objects.first()
 
         self.assertEqual(str(client.phone), "54221555232")
 
-
         client.update_client({"phone": "54221555234"})
 
-        client_updated = Client.objects.get(pk=1)
+        client_updated = Client.objects.first()
 
         self.assertEqual(str(client_updated.phone), "54221555232")
 
@@ -100,7 +115,7 @@ class ClientModelTest(TestCase):
             },
 
         )
-        client = Client.objects.get(pk=1)
+        client = Client.objects.first()
 
         self.assertEqual(str(client.phone), "54221555232")
 
@@ -110,7 +125,7 @@ class ClientModelTest(TestCase):
                 "city": "La Plata",
                 "email": "brujita75hotmail.com"})
 
-        client_updated = Client.objects.get(pk=1)
+        client_updated = Client.objects.first()
 
         self.assertEqual(str(client_updated.phone), "54221555232")
 
@@ -159,13 +174,13 @@ class ClientModelTest(TestCase):
                 "email": "brujita75@vetsoft.com",
             },
         )
-        client = Client.objects.get(pk=1)
+        client = Client.objects.first()
 
         self.assertEqual(client.phone, 54221555232)
 
         client.update_client({"email": ""})
 
-        client_updated = Client.objects.get(pk=1)
+        client_updated = Client.objects.first()
 
         self.assertEqual(client_updated.email, "brujita75@vetsoft.com")
 
@@ -181,12 +196,12 @@ class ClientModelTest(TestCase):
                 "email": "brujita75@vetsoft.com",
             },
         )
-        client = Client.objects.get(pk=1)
+        client = Client.objects.first()
 
         self.assertEqual(client.name, "Juan Sebastian Veron")
 
         client.update_client({"name": ""})
-        client_updated = Client.objects.get(pk=1)
+        client_updated = Client.objects.first()
 
         self.assertEqual(client_updated.name, "Juan Sebastian Veron")
 
@@ -202,7 +217,7 @@ class ClientModelTest(TestCase):
                 "email": "brujita75@vetsoft.com",
             },
         )
-        client = Client.objects.get(pk=1)
+        client = Client.objects.first()
 
         self.assertEqual(client.name, "Juan Sebastian Veron")
 
@@ -211,7 +226,7 @@ class ClientModelTest(TestCase):
                 "phone": "54221555232",
                 "city": "La Plata",
                 "email": "brujita75@vetsoft.com",})
-        client_updated = Client.objects.get(pk=1)
+        client_updated = Client.objects.first()
 
         self.assertEqual(client_updated.name, "Juan Sebastian Veron")
 
@@ -225,13 +240,17 @@ class MedicineModelTest(TestCase):
         Prueba la creación de un medicamento con una dosis válida.
         Esta función testea que el sistema permita la creación de un medicamento con una dosis válida.
         """
-        success, errors = Medicine.save_medicine(
-            {
-                "name": "Ibuprofeno",
-                "description": "Medicamento antiinflamatorio",
-                "dose": 1,
-            },
-        )
+        with open(relative_path, 'rb') as f:
+            image_data = f.read()
+            image_file = SimpleUploadedFile('pipeta.png', image_data, content_type='image/png')
+            success, errors = Medicine.save_medicine(
+                {
+                    "name": "Ibuprofeno",
+                    "description": "Medicamento antiinflamatorio",
+                    "dose": 1,
+                },
+                medicine_image=image_file 
+            )
         self.assertTrue(success)
 
         medicines = Medicine.objects.all()
@@ -242,13 +261,18 @@ class MedicineModelTest(TestCase):
         Prueba la creación de un medicamento con una dosis inválida.
         Esta función verifica que el sistema no permita la creación de un medicamento con una dosis inválida.
         """
-        success, errors = Medicine.save_medicine(
-            {
-                "name": "Ibuprofeno",
-                "description": "Medicamento antiinflamatorio",
-                "dose": 11,
-            },
-        )
+        with open(relative_path, 'rb') as f:
+            image_data = f.read()
+            image_file = SimpleUploadedFile('pipeta.png', image_data, content_type='image/png')
+            success, errors = Medicine.save_medicine(
+                {
+                    "name": "Ibuprofeno",
+                    "description": "Medicamento antiinflamatorio",
+                    "dose": 11,
+                },
+                medicine_image=image_file 
+            )
+
         self.assertFalse(success)
         self.assertIn("dose", errors)
 
@@ -260,22 +284,27 @@ class MedicineModelTest(TestCase):
         Prueba la actualización de un medicamento con una dosis inválida.       
         Esta función verifica que el sistema maneje adecuadamente los intentos de actualización de un medicamento con una dosis inválida.
         """
-        Medicine.save_medicine(
-            {
-                "name": "Paracetamol",
-                "description": "Medicamento para el dolor",
-                "dose": 5,
-            },
-        )
-        medicine = Medicine.objects.get(pk=1)
+        with open(relative_path, 'rb') as f:
+            image_data = f.read()
+            image_file = SimpleUploadedFile('pipeta.png', image_data, content_type='image/png')
+            Medicine.save_medicine(
+                {
+                    "name": "Paracetamol",
+                    "description": "Medicamento para el dolor",
+                    "dose": 5,
+                },
+                medicine_image=image_file 
+            )
+        
+        medicine = Medicine.objects.first()
 
         self.assertEqual(medicine.dose, 5)
 
-        success, errors = medicine.update_medicine({"dose": 11})
+        success, errors = medicine.update_medicine({"dose": 11},image_file)
 
         self.assertFalse(success)
         self.assertIn("dose", errors)
-        medicine_updated = Medicine.objects.get(pk=1)
+        medicine_updated = Medicine.objects.first()
 
         self.assertEqual(medicine_updated.dose, 5)
 
@@ -394,11 +423,18 @@ class ProductModelTest(TestCase):
         Prueba la creación de un producto con un precio válido.
         Esta función verifica que el sistema permita la creación de un producto con un precio válido.
         """
-        success, message_or_errors = Product.save_product({
-            "name": "Test Product",
-            "product_type": "Test Type",
-            "price": "100",
-        })
+        with open(relative_path, 'rb') as f:
+            image_data = f.read()
+            image_file = SimpleUploadedFile('pipeta.png', image_data, content_type='image/png')
+            success, message_or_errors = Product.save_product(
+                {
+                    "name": "Test Product",
+                    "type": "Test Type",
+                    "price": "100",
+                    "description":"lorem ipsum",
+                },
+                product_image=image_file
+            )
 
         self.assertTrue(success)
         self.assertEqual(message_or_errors, "Producto creado exitosamente")
@@ -408,11 +444,18 @@ class ProductModelTest(TestCase):
         Prueba la creación de un producto con un precio de cero.
         Esta función verifica cómo el sistema maneja la creación de un producto con un precio igual a cero.
         """
-        success, message_or_errors = Product.save_product({
-            "name": "Test Product",
-            "product_type": "Test Type",
-           "price": "0",
-         })
+        with open(relative_path, 'rb') as f:
+            image_data = f.read()
+            image_file = SimpleUploadedFile('pipeta.png', image_data, content_type='image/png')
+            success, message_or_errors = Product.save_product(
+                {
+                "name": "Test Product",
+                "type": "Test Type",
+                "price": "0",
+                "description":"lorem ipsum",
+                },
+                product_image=image_file 
+            )
 
         self.assertFalse(success)
         self.assertIn("price", message_or_errors)
@@ -423,11 +466,18 @@ class ProductModelTest(TestCase):
         Prueba la creación de un producto con un precio negativo.
         Esta función verifica cómo el sistema maneja la creación de un producto con un precio negativo.
         """
-        success, message_or_errors = Product.save_product({
-            "name": "Test Product",
-          "product_type": "Test Type",
-           "price": "-10",
-        })
+        with open(relative_path, 'rb') as f:
+            image_data = f.read()
+            image_file = SimpleUploadedFile('pipeta.png', image_data, content_type='image/png')
+            success, message_or_errors = Product.save_product(
+                {
+                "name": "Test Product",
+                "type": "Test Type",
+                "price": "-10",
+                "description":"lorem ipsum",
+                },
+                product_image=image_file
+            )
 
         self.assertFalse(success)
         self.assertIn("price", message_or_errors)

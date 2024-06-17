@@ -1,11 +1,27 @@
 from datetime import datetime
 
+import os
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import reverse
 from django.test import TestCase
 from django.utils import timezone
 
 from app.models import Client, Medicine, Pet, Product, Provider
 
+
+# Obtengo ruta actual app
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Retrocedo a vetsoft
+project_dir = os.path.dirname(current_dir)
+
+# Armo ruta relativa para acceder a '/test_images/pipeta.png'
+relative_path = os.path.join(project_dir, 'test_images', 'pipeta.png')
+
+with open(relative_path, 'rb') as f:
+    image_data = f.read()
+    image_file = SimpleUploadedFile('pipeta.png', image_data, content_type='image/png')
 
 class HomePageTest(TestCase):
     """
@@ -58,7 +74,6 @@ class ClientsTest(TestCase):
             data={
                 "name": "Juan Sebastian Veron",
                 "phone": "54221555232",
-
                 "email": "brujita75@vetsoft.com",
                 "city": "La Plata",
             },
@@ -262,6 +277,7 @@ class MedicineIntegrationTest(TestCase):
                 "description": "Analgesic and antipyretic",
                 "dose": 5,
             },
+            files={'image': image_file} 
         )
         medicines = Medicine.objects.all()
         self.assertEqual(len(medicines), 1)
@@ -269,7 +285,6 @@ class MedicineIntegrationTest(TestCase):
         self.assertEqual(medicines[0].name, "Paracetamol")
         self.assertEqual(medicines[0].description, "Analgesic and antipyretic")
         self.assertEqual(medicines[0].dose, 5)
-
         self.assertRedirects(response, reverse("medicine_repo"))
 
     def test_validation_errors_create_medicine(self):
@@ -296,6 +311,7 @@ class MedicineIntegrationTest(TestCase):
                 "description": "qwe",
                 "dose": 4,
             },
+            files={'image': image_file}
         )
         self.assertEqual(response.status_code, 302) # verificamos medicina creada tras la redireccion
 
@@ -310,6 +326,7 @@ class MedicineIntegrationTest(TestCase):
                 "description": "qwe",
                 "dose": 13,
             },
+            files={'image': image_file}
         )
         self.assertContains(response, "La dosis debe estar en un rango de 1 a 10")
         
@@ -324,6 +341,7 @@ class MedicineIntegrationTest(TestCase):
                 "description": "qwe",
                 "dose": -1,
             },
+            files={'image': image_file}
         )
         self.assertContains(response, "La dosis debe estar en un rango de 1 a 10")
 class ProviderTest(TestCase):
@@ -512,10 +530,12 @@ class ProductsTest(TestCase):
             reverse("product_form"), 
             data={
                 "name": "Producto Test",
-
-                "product_type": "Tipo Test",
+                "type": "Tipo Test",
                 "price": "10.00",  # Precio válido
+                "description":"lorem ipsum",
             },
+            files={'image': image_file} 
+
         )
 
         # Verificar que el producto se haya creado correctamente
@@ -524,8 +544,9 @@ class ProductsTest(TestCase):
 
         # Verificar los detalles del producto creado
         self.assertEqual(products[0].name, "Producto Test")
-        self.assertEqual(products[0].product_type, "Tipo Test")
+        self.assertEqual(products[0].type, "Tipo Test")
         self.assertEqual(products[0].price, 10.00)  # Precio válido
+        self.assertEqual(products[0].description, "lorem ipsum")
 
         # Verificar la redirección después de crear el producto
         self.assertRedirects(response, reverse("product_repo"))
@@ -541,7 +562,9 @@ class ProductsTest(TestCase):
                 "name": "Producto Test",
                 "product_type": "Tipo Test",
                 "price": "-5.00",  # Precio inválido (negativo)
+                "description":"lorem ipsum",
             },
+             files={'image': image_file} 
         )
 
         # Verificar que el producto no se haya creado debido al precio inválido
@@ -562,7 +585,9 @@ class ProductsTest(TestCase):
                 "name": "Producto Test",
                 "product_type": "Tipo Test",
                 "price": "precio_invalido",  # Precio inválido (no numérico)
+                "description":"lorem ipsum",
             },
+             files={'image': image_file} 
         )
 
         # Verificar que el producto no se haya creado debido al precio inválido
@@ -570,4 +595,4 @@ class ProductsTest(TestCase):
         self.assertEqual(len(products), 0)
 
         # Verificar que se muestra un mensaje de error en la respuesta
-        self.assertContains(response, "El precio debe ser un número válido")
+        self.assertContains(response, "El precio debe ser un número")
