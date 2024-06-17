@@ -117,6 +117,11 @@ def provider_delete(request):
     return redirect(reverse("provider_repo"))
 
 
+# Configurar las credenciales y el cliente para Azure Computer Vision
+KEY = '6cd151994fa843228f17ff671b3719e9'
+ENDPOINT = 'https://vet-vision.cognitiveservices.azure.com/'
+computervision_client = ComputerVisionClient(ENDPOINT, CognitiveServicesCredentials(KEY))
+
 # Producto
 def product_repository(request):
     """
@@ -124,11 +129,6 @@ def product_repository(request):
     """
     products = Product.objects.all()
     return render(request, "products/repository.html", {"products": products})
-
-# Configurar las credenciales y el cliente para Azure Computer Vision
-KEY = '6cd151994fa843228f17ff671b3719e9'
-ENDPOINT = 'https://vet-vision.cognitiveservices.azure.com/'
-computervision_client = ComputerVisionClient(ENDPOINT, CognitiveServicesCredentials(KEY))
 
 def extract_text_from_image(request):
     if request.method == 'POST' and request.FILES.get('image'):
@@ -171,6 +171,9 @@ def product_form(request, id=None):
     """
     Renderiza el formulario de productos y maneja la creación o actualización de productos.
     """
+
+    providers = Provider.objects.all()
+
     if request.method == "POST":
         product_id = request.POST.get("id", "")
         errors = {}
@@ -180,22 +183,40 @@ def product_form(request, id=None):
             # Obtén la imagen del formulario
             product_image = request.FILES.get("image")
             saved, errors = Product.save_product(request.POST, product_image)  # Pasa la imagen
+
+            # Obtener el ID del proveedor seleccionado del formulario
+            provider_id = request.POST.get("provider", "")
+
+            # Asociar el proveedor seleccionado con el producto creado
+            if provider_id:
+                product = Product.objects.latest('id')  # Obtener el último producto creado
+                product.provider_id = provider_id
+                product.save()
+
         else:
             product = get_object_or_404(Product, pk=product_id)
             product_image = request.FILES.get("image")
             saved,errors = product.update_product(request.POST,product_image)  # Pasar request.FILES
+            
+            # Obtener el ID del proveedor seleccionado del formulario
+            provider_id = request.POST.get("provider", "")
+
+            # Asociar el proveedor seleccionado con el producto actualizado
+            if provider_id:
+                product.provider_id = provider_id
+                product.save()
 
         if saved:
             return redirect(reverse("product_repo"))
 
         return render(
-            request, "products/form.html", {"errors": errors, "product": request.POST}
+            request, "products/form.html", {"errors": errors, "product": request.POST, "providers": providers}
         )
     product = None
     if id is not None:
         product = get_object_or_404(Product, pk=id)
 
-    return render(request, "products/form.html", {"product": product})
+    return render(request, "products/form.html", {"product": product, "providers": providers})
 
 
 def product_delete(request):

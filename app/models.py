@@ -273,6 +273,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image_url = models.URLField(null=True, blank=True)  # Campo para almacenar la URL de la imagen en Blob Storage
     description = models.CharField(max_length=300)
+    provider = models.ForeignKey("Provider", on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
             """

@@ -70,6 +70,16 @@
                         </div>
                     {% endif %}
                 </div>
+                
+                <div>
+                    <label for="provider" class="form-label">Proveedor</label>
+                    <select name="provider" id="provider" class="form-select">
+                        {% for provider in providers %}
+                        <option value="{{ provider.id }}" {% if provider.id == product.provider %}selected{% endif %}>{{ provider.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <div>
                     <label for="image" class="form-label">Imagen</label>
                     <input type="file"
