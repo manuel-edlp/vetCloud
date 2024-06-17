@@ -22,6 +22,17 @@ Aplicación web para veterinarias utilizada en la cursada 2024 de Ingeniería y 
 
 `python manage.py runserver`
 
+## Ejecutar tests unitarios y de integracion
+`python manage.py test app`
+
+## Ejecutar tests e2e
+`python manage.py test functional_tests`
+
+## Ejecutar analisis de coverage de los test 
+`coverage run --source="./app" --omit="./app/migrations/**" manage.py test app `
+
+`coverage report`
+
 ## Integrantes:
 
 Baez Gonazalo - Proveedor
