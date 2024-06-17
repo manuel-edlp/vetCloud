@@ -447,6 +447,7 @@ class Pet(models.Model):
     breed = models.CharField(max_length=40)
     birthday = models.DateField()
     weight = models.FloatField()
+    client = models.ForeignKey("Client", on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
             """

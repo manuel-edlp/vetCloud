@@ -220,33 +220,46 @@ def pet_form(request, id=None):
     """
     Renderiza el formulario de mascotas y maneja la creación o actualización de mascotas.
     """
+    clients = Client.objects.all()
     if request.method == "POST":
         pet_id = request.POST.get("id", "")
         errors = {}
         saved = False
 
         if pet_id == "":
-            saved, errors = Pet.save_pet(request.POST)
+            saved, errors = Pet.save_pet(request.POST) 
+            # Si el objeto Pet se ha creado correctamente
+            if saved:
+                # Obtener el ID del cliente seleccionado del formulario
+                client_id = request.POST.get("client", "")
+                # Asociar el cliente seleccionado con el animal creado
+                if client_id:
+                    pet = Pet.objects.latest('id')  # Obtener el último animal creado
+                    pet.client_id = client_id
+                    pet.save()
         else:
             pet = get_object_or_404(Pet, pk=pet_id)
-            update_result = pet.update_pet(request.POST)
-            if update_result is not None:
-                saved, errors = update_result
-            else:
-                saved = True
+            saved, errors = pet.update_pet(request.POST)
 
+            # Obtener el ID del cliente seleccionado del formulario
+            client_id = request.POST.get("client", "")
+            # Asociar el cliente seleccionado con el animal actualizado
+            if client_id:
+                pet.client_id = client_id
+                pet.save()
+                
         if saved:
             return redirect(reverse("pet_repo"))
 
         return render(
-            request, "pets/form.html", {"errors": errors, "pet": request.POST},
+            request, "pets/form.html", {"errors": errors, "pet": request.POST,},
         )
 
     pet = None
     if id is not None:
         pet = get_object_or_404(Pet, pk=id)
 
-    return render(request, "pets/form.html", {"pet": pet})
+    return render(request, "pets/form.html", {"pet": pet,"clients": clients})
 
 
 def pet_delete(request):
