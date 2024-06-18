@@ -19,6 +19,7 @@ urlpatterns = [
     path('extract_text_from_image/', views.extract_text_from_image, name='extract_text_from_image'),
     path("producto/editar/<int:id>/", view=views.product_form, name="product_edit"),
     path("producto/eliminar/", view=views.product_delete, name="product_delete"),
+    path('producto/buscar/', view=views.product_search, name='product_search'),
 
     # Mascota
     path("mascota/", view=views.pet_repository, name="pet_repo"),

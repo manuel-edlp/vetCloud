@@ -230,6 +230,24 @@ def product_delete(request):
 
     return redirect(reverse("product_repo"))
 
+def product_search(request):
+    query = request.GET.get('search')
+
+    if query:
+        # Realiza la búsqueda en varios campos utilizando Q objects
+        products = Product.objects.filter(
+            Q(name__icontains=query) |  # Búsqueda por nombre que contiene la consulta
+            Q(description__icontains=query) |  # Búsqueda por descripción que contiene la consulta
+            Q(type__icontains=query) | # Búsqueda por dosis que contiene la consulta
+            Q(price__icontains=query) | # Búsqueda por precio que contiene la consulta
+            Q(provider__name__icontains=query) # Búsqueda por nombre de proveedor que contiene la consulta          
+        )
+    else:
+        products = Product.objects.all()
+
+    context = {'products': products, 'query': query}
+    return render(request, 'products/repository.html', context)
+
 # Mascota
 def pet_repository(request):
     """
