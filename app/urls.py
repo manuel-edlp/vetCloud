@@ -43,4 +43,5 @@ urlpatterns = [
     path("medicamento/nuevo/", view=views.medicine_form, name="medicine_form"),
     path("medicamento/editar/<int:id>/", view=views.medicine_form, name="medicine_edit"),
     path("medicamento/eliminar/", view=views.medicine_delete, name="medicine_delete"),
+    path('medicamento/buscar/', view=views.medicine_search, name='medicine_search'),
 ]

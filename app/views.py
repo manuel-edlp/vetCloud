@@ -2,13 +2,14 @@ from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 from .models import CityEnum, Client, Medicine, Pet, Product, Provider, Veterinary
 
+from django.db.models import Q
+
 from django.http import JsonResponse
 
 from azure.cognitiveservices.vision.computervision import ComputerVisionClient
 from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
 from msrest.authentication import CognitiveServicesCredentials
 from io import BytesIO
-from PIL import Image
 
 
 def home(request):
@@ -452,3 +453,19 @@ def medicine_delete(request):
     medicine.delete()
 
     return redirect(reverse("medicine_repo"))
+
+def medicine_search(request):
+    query = request.GET.get('search')
+
+    if query:
+        # Realiza la búsqueda en varios campos utilizando Q objects
+        medicines = Medicine.objects.filter(
+            Q(name__icontains=query) |  # Búsqueda por nombre que contiene la consulta
+            Q(description__icontains=query) |  # Búsqueda por descripción que contiene la consulta
+            Q(dose__icontains=query)  # Búsqueda por dosis que contiene la consulta
+        )
+    else:
+        medicines = Medicine.objects.all()
+
+    context = {'medicines': medicines, 'query': query}
+    return render(request, 'medicines/repository.html', context)
