@@ -43,6 +43,7 @@ urlpatterns = [
     path("veterinario/nuevo/", view=views.veterinary_form, name="veterinary_form"),
     path("veterinario/editar/<int:id>/", view=views.veterinary_form, name="veterinary_edit"),
     path("veterinario/eliminar/", view=views.veterinary_delete, name="veterinary_delete"),
+    path('veterinario/buscar/', view=views.veterinary_search, name='veterinary_search'),
 
      # Medicamento
     path("medicamento/", view=views.medicine_repository, name="medicine_repo"),

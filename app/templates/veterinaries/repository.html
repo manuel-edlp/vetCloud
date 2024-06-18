@@ -4,11 +4,15 @@
 <div class="container">
     <h1 class="mb-4">Veterinarios</h1>
 
-    <div class="mb-2">
+    <div class="mb-2 d-inline-flex">
         <a href="{% url 'veterinary_form' %}" class="btn btn-primary">
             <i class="bi bi-plus"></i>
             Nuevo Veterinario
         </a>
+        <form class="d-flex ms-2" action="{% url 'veterinary_search' %}" method="GET">
+            <input class="form-control me-2" type="search" name="search" placeholder="Buscar veterinarios..." aria-label="Buscar">
+            <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+        </form>
     </div>
 
     <table class="table">

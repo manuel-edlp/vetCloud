@@ -431,6 +431,22 @@ def veterinary_delete(request):
 
     return redirect(reverse("veterinary_repo"))
 
+def veterinary_search(request):
+    query = request.GET.get('search')
+
+    if query:
+        # Realiza la búsqueda en varios campos utilizando Q objects
+        veterinaries = Veterinary.objects.filter(
+            Q(name__icontains=query) |  # Búsqueda por nombre que contiene la consulta
+            Q(email__icontains=query) |  # Búsqueda por email que contiene la consulta
+            Q(phone__icontains=query)  # Búsqueda por phone que contiene la consulta
+        )
+    else:
+        veterinaries = Veterinary.objects.all()
+
+    context = {'veterinaries': veterinaries, 'query': query}
+    return render(request, 'veterinaries/repository.html', context)
+
 # Funciones para Medicamentos
 def medicine_repository(request):
     """
