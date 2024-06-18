@@ -11,6 +11,11 @@ from azure.cognitiveservices.vision.computervision.models import OperationStatus
 from msrest.authentication import CognitiveServicesCredentials
 from io import BytesIO
 
+# Configurar las credenciales y el cliente para Azure Computer Vision
+KEY = '6cd151994fa843228f17ff671b3719e9'
+ENDPOINT = 'https://vet-vision.cognitiveservices.azure.com/'
+computervision_client = ComputerVisionClient(ENDPOINT, CognitiveServicesCredentials(KEY))
+
 
 def home(request):
     """
@@ -117,11 +122,21 @@ def provider_delete(request):
 
     return redirect(reverse("provider_repo"))
 
+def provider_search(request):
+    query = request.GET.get('search')
 
-# Configurar las credenciales y el cliente para Azure Computer Vision
-KEY = '6cd151994fa843228f17ff671b3719e9'
-ENDPOINT = 'https://vet-vision.cognitiveservices.azure.com/'
-computervision_client = ComputerVisionClient(ENDPOINT, CognitiveServicesCredentials(KEY))
+    if query:
+        # Realiza la búsqueda en varios campos utilizando Q objects
+        providers = Provider.objects.filter(
+            Q(name__icontains=query) |  # Búsqueda por nombre que contiene la consulta
+            Q(email__icontains=query) |  # Búsqueda por email que contiene la consulta
+            Q(address__icontains=query)  # Búsqueda por address que contiene la consulta
+        )
+    else:
+        providers = Provider.objects.all()
+
+    context = {'providers': providers, 'query': query}
+    return render(request, 'providers/repository.html', context)
 
 # Producto
 def product_repository(request):
@@ -219,7 +234,6 @@ def product_form(request, id=None):
 
     return render(request, "products/form.html", {"product": product, "providers": providers})
 
-
 def product_delete(request):
     """
     Elimina un producto.
@@ -301,7 +315,6 @@ def pet_form(request, id=None):
 
     return render(request, "pets/form.html", {"pet": pet,"clients": clients})
 
-
 def pet_delete(request):
     """
     Elimina una mascota.
@@ -313,7 +326,6 @@ def pet_delete(request):
     return redirect(reverse("pet_repo"))
 
 # Mascota Historial
-
 def pet_history(request, id):
     pet = get_object_or_404(Pet.objects.prefetch_related("medicines", "veterinaries"), id=id)
 
@@ -371,16 +383,13 @@ def pet_form_history(request, id):
         'medicines': medicines,
     })
 
-
 # Veterinario
-
 def veterinary_repository(request):
     """
     Renderiza la lista de veterinarios.
     """
     veterinaries = Veterinary.objects.all()
     return render(request, "veterinaries/repository.html", {"veterinaries": veterinaries})
-
 
 def veterinary_form(request, id=None):
     """
@@ -411,7 +420,6 @@ def veterinary_form(request, id=None):
         veterinary = get_object_or_404(Veterinary, pk=id)
 
     return render(request, "veterinaries/form.html", {"veterinary": veterinary})
-
 
 def veterinary_delete(request):
     """
