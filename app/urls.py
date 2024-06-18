@@ -38,6 +38,7 @@ urlpatterns = [
     path("mascota/historial/<int:id>/nuevo", view=views.pet_form_history, name="pet_form_history"),
     path("mascota/historial/<int:id>/editar", view=views.pet_form_history, name="pet_edit_history"),
     path("mascota/historial/<int:id>/eliminar/", view=views.pet_delete, name="pet_delete_history"), 
+    path('mascota/buscar/', view=views.pet_search, name='pet_search'),
 
     #Veterinario
     path("veterinario/", view=views.veterinary_repository, name="veterinary_repo"),

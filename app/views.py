@@ -343,6 +343,24 @@ def pet_delete(request):
 
     return redirect(reverse("pet_repo"))
 
+def pet_search(request):
+    query = request.GET.get('search')
+
+    if query:
+        # Realiza la búsqueda en varios campos utilizando Q objects
+        pets = Pet.objects.filter(
+            Q(name__icontains=query) |  # Búsqueda por nombre que contiene la consulta
+            Q(breed__icontains=query) |  # Búsqueda por email que contiene la consulta
+            Q(birthday__icontains=query) |  # Búsqueda por phone que contiene la consulta
+            Q(weight__icontains=query) |   # Búsqueda por city que contiene la consulta
+            Q(client__name__icontains=query) 
+        )
+    else:
+        pets = Pet.objects.all()
+
+    context = {'pets': pets, 'query': query}
+    return render(request, 'pets/repository.html', context)
+
 # Mascota Historial
 def pet_history(request, id):
     pet = get_object_or_404(Pet.objects.prefetch_related("medicines", "veterinaries"), id=id)
