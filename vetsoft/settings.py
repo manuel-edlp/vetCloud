@@ -29,9 +29,6 @@ ALLOWED_HOSTS = ['vetcloud.azurewebsites.net','127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = ['https://vetcloud.azurewebsites.net']
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://vet-soft-1-4.onrender.com',
-]
 # Application definition
 
 INSTALLED_APPS = [
