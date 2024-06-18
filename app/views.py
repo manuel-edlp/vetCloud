@@ -74,6 +74,24 @@ def clients_delete(request):
 
     return redirect(reverse("clients_repo"))
 
+def clients_search(request):
+    query = request.GET.get('search')
+
+    if query:
+        # Realiza la búsqueda en varios campos utilizando Q objects
+        clients = Client.objects.filter(
+            Q(name__icontains=query) |  # Búsqueda por nombre que contiene la consulta
+            Q(email__icontains=query) |  # Búsqueda por email que contiene la consulta
+            Q(phone__icontains=query) |  # Búsqueda por phone que contiene la consulta
+            Q(city__icontains=query)     # Búsqueda por city que contiene la consulta
+        )
+    else:
+        clients = Client.objects.all()
+
+    context = {'clients': clients, 'query': query}
+    return render(request, 'clients/repository.html', context)
+
+
 # Proveedor
 def provider_repository(request):
     """

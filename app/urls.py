@@ -10,7 +10,8 @@ urlpatterns = [
     path("clientes/nuevo/", view=views.clients_form, name="clients_form"),
     path("clientes/editar/<int:id>/", view=views.clients_form, name="clients_edit"),
     path("clientes/eliminar/", view=views.clients_delete, name="clients_delete"),
-    
+    path('clientes/buscar/', view=views.clients_search, name='clients_search'),
+
     # Proveedor
     path("proveedor/", view=views.provider_repository, name="provider_repo"),
     path("proveedor/nuevo/", view=views.provider_form, name="provider_form"),
