@@ -65,6 +65,7 @@ class Client(models.Model):
     email = models.EmailField()
     city = models.CharField(max_length=35, choices=CityEnum.choices)
 
+
     def __str__(self):
         """
         Devuelve la representación de cadena de cliente.
@@ -373,7 +374,7 @@ def upload_image_to_azure(image_file):
         blob_client.upload_blob(data)
 
     # Construir y devolver la URL de la imagen
-    return f"https://vetstorage01.blob.core.windows.net/imagenes/{unique_name}"
+    return f"https://vetstorage02.blob.core.windows.net/imagenes/{unique_name}"
 
 
 
