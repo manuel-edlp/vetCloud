@@ -12,8 +12,8 @@ from msrest.authentication import CognitiveServicesCredentials
 from io import BytesIO
 
 # Configurar las credenciales y el cliente para Azure Computer Vision
-KEY = '6cd151994fa843228f17ff671b3719e9'
-ENDPOINT = 'https://vet-vision.cognitiveservices.azure.com/'
+KEY = '9e277c95a2cd4f6e94aabfbf1b45108e'
+ENDPOINT = 'https://vet-vision-service.cognitiveservices.azure.com/'
 computervision_client = ComputerVisionClient(ENDPOINT, CognitiveServicesCredentials(KEY))
 
 
@@ -483,7 +483,7 @@ def veterinary_search(request):
     context = {'veterinaries': veterinaries, 'query': query}
     return render(request, 'veterinaries/repository.html', context)
 
-# Funciones para Medicamentos
+# Medicamentos
 def medicine_repository(request):
     """
     Renderiza la lista de medicamentos.
