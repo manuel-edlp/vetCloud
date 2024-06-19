@@ -81,7 +81,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "vet-cloud-database", # Nombre de la base de datos
-        "USER": "kclgbooket",
+        "USER": "postgres",
         "PASSWORD": "Admin1234",
         "HOST": "vet-cloud-server.postgres.database.azure.com",  # dirección del servidor de PostgreSQL
         "PORT": "5432",  # el puerto por defecto de PostgreSQL
