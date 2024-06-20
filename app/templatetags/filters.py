@@ -20,5 +20,5 @@ def generate_sas_token(image_url):
         permission=BlobSasPermissions(read=True),
         expiry=datetime.utcnow() + timedelta(hours=1)  # Expira en una hora
     )
-
+    # prueba
     return f"?{sas_token}"
