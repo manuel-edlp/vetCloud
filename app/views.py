@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
-from .models import CityEnum, Client, ClientProduct, Medicine, Pet, Product, Provider, Veterinary
+from .models import CityEnum, Client, Medicine, Pet, Product, Provider, Veterinary
 
 from django.db.models import Q
 
