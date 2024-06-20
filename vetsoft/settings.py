@@ -25,12 +25,11 @@ SECRET_KEY = "django-insecure-p)^5i@33!)v)l7*c#q)%j(g5d+**-yo%)6l*vg!gs_w-e=^_ig
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['vet-cloud.azurewebsites.net','127.0.0.1']
+ALLOWED_HOSTS = ['vet-web-app.azurewebsites.net','127.0.0.1']
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://vet-cloud.azurewebsites.net',
-    'http://127.0.0.1:8000',
+    'https://vet-web-app.azurewebsites.net',
 ]
 
 
