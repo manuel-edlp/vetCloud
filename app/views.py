@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
-from .models import CityEnum, Client, Medicine, Pet, Product, Provider, Veterinary
+from .models import CityEnum, Client, ClientProduct, Medicine, Pet, Product, Provider, Veterinary
 
 from django.db.models import Q
 
@@ -12,8 +12,8 @@ from msrest.authentication import CognitiveServicesCredentials
 from io import BytesIO
 
 # Configurar las credenciales y el cliente para Azure Computer Vision
-KEY = '9e277c95a2cd4f6e94aabfbf1b45108e'
-ENDPOINT = 'https://vet-vision-service.cognitiveservices.azure.com/'
+KEY = '54d2d1efe0184a369ed2c2f290e50d15'
+ENDPOINT = 'https://vet-computer-vision.cognitiveservices.azure.com/'
 computervision_client = ComputerVisionClient(ENDPOINT, CognitiveServicesCredentials(KEY))
 
 
@@ -90,6 +90,7 @@ def clients_search(request):
 
     context = {'clients': clients, 'query': query}
     return render(request, 'clients/repository.html', context)
+
 
 
 # Proveedor
@@ -279,6 +280,7 @@ def product_search(request):
 
     context = {'products': products, 'query': query}
     return render(request, 'products/repository.html', context)
+
 
 # Mascota
 def pet_repository(request):
