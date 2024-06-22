@@ -6,8 +6,10 @@ from django.db.models import Q
 
 from django.http import JsonResponse
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from azure.cognitiveservices.vision.computervision import ComputerVisionClient
-from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
+from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes,VisualFeatureTypes
 from msrest.authentication import CognitiveServicesCredentials
 from io import BytesIO
 
@@ -174,6 +176,15 @@ def extract_text_from_image(request):
             # Leer los bytes de la imagen
             img_bytes = image_file.read()
 
+            # Llamar al servicio de Computer Vision para analizar la imagen y extraer etiquetas
+            tags_result = computervision_client.analyze_image_in_stream(BytesIO(img_bytes), visual_features=[VisualFeatureTypes.tags])
+
+            # Imprimir las etiquetas extraídas en la consola de Python
+            if tags_result.tags:
+                print("Etiquetas extraídas de la imagen:")
+                for tag in tags_result.tags:
+                    print(f"- {tag.name}")
+            else: print("no se detectaron etiquetas")
             # Llamar al servicio de Computer Vision para extraer texto de la imagen
             result = computervision_client.read_in_stream(BytesIO(img_bytes), raw=True)
 
@@ -224,9 +235,13 @@ def product_form(request, id=None):
 
             # Asociar el proveedor seleccionado con el producto creado
             if provider_id:
-                product = Product.objects.latest('id')  # Obtener el último producto creado
-                product.provider_id = provider_id
-                product.save()
+                try:
+                    product = Product.objects.latest('id')
+                    product.provider_id = provider_id
+                    product.save()
+                except ObjectDoesNotExist:
+                    # Manejo de la excepción cuando no se encuentra ningún producto
+                    product = None  
 
         else:
             product = get_object_or_404(Product, pk=product_id)
