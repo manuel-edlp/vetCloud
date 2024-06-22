@@ -22,3 +22,7 @@ def generate_sas_token(image_url):
     )
     # prueba
     return f"?{sas_token}"
+
+@register.filter
+def split_string(value, separator):
+    return value.split(separator)
