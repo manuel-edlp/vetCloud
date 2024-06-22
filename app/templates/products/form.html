@@ -12,7 +12,7 @@
         <div class="col-lg-6 offset-lg-3">
 
             
-            <form class="vstack gap-3 {% if errors %}was-validated{% endif %}"
+            <form id="form" class="vstack gap-3 {% if errors %}was-validated{% endif %}"
                 aria-label="Formulario de creacion de producto"
                 method="POST"
                 action="{% url 'product_form' %}"
@@ -38,6 +38,40 @@
                         </div>
                     {% endif %}
                 </div>
+
+                <div id="toggleContainer">
+                    <label for="toggleAutoDescription">Descripción automática del producto</label>
+                    <input type="checkbox" id="toggleAutoDescription">
+                </div>
+
+                <div>
+                    <label for="image" class="form-label">Imagen</label>
+                    <input type="file"
+                        id="image"
+                        name="image"
+                        class="form-control {% if errors.image_url %}is-invalid{% endif %}"
+                        accept="image/jpeg, image/jpg, image/png"/>
+
+                        {% if product.image_url %}
+                        <div id="imagePreview" style="margin-top: 10px;">
+                            {% with sas_token=product.image_url|generate_sas_token %}
+                            <img src="{{ product.image_url }}{{ sas_token }}" alt="{{ product.name }}"
+                                style="max-width: 150px; max-height: 150px;">
+                            {% endwith %}
+                        </div>
+                        {% else %}
+                        <div id="imagePreviewLocal" style="margin-top: 10px;">
+            
+                        </div>
+                        {% endif %}
+                        
+                    {% if errors.image_url %}
+                        <div class="invalid-feedback">
+                            {{ errors.image_url }}
+                        </div>
+                    {% endif %}
+                </div>
+
                 <div>
                     <label for="type" class="form-label">Tipo</label>
                     <input type="text"
@@ -45,7 +79,7 @@
                         name="type"
                         value="{{product.type}}"
                         class="form-control {% if errors.type %}is-invalid{% endif %}"
-                        required/>
+                        />
 
                     {% if errors.type %}
                         <div class="invalid-feedback">
@@ -53,6 +87,42 @@
                         </div>
                     {% endif %}
                 </div>
+
+                <div id="tagContainer" class="form-control tags-container">
+                    <!-- Aquí se agregarán las etiquetas dinámicamente -->
+                    {% if product.type %}
+                        {% with product_type_list=product.type|split_string:',' %}
+                            {% for tag in product_type_list %}
+                                <div class="tag">
+                                    <span class="tag-text">{{ tag }}</span>
+                                    <i class="bi bi-x-circle tag-close"></i>
+                                </div>
+                            {% endfor %}
+                        {% endwith %}
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="description" class="form-label">Descripción</label>
+                    <style>
+                        textarea {
+                            width: 100%; /* Opcional: ancho completo del contenedor */
+                            min-height: 100px; /* Altura mínima inicial */
+                            resize: vertical; /* Permite redimensionar verticalmente */
+                        }
+                    </style>
+                    <textarea id="description"
+                              name="description"
+                              class="form-control {% if errors.description %}is-invalid{% endif %}"
+                              required>{{ product.description }}</textarea>
+                
+                    {% if errors.description %}
+                        <div class="invalid-feedback">
+                            {{ errors.description }}
+                        </div>
+                    {% endif %}
+                </div>     
+
                 <div>
                     <label for="price" class="form-label">Precio</label>
                     <input type="number"
@@ -79,62 +149,36 @@
                         {% endfor %}
                     </select>
                 </div>
-
-                <div>
-                    <label for="image" class="form-label">Imagen</label>
-                    <input type="file"
-                        id="image"
-                        name="image"
-                        class="form-control {% if errors.image_url %}is-invalid{% endif %}"
-                        accept="image/*"/>
-
-                        {% if product.image_url %}
-                        <div id="imagePreview" style="margin-top: 10px;">
-                            {% with sas_token=product.image_url|generate_sas_token %}
-                            <img src="{{ product.image_url }}{{ sas_token }}" alt="{{ product.name }}"
-                                style="max-width: 150px; max-height: 150px;">
-                            {% endwith %}
-                        </div>
-                        {% else %}
-                        <div id="imagePreviewLocal" style="margin-top: 10px;">
-            
-                        </div>
-                        {% endif %}
-                        
-                    {% if errors.image_url %}
-                        <div class="invalid-feedback">
-                            {{ errors.image_url }}
-                        </div>
-                    {% endif %}
-                </div>
-    
-                <div id="toggleContainer">
-                    <label for="toggleAutoDescription">Descripción automática del producto</label>
-                    <input type="checkbox" id="toggleAutoDescription">
-                </div>
-
-                <div>
-                    <label for="description" class="form-label">Descripción</label>
-                    <style>
-                        textarea {
-                            width: 100%; /* Opcional: ancho completo del contenedor */
-                            min-height: 100px; /* Altura mínima inicial */
-                            resize: vertical; /* Permite redimensionar verticalmente */
-                        }
-                    </style>
-                    <textarea id="description"
-                              name="description"
-                              class="form-control {% if errors.description %}is-invalid{% endif %}"
-                              required>{{ product.description }}</textarea>
-                
-                    {% if errors.description %}
-                        <div class="invalid-feedback">
-                            {{ errors.description }}
-                        </div>
-                    {% endif %}
-                </div>                
-                <button class="btn btn-primary">Guardar</button>
+           
+                <button type="submit" class="btn btn-primary">Guardar</button>
             </form>
+
+            <style>
+                .tags-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                }
+
+                .tag {
+                    background-color: #6ea8fe;
+                    color: #212529;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .tag-text {
+                    margin-right: 4px; /* Espacio entre el texto y el icono de la cruz */
+                }
+
+                .tag-close {
+                    display: none;
+                    cursor: pointer;
+                    color: red; /* Color opcional para el icono */
+                }
+            </style>
 
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
@@ -145,7 +189,66 @@
                     const imageInput = document.getElementById('image');
                     const imagePreviewDiv = document.getElementById('imagePreview');
                     const imagePreviewDivLocal = document.getElementById('imagePreviewLocal');
+                    const typeInput = document.getElementById('type');
+                    const tagContainer = document.getElementById('tagContainer');
+                    const form = document.getElementById("form")
                     
+                    let tags = {}; // Objeto para almacenar las etiquetas
+
+                    typeInput.value=""
+
+                    typeInput.addEventListener('keydown', function (event) {
+                        // Verificar si se presionó la tecla "Enter"
+                        if (event.key === 'Enter') {
+                            event.preventDefault(); // Evitar el envío del formulario por defecto
+
+                            const typeValue = this.value.trim(); // Obtener el valor del input y quitar espacios en blanco al cominezo y final
+
+                            if (typeValue !== '') {
+
+                                 // Verificar si la etiqueta ya existe en el diccionario
+                                if (!tags[typeValue]) {
+                                    // Agregar la etiqueta al diccionario
+                                    tags[typeValue] = true;
+                                }
+                                // Crear un nuevo elemento div para la etiqueta
+                                const tagElement = document.createElement('div');
+                                tagElement.classList.add('tag');
+                                // Contenido de la etiqueta (texto y botón de eliminar)
+                                tagElement.innerHTML = `
+                                    <span class="tag-text">${typeValue}</span>      
+                                    <i class="bi bi-x-circle tag-close"></i> <!-- Icono de Bootstrap Icons como cruz -->                      
+                                `;
+
+                                // Agregar la etiqueta al contenedor de etiquetas
+                                tagContainer.appendChild(tagElement);
+
+                                // Limpiar el valor del input para permitir agregar más etiquetas
+                                this.value = '';
+
+                                // Manejar clic en el botón de eliminar etiqueta
+                                const closeBtn = tagElement.querySelector('.tag-close');
+                                closeBtn.addEventListener('click', function () {
+                                    // Encontrar y eliminar la etiqueta del diccionario
+                                    const tagText = tagElement.querySelector('.tag-text').textContent;
+                                    delete tags[tagText];
+                                    tagElement.remove(); // Eliminar la etiqueta al hacer clic en la cruz
+                                });
+
+                                // Mostrar y ocultar la cruz al pasar el mouse por encima de la etiqueta
+                                tagElement.addEventListener('mouseenter', function () {
+                                    closeBtn.style.display = 'inline'; // Mostrar la cruz
+                                });
+
+                                tagElement.addEventListener('mouseleave', function () {
+                                   closeBtn.style.display = 'none'; // Ocultar la cruz
+                                });
+                            }
+                        }
+                    
+                    });
+
+
                     // Función para convertir una imagen en base64 y guardar en localStorage
                     function convertirImagenABase64(url, callback) {
                         var img = new Image();
@@ -357,8 +460,44 @@
 
                     }}
 
+                    // Manejar etiquetas existentes al cargar el formulario
+                    const tagElements = document.querySelectorAll('.tag');
+                    tagElements.forEach(tagElement => {
+                        const closeBtn = tagElement.querySelector('.tag-close');
 
-                    
+                        closeBtn.addEventListener('click', function () {
+                            // Encontrar y eliminar la etiqueta del diccionario
+                            const tagText = tagElement.querySelector('.tag-text').textContent;
+                            delete tags[tagText];
+                            tagElement.remove(); // Eliminar la etiqueta al hacer clic en la cruz
+                        });
+
+                        // Mostrar y ocultar la cruz al pasar el mouse por encima de la etiqueta
+                        tagElement.addEventListener('mouseenter', function () {
+                            closeBtn.style.display = 'inline'; // Mostrar la cruz
+                        });
+
+                        tagElement.addEventListener('mouseleave', function () {
+                            closeBtn.style.display = 'none'; // Ocultar la cruz
+                        });
+                    });
+                    // Manejar el envío del formulario
+                    form.addEventListener('submit', function(event) {
+                        '{% if product.type %}'
+                            '{% with product_type_list=product.type|split_string:',' %}'
+                                '{% for tag in product_type_list %}'
+                                    // Verificar si la etiqueta ya existe en el diccionario
+                                    if (!tags[tag]) {
+                                        // Agregar la etiqueta al diccionario
+                                        tags[tag] = true;
+                                    }
+                                '{% endfor %}'
+                            '{% endwith %}'
+                        '{% endif %}'
+                        // Convertir las claves del objeto tags a una cadena separada por comas
+                        typeInput.value = Object.keys(tags).join(',');
+                        console.log("tags: "+ Object.keys(tags).join(',')) 
+                    });
                             
 
 
