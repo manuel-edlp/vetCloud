@@ -270,7 +270,7 @@ class Product(models.Model):
     Modelo que representa a un producto en el sistema.
     """
     name = models.CharField(max_length=100)
-    type = models.CharField(max_length=15)
+    type = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image_url = models.URLField(null=True, blank=True)  # Campo para almacenar la URL de la imagen en Blob Storage
     description = models.CharField(max_length=300)
