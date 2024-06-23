@@ -79,7 +79,7 @@
                         name="type"
                         value="{{product.type}}"
                         class="form-control {% if errors.type %}is-invalid{% endif %}"
-                        />
+                    />
 
                     {% if errors.type %}
                         <div class="invalid-feedback">
@@ -192,6 +192,7 @@
                     const typeInput = document.getElementById('type');
                     const tagContainer = document.getElementById('tagContainer');
                     const form = document.getElementById("form")
+                    const tagsElements = tagContainer.getElementsByClassName('tag');
                     
                     let tags = {}; // Objeto para almacenar las etiquetas
 
@@ -482,18 +483,15 @@
                         });
                     });
                     // Manejar el envío del formulario
-                    form.addEventListener('submit', function(event) {
-                        '{% if product.type %}'
-                            '{% with product_type_list=product.type|split_string:',' %}'
-                                '{% for tag in product_type_list %}'
-                                    // Verificar si la etiqueta ya existe en el diccionario
-                                    if (!tags[tag]) {
-                                        // Agregar la etiqueta al diccionario
-                                        tags[tag] = true;
-                                    }
-                                '{% endfor %}'
-                            '{% endwith %}'
-                        '{% endif %}'
+                    form.addEventListener('submit', function (event) {
+                        // Procesar las etiquetas y llenar el diccionario
+                        for (let i = 0; i < tagsElements.length; i++) {
+                            const tagTextElement = tagsElements[i].getElementsByClassName('tag-text')[0];
+                            const tagText = tagTextElement.textContent.trim();
+                            if (!tags[tagText]) {
+                                tags[tagText] = true;
+                            }
+                        }
                         // Convertir las claves del objeto tags a una cadena separada por comas
                         typeInput.value = Object.keys(tags).join(',');
                         console.log("tags: "+ Object.keys(tags).join(',')) 
