@@ -32,7 +32,19 @@
             {% for product in products %}
             <tr>
                 <td>{{ product.name }}</td>
-                <td>{{ product.type }}</td>
+                <td>
+                    <div id="tagContainer" class="tags-container">
+                        {% if product.type %}
+                            {% with product_type_list=product.type|split_string:',' %}
+                                {% for tag in product_type_list %}
+                                    <div class="tag">
+                                        <span class="tag-text">{{ tag }}</span>
+                                    </div>
+                                {% endfor %}
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                </td>
                 <td>{{ product.price }}</td>
                 <td>{{product.provider}}</td>
                 <td>{{ product.description }}</td>
@@ -63,6 +75,25 @@
             {% endfor %}
         </tbody>
     </table>
+    <style>
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            background-color: #6ea8fe;
+            color: #212529;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .tag-text {
+            margin-right: 4px; /* Espacio entre el texto y el icono de la cruz */
+        }
+    </style>
 
     <script>
         // Eliminar la imagen almacenada en localStorage con la clave 'imagenProducto'
