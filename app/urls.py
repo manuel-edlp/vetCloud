@@ -5,6 +5,11 @@ from . import views
 urlpatterns = [
     path("", view=views.home, name="home"),
     
+
+    # Analisis de imagen
+    path('extract_text_from_image/', views.extract_text_from_image, name='extract_text_from_image'),
+    path('process_image/',views.process_image, name='process_image'),
+
     # Cliente
     path("clientes/", view=views.clients_repository, name="clients_repo"),
     path("clientes/nuevo/", view=views.clients_form, name="clients_form"),
@@ -22,7 +27,6 @@ urlpatterns = [
     # Producto
     path("producto/", view=views.product_repository, name="product_repo"),
     path("producto/nuevo/", view=views.product_form, name="product_form"),
-    path('extract_text_from_image/', views.extract_text_from_image, name='extract_text_from_image'),
     path("producto/editar/<int:id>/", view=views.product_form, name="product_edit"),
     path("producto/eliminar/", view=views.product_delete, name="product_delete"),
     path('producto/buscar/', view=views.product_search, name='product_search'),

@@ -13,6 +13,8 @@ from azure.cognitiveservices.vision.computervision.models import OperationStatus
 from msrest.authentication import CognitiveServicesCredentials
 from io import BytesIO
 
+import json
+
 # Configurar las credenciales y el cliente para Azure Computer Vision
 KEY = '54d2d1efe0184a369ed2c2f290e50d15'
 ENDPOINT = 'https://vet-computer-vision.cognitiveservices.azure.com/'
@@ -26,6 +28,121 @@ def home(request):
     return render(request, "home.html")
 
 
+# Analisis de imagen
+def extract_text_from_image(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        try:
+            # Obtener la imagen del formulario
+            image_file = request.FILES['image']
+
+            # Leer los bytes de la imagen
+            img_bytes = image_file.read()
+
+            # Llamar al servicio de Computer Vision para extraer texto de la imagen
+            result = computervision_client.read_in_stream(BytesIO(img_bytes), raw=True)
+
+            # Obtener el ID de operación para hacer un seguimiento del estado
+            operation_location_remote = result.headers["Operation-Location"]
+            operation_id = operation_location_remote.split("/")[-1]
+
+            # Hacer un seguimiento del estado de la operación para obtener el texto extraído
+            while True:
+                get_text_results = computervision_client.get_read_result(operation_id)
+                if get_text_results.status not in [OperationStatusCodes.running]:
+                    break
+
+            # Procesar resultados y extraer texto
+            extracted_text = ""
+            for text_result in get_text_results.analyze_result.read_results:
+                for line in text_result.lines:
+                    extracted_text += line.text + " "
+
+            # Devolver el texto extraído como respuesta JSON
+            return JsonResponse({'extracted_text': extracted_text.strip()})
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    else:
+        return JsonResponse({'error': 'Se esperaba una imagen en la solicitud'}, status=400)
+
+def suggest_tags_from_image(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        try:
+            # Obtener la imagen del formulario
+            image_file = request.FILES['image']
+
+            # Leer los bytes de la imagen
+            img_bytes = image_file.read()
+
+            # Llamar al servicio de Computer Vision para analizar la imagen y extraer etiquetas
+            tags_result = computervision_client.analyze_image_in_stream(BytesIO(img_bytes), visual_features=[VisualFeatureTypes.tags])
+
+            # Imprimir las etiquetas extraídas en la consola de Python
+            if tags_result.tags:
+                print("Etiquetas extraídas de la imagen:")
+                tags_list = []
+                for tag in tags_result.tags:
+                    tags_list.append(tag.name)
+                    print(f"- {tag.name}")
+            else:
+                print("No se detectaron etiquetas")
+                tags_list = []
+
+            # Devolver las etiquetas extraídas como respuesta JSON
+            return JsonResponse({'suggested_tags': tags_list})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Se esperaba una imagen en la solicitud'}, status=400)
+
+def process_image(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+
+        toggle_text = request.POST.get('extract_text')
+        toggle_suggestion = request.POST.get('suggest_tags')
+        
+        suggested_tags_data = None
+        extracted_text_data = None
+
+        print(f"Toggle Text: {toggle_text}, Toggle Suggestion: {toggle_suggestion}")
+
+        if toggle_text == 'true':
+            # Llamar a extract_text_from_image con el request completo
+            extracted_text_response = extract_text_from_image(request)
+
+             # Extraer el contenido JSON de las respuestas JsonResponse
+            extracted_text_data = json.loads(extracted_text_response.content)
+
+        if toggle_suggestion == 'true':
+             # Llamar a suggest_tags_from_image con el request completo
+            suggested_tags_response = suggest_tags_from_image(request)
+
+            # Extraer el contenido JSON de las respuestas JsonResponse
+            suggested_tags_data = json.loads(suggested_tags_response.content)
+        
+        # Si se solicita extracción de texto y sugerencia de etiquetas, devolver ambos datos
+        if extracted_text_data!=None and suggested_tags_data!=None:
+            return JsonResponse({
+                'extracted_text': extracted_text_data.get('extracted_text', None),
+                'suggested_tags': suggested_tags_data.get('suggested_tags', None)
+            })
+        
+        #  Si solo se solicita extracción de texto, devolver solo los datos de texto extraído
+        elif extracted_text_data!=None:
+            return JsonResponse({
+                'extracted_text': extracted_text_data.get('extracted_text', None),})
+        
+        #  Si solo se solicita sugerencia de etiquetas, devolver solo los datos de sugerencia de etiquetas
+        elif suggested_tags_data!=None:
+            return JsonResponse({
+                'suggested_tags': suggested_tags_data.get('suggested_tags', None)})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+# Cliente
 def clients_repository(request):
     """
     Renderiza la lista de clientes.
@@ -65,7 +182,6 @@ def clients_form(request, id=None):
 
     return render(request, "clients/form.html", {"client": client, "ciudades": ciudades})
 
-
 def clients_delete(request):
     """
     Elimina un cliente.
@@ -92,7 +208,6 @@ def clients_search(request):
 
     context = {'clients': clients, 'query': query}
     return render(request, 'clients/repository.html', context)
-
 
 
 # Proveedor
@@ -166,52 +281,6 @@ def product_repository(request):
     """
     products = Product.objects.all()
     return render(request, "products/repository.html", {"products": products})
-
-def extract_text_from_image(request):
-    if request.method == 'POST' and request.FILES.get('image'):
-        try:
-            # Obtener la imagen del formulario
-            image_file = request.FILES['image']
-
-            # Leer los bytes de la imagen
-            img_bytes = image_file.read()
-
-            # Llamar al servicio de Computer Vision para analizar la imagen y extraer etiquetas
-            tags_result = computervision_client.analyze_image_in_stream(BytesIO(img_bytes), visual_features=[VisualFeatureTypes.tags])
-
-            # Imprimir las etiquetas extraídas en la consola de Python
-            if tags_result.tags:
-                print("Etiquetas extraídas de la imagen:")
-                for tag in tags_result.tags:
-                    print(f"- {tag.name}")
-            else: print("no se detectaron etiquetas")
-            # Llamar al servicio de Computer Vision para extraer texto de la imagen
-            result = computervision_client.read_in_stream(BytesIO(img_bytes), raw=True)
-
-            # Obtener el ID de operación para hacer un seguimiento del estado
-            operation_location_remote = result.headers["Operation-Location"]
-            operation_id = operation_location_remote.split("/")[-1]
-
-            # Hacer un seguimiento del estado de la operación para obtener el texto extraído
-            while True:
-                get_text_results = computervision_client.get_read_result(operation_id)
-                if get_text_results.status not in [OperationStatusCodes.running]:
-                    break
-
-            # Procesar resultados y extraer texto
-            extracted_text = ""
-            for text_result in get_text_results.analyze_result.read_results:
-                for line in text_result.lines:
-                    extracted_text += line.text + " "
-
-            # Devolver el texto extraído como respuesta JSON
-            return JsonResponse({'extracted_text': extracted_text.strip()})
-        
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    
-    else:
-        return JsonResponse({'error': 'Se esperaba una imagen en la solicitud'}, status=400)
 
 def product_form(request, id=None):
     """

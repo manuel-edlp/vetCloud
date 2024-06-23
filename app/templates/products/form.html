@@ -44,6 +44,11 @@
                     <input type="checkbox" id="toggleAutoDescription">
                 </div>
 
+                <div id="toggleContainer">
+                    <label for="toggleSuggestions">Sugerencias de etiquetas</label>
+                    <input type="checkbox" id="toggleSuggestions"/>
+                </div>
+
                 <div>
                     <label for="image" class="form-label">Imagen</label>
                     <input type="file"
@@ -185,6 +190,7 @@
 
                     // Obtener elementos del DOM
                     const toggleAutoDescription = document.getElementById('toggleAutoDescription');
+                    const toggleSuggestions = document.getElementById('toggleSuggestions');
                     const descriptionTextarea = document.getElementById('description');
                     const imageInput = document.getElementById('image');
                     const imagePreviewDiv = document.getElementById('imagePreview');
@@ -193,8 +199,14 @@
                     const tagContainer = document.getElementById('tagContainer');
                     const form = document.getElementById("form")
                     const tagsElements = tagContainer.getElementsByClassName('tag');
-                    
+
                     let tags = {}; // Objeto para almacenar las etiquetas
+
+                    // Por defecto, el toggle está desactivado (no ejecuta la extracción de texto)
+                    toggleAutoDescription.checked = false;
+
+                    // Por defecto, el toggle está desactivado (no ejecuta las sugerencias de etiquetas)
+                    toggleSuggestions.checked = false;
 
                     typeInput.value=""
 
@@ -280,9 +292,7 @@
                     convertirImagenABase64(url, function (base64Img) {
                         localStorage.setItem('imagen', base64Img);
                     });
-
-                    // Por defecto, el toggle está desactivado (no ejecuta la extracción de texto)
-                    toggleAutoDescription.checked = false;
+                  
 
                     // guarda imagen no subida en el local storage cuando se selecciona desde el input files
                     function saveImageToLocalStorage(file) {
@@ -312,42 +322,55 @@
                         // Guardar el nombre del archivo en el local storage
                         localStorage.setItem('imagenNombre', fileName);
 
+                        // imprimo valores de los toggles
+                        console.log('toggleAutoDescription:', toggleAutoDescription.checked);
+                        console.log('toggleSuggestions:', toggleSuggestions.checked);
+
                         saveImageToLocalStorage(file);
 
                         showImagePreview();
 
-                        extractTextFromImage();  
+                        processImage();
+
                     });
-                    
-                    // Funcion para extraer el texto de la imagen y cargarlo a la descripcion del producto
-                    function extractTextFromImage(){
 
-                        if (toggleAutoDescription.checked==false) {
 
-                        }else{
-                            if (imageInput.files && imageInput.files.length > 0) {
-                                var formData = new FormData();
-                                formData.append('image', imageInput.files[0]);
+                    function processImage() {
+                        if (!toggleSuggestions.checked && !toggleAutoDescription.checked) {
+                            // Si ambos toggles están desactivados, no hacer nada
+                            return;
+                        }
 
-                                fetch('{% url "extract_text_from_image" %}', {
-                                    method: 'POST',
-                                    body: formData,
-                                    headers: {
-                                        'X-CSRFToken': '{{ csrf_token }}'
-                                    }
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.extracted_text) {
-                                        descriptionTextarea.value = data.extracted_text;
-                                    } else {
-                                        console.error("No se pudo extraer texto de la imagen.");
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error("Error al extraer texto:", error);
-                                });
-                            }else{console.log("No se selecciono una imagen aun.");}
+                        if (imageInput.files && imageInput.files.length > 0) {
+                            var formData = new FormData();
+                            formData.append('image', imageInput.files[0]);
+                            formData.append('extract_text', toggleAutoDescription.checked);
+                            formData.append('suggest_tags', toggleSuggestions.checked);
+
+                            fetch('{% url "process_image" %}', {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-CSRFToken': '{{ csrf_token }}'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (toggleAutoDescription.checked && data.extracted_text) {
+                                    descriptionTextarea.value = data.extracted_text;
+                                }
+
+                                if (toggleSuggestions.checked && data.suggested_tags) {
+                                    // Maneja las etiquetas sugeridas (puedes ajustar esto según tus necesidades)
+                                    console.log("Etiquetas sugeridas:", data.suggested_tags);
+                                    // Aquí puedes actualizar tu UI con las etiquetas sugeridas
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error al procesar la imagen:", error);
+                            });
+                        } else {
+                            console.log("No se seleccionó una imagen.");
                         }
                     }
                     
