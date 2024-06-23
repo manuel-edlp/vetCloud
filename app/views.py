@@ -29,17 +29,16 @@ def home(request):
 
 
 # Analisis de imagen
-def extract_text_from_image(request):
+def extract_text_from_image(request,img_bytes):
     if request.method == 'POST' and request.FILES.get('image'):
         try:
-            # Obtener la imagen del formulario
-            image_file = request.FILES['image']
 
-            # Leer los bytes de la imagen
-            img_bytes = image_file.read()
+            # Rebobinar el cursor para reutilizar los bytes
+            img_bytes_io = BytesIO(img_bytes)
+            img_bytes_io.seek(0)
 
             # Llamar al servicio de Computer Vision para extraer texto de la imagen
-            result = computervision_client.read_in_stream(BytesIO(img_bytes), raw=True)
+            result = computervision_client.read_in_stream(img_bytes_io, raw=True)
 
             # Obtener el ID de operación para hacer un seguimiento del estado
             operation_location_remote = result.headers["Operation-Location"]
@@ -66,29 +65,25 @@ def extract_text_from_image(request):
     else:
         return JsonResponse({'error': 'Se esperaba una imagen en la solicitud'}, status=400)
 
-def suggest_tags_from_image(request):
+def suggest_tags_from_image(request,img_bytes):
     if request.method == 'POST' and request.FILES.get('image'):
         try:
-            # Obtener la imagen del formulario
-            image_file = request.FILES['image']
 
-            # Leer los bytes de la imagen
-            img_bytes = image_file.read()
+            # Rebobinar el cursor para reutilizar los bytes
+            img_bytes_io = BytesIO(img_bytes)
+            img_bytes_io.seek(0)
 
             # Llamar al servicio de Computer Vision para analizar la imagen y extraer etiquetas
-            tags_result = computervision_client.analyze_image_in_stream(BytesIO(img_bytes), visual_features=[VisualFeatureTypes.tags])
+            tags_result = computervision_client.analyze_image_in_stream(img_bytes_io, visual_features=[VisualFeatureTypes.tags])
 
             # Imprimir las etiquetas extraídas en la consola de Python
             if tags_result.tags:
-                print("Etiquetas extraídas de la imagen:")
                 tags_list = []
                 for tag in tags_result.tags:
                     tags_list.append(tag.name)
-                    print(f"- {tag.name}")
             else:
-                print("No se detectaron etiquetas")
                 tags_list = []
-
+                
             # Devolver las etiquetas extraídas como respuesta JSON
             return JsonResponse({'suggested_tags': tags_list})
 
@@ -100,6 +95,9 @@ def suggest_tags_from_image(request):
 def process_image(request):
     if request.method == 'POST' and request.FILES.get('image'):
 
+        image_file = request.FILES['image']
+        img_bytes = image_file.read()
+        
         toggle_text = request.POST.get('extract_text')
         toggle_suggestion = request.POST.get('suggest_tags')
         
@@ -109,28 +107,29 @@ def process_image(request):
         print(f"Toggle Text: {toggle_text}, Toggle Suggestion: {toggle_suggestion}")
 
         if toggle_text == 'true':
+
             # Llamar a extract_text_from_image con el request completo
-            extracted_text_response = extract_text_from_image(request)
+            extracted_text_response = extract_text_from_image(request,img_bytes)
 
              # Extraer el contenido JSON de las respuestas JsonResponse
             extracted_text_data = json.loads(extracted_text_response.content)
 
         if toggle_suggestion == 'true':
              # Llamar a suggest_tags_from_image con el request completo
-            suggested_tags_response = suggest_tags_from_image(request)
+            suggested_tags_response = suggest_tags_from_image(request,img_bytes)
 
             # Extraer el contenido JSON de las respuestas JsonResponse
             suggested_tags_data = json.loads(suggested_tags_response.content)
         
         # Si se solicita extracción de texto y sugerencia de etiquetas, devolver ambos datos
-        if extracted_text_data!=None and suggested_tags_data!=None:
+        if extracted_text_data!=None and suggested_tags_data!=None:          
             return JsonResponse({
                 'extracted_text': extracted_text_data.get('extracted_text', None),
                 'suggested_tags': suggested_tags_data.get('suggested_tags', None)
             })
         
         #  Si solo se solicita extracción de texto, devolver solo los datos de texto extraído
-        elif extracted_text_data!=None:
+        elif extracted_text_data!=None:          
             return JsonResponse({
                 'extracted_text': extracted_text_data.get('extracted_text', None),})
         
