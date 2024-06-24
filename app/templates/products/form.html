@@ -581,45 +581,44 @@
                     });
 
                     function agregarSugerencias() {
-                        console.log("entre a sugerencias funcion");
-                        // Seleccionar todos los botones de agregar dentro de suggestionsContainer
                         const addBtns = suggestionsContainer.querySelectorAll('.tag .tag-add');
-                        console.log(`Número de botones de agregar encontrados: ${addBtns.length}`);
-    
-                        // Iterar sobre cada botón de agregar
+                        
                         addBtns.forEach(addBtn => {
                             addBtn.addEventListener('click', function () {
-                                console.log("Botón clickeado");
-                                
-                                // Encontrar y agregar la etiqueta al diccionario
-                                const tagElement = addBtn.closest('.tag'); // Obtener el elemento clickeado
+                                const tagElement = addBtn.closest('.tag');
                                 const tagText = tagElement.querySelector('.tag-text').textContent;
-                                
+
                                 if (!tags[tagText]) {
-                                    console.log("Dentro del if");
-                                    tags[tagText] = true; // Agregar la etiqueta al diccionario (tags)
-                                    
-                                    // Crear un nuevo elemento div para la etiqueta
+                                    tags[tagText] = true;
+
                                     const newTagElement = document.createElement('div');
                                     newTagElement.classList.add('tag');
-                                    
-                                    // Contenido de la etiqueta (texto y botón de eliminar)
                                     newTagElement.innerHTML = `
-                                        <span class="tag-text">${tagText}</span>      
-                                        <i class="bi bi-x-circle tag-close"></i> <!-- Icono de Bootstrap Icons como cruz -->                      
-                                    `;
-                                    
-                                    // Agregar la etiqueta al contenedor de etiquetas
-                                    const tagContainer = document.getElementById('tagContainer');
+                    <span class="tag-text">${tagText}</span>      
+                    <i class="bi bi-x-circle tag-close"></i>
+                `;
+
                                     tagContainer.appendChild(newTagElement);
-                                    
-                                    tagElement.remove(); // Eliminar la etiqueta al hacer clic en add
+
+                                    const closeBtn = newTagElement.querySelector('.tag-close');
+                                    closeBtn.addEventListener('click', function () {
+                                        const tagText = newTagElement.querySelector('.tag-text').textContent;
+                                        delete tags[tagText];
+                                        newTagElement.remove();
+                                    });
+
+                                    newTagElement.addEventListener('mouseenter', function () {
+                                        closeBtn.style.display = 'inline';
+                                    });
+
+                                    newTagElement.addEventListener('mouseleave', function () {
+                                        closeBtn.style.display = 'none';
+                                    });
                                 }
-                                
-                                console.log("Fuera del if");
                             });
                         });
                     }
+
 
                     
 
