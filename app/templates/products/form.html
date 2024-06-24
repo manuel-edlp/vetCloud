@@ -157,10 +157,26 @@
                 <div>
                     <label for="provider" class="form-label">Proveedor</label>
                     <select name="provider" id="provider" class="form-select">
+                        
+                    {% if product.provider %}
                         {% for provider in providers %}
-                        <option value="{{ provider.id }}" {% if provider.id == product.provider %}selected{% endif %}>{{ provider.name }}</option>
+                            <option value="{{ provider.id }}"
+                                {% if provider.id == product.provider.id or provider.id|safe|stringformat:"d" == product.provider|safe|stringformat:"d" %}
+                                    selected
+                                {% endif %}>                       
+                                {{ provider.name }}
+                            </option>
                         {% endfor %}
+
+                    {% else %}
+                        <option value="" selected>Selecciona un proveedor</option>
+                        {% for provider in providers %}
+                            <option value="{{ provider.id }}">{{ provider.name }}</option>
+                        {% endfor %}
+                    {% endif %}
+
                     </select>
+                    
                 </div>
            
                 <button type="submit" class="btn btn-primary">Guardar</button>
@@ -582,7 +598,7 @@
 
                     function agregarSugerencias() {
                         const addBtns = suggestionsContainer.querySelectorAll('.tag .tag-add');
-                        
+
                         addBtns.forEach(addBtn => {
                             addBtn.addEventListener('click', function () {
                                 const tagElement = addBtn.closest('.tag');
@@ -618,10 +634,6 @@
                             });
                         });
                     }
-
-
-                    
-
 
                     // Manejar el envío del formulario
                     form.addEventListener('submit', function (event) {
