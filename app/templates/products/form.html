@@ -77,20 +77,28 @@
                     {% endif %}
                 </div>
 
-                <div>
-                    <label for="type" class="form-label">Tipo</label>
-                    <input type="text"
-                        id="type"
-                        name="type"
-                        value="{{product.type}}"
-                        class="form-control {% if errors.type %}is-invalid{% endif %}"
-                    />
+                <div class="d-inline-flex">
+                    <div id="tipo">
+                        <label for="type" class="form-label">Tipo</label>
+                        <input type="text"
+                            id="type"
+                            name="type"
+                            value="{{product.type}}"
+                            class="form-control {% if errors.type %}is-invalid{% endif %}"
+                        />
 
-                    {% if errors.type %}
-                        <div class="invalid-feedback">
-                            {{ errors.type }}
+                        {% if errors.type %}
+                            <div class="invalid-feedback">
+                                {{ errors.type }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div id="sugerencias">
+                        <label class="form-label">Sugerencias</label>
+                        <div id="suggestionsContainer" class="form-control tags-container">
+                            <!-- Aquí se agregarán las sugerencias dinámicamente -->                        
                         </div>
-                    {% endif %}
+                    </div>
                 </div>
 
                 <div id="tagContainer" class="form-control tags-container">
@@ -166,8 +174,8 @@
                 }
 
                 .tag {
-                    background-color: #6ea8fe;
-                    color: #212529;
+                    background-color: #0062f3;
+                    color: #ffffff;
                     padding: 4px 8px;
                     border-radius: 4px;
                     display: flex;
@@ -182,6 +190,44 @@
                     display: none;
                     cursor: pointer;
                     color: red; /* Color opcional para el icono */
+                }
+
+                .tag-add{
+                   
+                    cursor: pointer; /* Cambiar el cursor al pasar sobre el icono */
+                    color: rgb(0, 0, 0); /* Color opcional para el icono */
+                }
+
+                .tag:hover .tag-close .tag:hover .tag-add { /* Mostrar el icono de cruz al pasar sobre la etiqueta */
+                    display: inline-block; /* Mostrar el icono de cruz al pasar sobre la etiqueta */                
+                }
+
+                .d-inline-flex {
+                    display: inline-flex;
+                    width: 100%; /* Asegura que ocupe todo el ancho disponible */
+                }
+
+                .d-inline-flex > div {
+                    flex-grow: 1; /* Hace que los elementos dentro de d-inline-flex ocupen el espacio disponible */
+                    margin-right: 10px; /* Margen entre los elementos */
+                }
+
+                #suggestionsContainer {
+                    display: flex; /* Utilizar flexbox dentro del contenedor de sugerencias */
+                    flex-direction: column; /* Alinear elementos verticalmente */
+                    width: 100%; /* Asegurar que ocupe todo el ancho disponible */
+                    height: 54%; 
+                    padding-right: 0%;
+        
+                }
+
+                #sugerencias{
+                    margin-right: 0%;
+                }
+
+                #suggestionsList {
+                    /* Estilos opcionales para el contenedor de lista de sugerencias */
+                    margin-bottom: 10px; /* Margen inferior para separación */
                 }
             </style>
 
@@ -199,6 +245,7 @@
                     const tagContainer = document.getElementById('tagContainer');
                     const form = document.getElementById("form")
                     const tagsElements = tagContainer.getElementsByClassName('tag');
+                    const suggestionsContainer = document.getElementById('suggestionsContainer');
 
                     let tags = {}; // Objeto para almacenar las etiquetas
 
@@ -209,6 +256,8 @@
                     toggleSuggestions.checked = false;
 
                     typeInput.value=""
+
+                    
 
                     typeInput.addEventListener('keydown', function (event) {
                         // Verificar si se presionó la tecla "Enter"
@@ -247,6 +296,7 @@
                                     delete tags[tagText];
                                     tagElement.remove(); // Eliminar la etiqueta al hacer clic en la cruz
                                 });
+
 
                                 // Mostrar y ocultar la cruz al pasar el mouse por encima de la etiqueta
                                 tagElement.addEventListener('mouseenter', function () {
@@ -359,12 +409,36 @@
                                 if (toggleAutoDescription.checked && data.extracted_text) {
                                     descriptionTextarea.value = data.extracted_text;
                                 }
-
+                                                               
                                 if (toggleSuggestions.checked && data.suggested_tags) {
-                                    // Maneja las etiquetas sugeridas (puedes ajustar esto según tus necesidades)
-                                    console.log("Etiquetas sugeridas:", data.suggested_tags);
-                                    // Aquí puedes actualizar tu UI con las etiquetas sugeridas
+                                    const suggestionsContainer = document.getElementById('suggestionsContainer');
+
+                                    // Limpiamos el contenido anterior del contenedor de sugerencias
+                                    suggestionsContainer.innerHTML = '';
+
+                                    // Iteramos sobre las etiquetas sugeridas y las agregamos al contenedor
+                                    data.suggested_tags.forEach(tag => {
+                                       // Crear un nuevo elemento div para la etiqueta
+                                        const tagElement = document.createElement('div');
+                                        tagElement.classList.add('tag');
+                                        // Contenido de la etiqueta (texto y botón de eliminar)
+                                        tagElement.innerHTML = `
+                                            <span class="tag-text">${tag}</span>      
+                                            <i class="bi bi-plus-circle tag-add"></i> <!-- Icono de Bootstrap Icons como cruz -->                      
+                                        `;
+                                        // Agregar la etiqueta al contenedor de etiquetas
+                                        suggestionsContainer.appendChild(tagElement);
+                                    });
+                                    // Agregar evento de clic al botón de agregar etiqueta
+                                    agregarSugerencias();
+
+                                    // Mostramos el contenedor de sugerencias si hay etiquetas sugeridas
+                                    //suggestionsContainer.style.display = 'flex';
+                                } else {
+                                    // Ocultamos el contenedor de sugerencias si no hay etiquetas sugeridas o el toggle no está activado
+                                    document.getElementById('suggestionsContainer').style.display = 'none';
                                 }
+
                             })
                             .catch(error => {
                                 console.error("Error al procesar la imagen:", error);
@@ -505,6 +579,51 @@
                             closeBtn.style.display = 'none'; // Ocultar la cruz
                         });
                     });
+
+                    function agregarSugerencias() {
+                        console.log("entre a sugerencias funcion");
+                        // Seleccionar todos los botones de agregar dentro de suggestionsContainer
+                        const addBtns = suggestionsContainer.querySelectorAll('.tag .tag-add');
+                        console.log(`Número de botones de agregar encontrados: ${addBtns.length}`);
+    
+                        // Iterar sobre cada botón de agregar
+                        addBtns.forEach(addBtn => {
+                            addBtn.addEventListener('click', function () {
+                                console.log("Botón clickeado");
+                                
+                                // Encontrar y agregar la etiqueta al diccionario
+                                const tagElement = addBtn.closest('.tag'); // Obtener el elemento clickeado
+                                const tagText = tagElement.querySelector('.tag-text').textContent;
+                                
+                                if (!tags[tagText]) {
+                                    console.log("Dentro del if");
+                                    tags[tagText] = true; // Agregar la etiqueta al diccionario (tags)
+                                    
+                                    // Crear un nuevo elemento div para la etiqueta
+                                    const newTagElement = document.createElement('div');
+                                    newTagElement.classList.add('tag');
+                                    
+                                    // Contenido de la etiqueta (texto y botón de eliminar)
+                                    newTagElement.innerHTML = `
+                                        <span class="tag-text">${tagText}</span>      
+                                        <i class="bi bi-x-circle tag-close"></i> <!-- Icono de Bootstrap Icons como cruz -->                      
+                                    `;
+                                    
+                                    // Agregar la etiqueta al contenedor de etiquetas
+                                    const tagContainer = document.getElementById('tagContainer');
+                                    tagContainer.appendChild(newTagElement);
+                                    
+                                    tagElement.remove(); // Eliminar la etiqueta al hacer clic en add
+                                }
+                                
+                                console.log("Fuera del if");
+                            });
+                        });
+                    }
+
+                    
+
+
                     // Manejar el envío del formulario
                     form.addEventListener('submit', function (event) {
                         // Procesar las etiquetas y llenar el diccionario
