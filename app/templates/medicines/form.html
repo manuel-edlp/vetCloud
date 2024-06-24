@@ -37,6 +37,11 @@
                     {% endif %}
                 </div>
 
+                <div id="toggleContainer">
+                    <label for="toggleAutoDescription">Descripción automática de la medicina</label>
+                    <input type="checkbox" id="toggleAutoDescription">
+                </div>
+
                 <div>
                     <label for="image" class="form-label">Imagen</label>
                     <input type="file"
@@ -65,11 +70,6 @@
                     {% endif %}
                 </div>
     
-                <div id="toggleContainer">
-                    <label for="toggleAutoDescription">Descripción automática de la medicina</label>
-                    <input type="checkbox" id="toggleAutoDescription">
-                </div>
-
                 <div>
                     <label for="description" class="form-label">Descripción</label>
                     <style>
@@ -190,16 +190,19 @@
                     });
                     
                     // Funcion para extraer el texto de la imagen y cargarlo a la descripcion
-                    function extractTextFromImage(){
+                    function extractTextFromImage() {
 
-                        if (toggleAutoDescription.checked==false) {
+                        if (toggleAutoDescription.checked == false) {
 
-                        }else{
+                        } else {
                             if (imageInput.files && imageInput.files.length > 0) {
                                 var formData = new FormData();
+                                const toggleSuggestions = { checked: false };
                                 formData.append('image', imageInput.files[0]);
+                                formData.append('extract_text', toggleAutoDescription.checked);
+                                formData.append('suggest_tags', toggleSuggestions.checked);
 
-                                fetch('{% url "extract_text_from_image" %}', {
+                                fetch('{% url "process_image" %}', {
                                     method: 'POST',
                                     body: formData,
                                     headers: {
@@ -208,12 +211,9 @@
                                 })
                                 .then(response => response.json())
                                 .then(data => {
-                                    if (data.extracted_text) {
+                                    if (toggleAutoDescription.checked && data.extracted_text) {
                                         descriptionTextarea.value = data.extracted_text;
-                                    } else {
-                                        console.error("No se pudo extraer texto de la imagen.");
-                                    }
-                                })
+                                    }})
                                 .catch(error => {
                                     console.error("Error al extraer texto:", error);
                                 });
