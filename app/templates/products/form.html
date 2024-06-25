@@ -3,13 +3,13 @@
 {% block main %}
 <div class="container">
     <div class="row">
-        <div class="col-lg-6 offset-lg-3">
+        <div class="col-lg-6 offset-lg-2">
             <h1>Nuevo Producto</h1>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-lg-6 offset-lg-3">
+        <div class="col-lg-8 offset-lg-2">
 
             
             <form id="form" class="vstack gap-3 {% if errors %}was-validated{% endif %}"
@@ -117,13 +117,6 @@
 
                 <div>
                     <label for="description" class="form-label">Descripción</label>
-                    <style>
-                        textarea {
-                            width: 100%; /* Opcional: ancho completo del contenedor */
-                            min-height: 100px; /* Altura mínima inicial */
-                            resize: vertical; /* Permite redimensionar verticalmente */
-                        }
-                    </style>
                     <textarea id="description"
                               name="description"
                               class="form-control {% if errors.description %}is-invalid{% endif %}"
@@ -183,10 +176,16 @@
             </form>
 
             <style>
+                .description {
+                    width: 100%; /* Opcional: ancho completo del contenedor */
+                    min-height: 100px; /* Altura mínima inicial */
+                    resize: vertical; /* Permite redimensionar verticalmente */
+                }
                 .tags-container {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 8px;
+                align-items: center;
                 }
 
                 .tag {
@@ -230,20 +229,26 @@
 
                 #suggestionsContainer {
                     display: flex; /* Utilizar flexbox dentro del contenedor de sugerencias */
-                    flex-direction: column; /* Alinear elementos verticalmente */
+                    flex-direction: row; /* Alinear elementos verticalmente */
                     width: 100%; /* Asegurar que ocupe todo el ancho disponible */
-                    height: 54%; 
+                    min-height: 54%; 
                     padding-right: 0%;
-        
                 }
 
                 #sugerencias{
                     margin-right: 0%;
+                    flex: 50%;
+                }
+                #tipo{
+                    flex: 50%;
                 }
 
                 #suggestionsList {
                     /* Estilos opcionales para el contenedor de lista de sugerencias */
                     margin-bottom: 10px; /* Margen inferior para separación */
+                }
+                .offset-lg-3{
+                    max-width: 70%;
                 }
             </style>
 
