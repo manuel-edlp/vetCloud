@@ -90,9 +90,28 @@
                         class="form-select"
                         required>   
                         
-                        {% for client in clients %}
-                        <option value="{{ client.id}}">{{ client.name }}</option>
-                        {% endfor %}
+                        {% if pet.client %}
+                            {% for client in clients %}
+                                <option value="{{ client.id }}"
+                                    {% if client.id == pet.client.id or client.id|stringformat:"s" == pet.client|stringformat:"s" %}
+                                        selected
+                                    {% endif %}>                       
+                                    {{ client.name }}
+                                    
+                                </option>
+                            {% endfor %}
+
+                        {% else %}
+                            <option value="" selected>Selecciona un Dueño</option>
+                            {% for client in clients %}                               
+                            <option value="{{ client.id }}">{{ client.name }} </option>
+                            {% endfor %}
+                        {% endif %}
+
+
+
+
+
                     </select>
                 </div>
 
