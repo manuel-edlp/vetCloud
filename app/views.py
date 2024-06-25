@@ -80,7 +80,8 @@ def suggest_tags_from_image(request,img_bytes):
             if tags_result.tags:
                 tags_list = []
                 for tag in tags_result.tags:
-                    tags_list.append(tag.name)
+                    if tag.name!='text':
+                        tags_list.append(tag.name)
             else:
                 tags_list = []
                 
