@@ -21,40 +21,105 @@
                 <th>Nombre</th>
                 <th>Email</th>
                 <th>Dirección</th>
-                <th></th>
+                <th>Acciones</th>
+                <th></th> <!-- Nueva columna para el mensaje de error -->
             </tr>
         </thead>
 
         <tbody>
             {% for provider in providers %}
             <tr>
-                    <td>{{provider.name}}</td>
-                    <td>{{provider.email}}</td>
-                    <td>{{provider.address}}</td>
-                    <td>
-                        <div class="d-inline-flex gap-2">  
-                            <a class="btn btn-outline-primary"
-                            href="{% url 'provider_edit' id=provider.id %}"
-                            >Editar</a>
-                            <form method="POST"
-                                action="{% url 'provider_delete' %}"
-                                aria-label="Formulario de eliminación de cliente">
-                                {% csrf_token %}
+                <td>{{ provider.name }}</td>
+                <td>{{ provider.email }}</td>
+                <td>{{ provider.address }}</td>
+                <td>
+                    <div class="d-inline-flex gap-2">  
+                        <a class="btn btn-outline-primary" href="{% url 'provider_edit' id=provider.id %}">
+                            Editar
+                        </a>
+                        <form class="delete-form" method="POST"
+                            action="{% url 'provider_delete' %}"
+                            aria-label="Formulario de eliminación de proveedor">
+                            {% csrf_token %}
 
-                                <input type="hidden" name="provider_id" value="{{ provider.id }}" />
-                                <button class="btn btn-outline-danger">Eliminar</button>
-                            </form>
-                        </div>
-                    </td>
+                            <input type="hidden" name="provider_id" value="{{ provider.id }}" />
+                            <button class="btn btn-outline-danger">Eliminar</button>
+                        </form>
+                        <div class="alert alert-danger error-message" style="display: none;"> </div>
+                    </div>
+                </td>
             </tr>
             {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center">
-                        No existen proveedores
-                    </td>
-                </tr>
+            <tr>
+                <td colspan="5" class="text-center">
+                    No existen proveedores
+                </td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <style>
+        /* Estilos para el mensaje de error */
+        .error-message {
+            padding: 8px;
+            max-height: 45px;
+            overflow-y: auto;
+        }
+        .btn-outline-primary {
+            max-height: 40px;
+        }
+    </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var deleteForms = document.querySelectorAll('.delete-form');
+    
+        deleteForms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Evita el envío estándar del formulario
+    
+                var formData = new FormData(form);
+                var errorDiv = form.closest('td').querySelector('.error-message');
+    
+                fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    // Maneja la respuesta exitosa, probablemente redirijas o actualices la página
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        errorDiv.textContent = 'Error desconocido al eliminar el proveedor.';
+                        errorDiv.style.display = 'block';
+                        // Ocultar el mensaje después de 10 segundos
+                        setTimeout(() => {
+                            errorDiv.style.display = 'none';
+                        }, 10000); // 10000 milisegundos = 10 segundos
+                    }
+                })
+                .catch(function(error) {
+                    // Captura y muestra el mensaje de error 
+                    errorDiv.textContent = 'No se puede eliminar el proveedor porque tiene productos asociados';
+                    errorDiv.style.display = 'block';
+                    // Ocultar el mensaje después de 10 segundos
+                    setTimeout(() => {
+                        errorDiv.style.display = 'none';
+                    }, 10000); // 10000 milisegundos = 10 segundos
+                });
+            });
+        });
+    });
+    </script>
 </div>
 {% endblock %}

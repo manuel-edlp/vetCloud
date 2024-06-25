@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 from .models import CityEnum, Client, Medicine, Pet, Product, Provider, Veterinary
 
-from django.db.models import Q
+from django.db.models import ProtectedError,Q
 
 from django.http import JsonResponse
 
@@ -251,9 +251,17 @@ def provider_delete(request):
     """
     Elimina un proveedor.
     """
-    provider_id = request.POST.get("provider_id")
-    provider = get_object_or_404(Provider, pk=int(provider_id))
-    provider.delete()
+    if request.method == 'POST':
+        provider_id = request.POST.get("provider_id")
+        provider = get_object_or_404(Provider, pk=int(provider_id))
+        
+        try:
+            provider.delete()
+            return JsonResponse({'success': True})  # Devuelve una respuesta JSON indicando éxito
+        except ProtectedError:
+            error_message = "No se puede eliminar el proveedor porque tiene productos asociados."
+            print(error_message)  # Imprime el mensaje de error en la consola del servidor
+            return JsonResponse({'error_message': error_message}, status=400)
 
     return redirect(reverse("provider_repo"))
 

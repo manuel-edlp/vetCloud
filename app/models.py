@@ -16,7 +16,30 @@ class CityEnum(models.TextChoices):
     """
     LA_PLATA = 'La Plata', 
     BERISSO = 'Berisso',
-    ENSENADA = 'Ensenada',
+    ENSENADA = 'Ensenada',	
+    AVELLANEDA = 'Avellaneda',
+    LOMAS_DE_ZAMORA = 'Lomas de Zamora',
+    MORON = 'Morón',
+    TIGRE = 'Tigre',
+    VICENTE_LOPEZ = 'Vicente López',
+    SAN_ISIDRO = 'San Isidro',
+    BANFIELD = 'Banfield',
+    FLORIDA = 'Florida',
+    QUILMES = 'Quilmes',
+    LA_MATANZA = 'La Matanza',
+    EZEIZA = 'Ezeiza',
+    LANUS = 'Lanús',
+    MERLO = 'Merlo',
+    MORENO = 'Moreno',
+    SAN_MIGUEL = 'San Miguel',
+    TRES_DE_FEBRERO = 'Tres de Febrero',
+    LOBOS = 'Lobos',
+    PILAR = 'Pilar',
+    SAN_FERNANDO = 'San Fernando',
+    SAN_MARTIN = 'San Martín',
+    TRES_ARROYOS = 'Tres Arroyos',
+    ZARATE = 'Zárate',
+
 
     
 
@@ -274,7 +297,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image_url = models.URLField(null=True, blank=True)  # Campo para almacenar la URL de la imagen en Blob Storage
     description = models.CharField(max_length=300)
-    provider = models.ForeignKey("Provider", on_delete=models.CASCADE, null=True, blank=True)
+    provider = models.ForeignKey("Provider", on_delete=models.PROTECT, null=True, blank=True)
 
     def __str__(self):
             """
@@ -449,7 +472,7 @@ class Pet(models.Model):
     breed = models.CharField(max_length=40)
     birthday = models.DateField()
     weight = models.FloatField()
-    client = models.ForeignKey("Client", on_delete=models.CASCADE, null=True, blank=True)
+    client = models.ForeignKey("Client", on_delete=models.PROTECT, null=True, blank=True)
     medicines = models.ManyToManyField("Medicine")
     veterinaries = models.ManyToManyField("Veterinary", blank=True)
 
