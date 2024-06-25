@@ -19,7 +19,7 @@
         <thead>
             <tr>
                 <th>Nombre</th>
-                <th>Tipo</th>
+                <th>Etiquetas</th>
                 <th>Precio</th>
                 <th>Proveedor</th>
                 <th>Descripcion</th>
@@ -51,7 +51,7 @@
                 <td>
                     {% if product.image_url %}
                         {% with sas_token=product.image_url|generate_sas_token %}
-                            <img src="{{ product.image_url }}{{ sas_token }}" alt="{{ product.name }}" style="max-width: 100px; max-height: 100px;">
+                            <img class="img" src="{{ product.image_url }}{{ sas_token }}" alt="{{ product.name }}">
                         {% endwith %}
                     {% else %}
                         No hay imagen
@@ -76,6 +76,11 @@
         </tbody>
     </table>
     <style>
+        .img{
+            max-width: 100px; 
+            max-height: 100px;
+            border-radius: 5%;
+        }
         .tags-container {
             display: flex;
             flex-wrap: wrap;

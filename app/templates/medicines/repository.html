@@ -35,7 +35,7 @@
                     <td>
                         {% if medicine.image_url %}
                             {% with sas_token=medicine.image_url|generate_sas_token %}
-                                <img src="{{ medicine.image_url }}{{ sas_token }}" alt="{{ medicine.name }}" style="max-width: 100px; max-height: 100px;">
+                                <img class="img" src="{{ medicine.image_url }}{{ sas_token }}" alt="{{ medicine.name }}">
                             {% endwith %}
                         {% else %}
                             No hay imagen
@@ -71,5 +71,12 @@
         localStorage.removeItem('imagen');
         localStorage.removeItem('imagenNombre');
     </script>
+    <style>
+        .img{
+            max-width: 100px; 
+            max-height: 100px;
+            border-radius: 5%;
+        }
+    </style>
 </div>
 {% endblock %}
