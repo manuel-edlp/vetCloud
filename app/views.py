@@ -325,13 +325,15 @@ def product_form(request, id=None):
             product_image = request.FILES.get("image")
             saved,errors = product.update_product(request.POST,product_image)  # Pasar request.FILES
             
-            # Obtener el ID del proveedor seleccionado del formulario
-            provider_id = request.POST.get("provider", "")
+            # si se actualizo correctamente el producto, se asocia el proveedor seleccionado
+            if saved:
+                # Obtener el ID del proveedor seleccionado del formulario
+                provider_id = request.POST.get("provider", "")
 
-            # Asociar el proveedor seleccionado con el producto actualizado
-            if provider_id:
-                product.provider_id = provider_id
-                product.save()
+                # Asociar el proveedor seleccionado con el producto actualizado
+                if provider_id:
+                    product.provider_id = provider_id
+                    product.save()
 
         if saved:
             return redirect(reverse("product_repo"))
@@ -406,19 +408,21 @@ def pet_form(request, id=None):
         else:
             pet = get_object_or_404(Pet, pk=pet_id)
             saved, errors = pet.update_pet(request.POST)
-
-            # Obtener el ID del cliente seleccionado del formulario
-            client_id = request.POST.get("client", "")
-            # Asociar el cliente seleccionado con el animal actualizado
-            if client_id:
-                pet.client_id = client_id
-                pet.save()
+            
+            # si se actualizo correctamente
+            if saved:
+                # Obtener el ID del cliente seleccionado del formulario
+                client_id = request.POST.get("client", "")
+                # Asociar el cliente seleccionado con el animal actualizado
+                if client_id:
+                    pet.client_id = client_id
+                    pet.save()
                 
         if saved:
             return redirect(reverse("pet_repo"))
 
         return render(
-            request, "pets/form.html", {"errors": errors, "pet": request.POST,},
+            request, "pets/form.html", {"errors": errors, "pet": request.POST,"clients": clients},
         )
 
     pet = None
@@ -485,15 +489,17 @@ def pet_form_history(request, id):
                 pet.save()
         else:
             pet = get_object_or_404(Pet, pk=pet_id)
-            pet.update_pet(request.POST)
+            saved,errors = pet.update_pet(request.POST)
             
-            medicine_id = request.POST.get("medicines", "")
-            vet_id = request.POST.get("veterinaries", "")
-            
-            if medicine_id and vet_id:
-                pet.medicines.add(medicine_id)
-                pet.veterinaries.add(vet_id)
-                pet.save()
+            # si se actualizo correctamente asocio medicina y veterinario
+            if saved:
+                medicine_id = request.POST.get("medicines", "")
+                vet_id = request.POST.get("veterinaries", "")
+                
+                if medicine_id and vet_id:
+                    pet.medicines.add(medicine_id)
+                    pet.veterinaries.add(vet_id)
+                    pet.save()
         
         if saved:
             return redirect(reverse("pets_history", args=(id,)))
