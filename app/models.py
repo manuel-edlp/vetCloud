@@ -263,15 +263,16 @@ def validate_product(data):
     errors = {}
 
     name = data.get("name", "")
-    type = data.get("type", "")
+    tag = data.get("tag", "")
     price = data.get("price", "")
     description = data.get("description", "")
+    provider = data.get("provider", "")
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
 
-    if type == "":
-        errors["type"] = "Por favor ingrese un tipo"
+    if tag == "":
+        errors["tag"] = "Por favor ingrese una etiqueta"
 
     if price == "":
         errors["price"] = "Por favor ingrese un precio"
@@ -286,6 +287,9 @@ def validate_product(data):
     if description == "":
         errors["description"] = "Por favor ingrese una descripcion"
     
+    if provider == "":
+        errors["provider"] = "Por favor ingrese un proveedor"
+        
     return errors
 
 class Product(models.Model):
@@ -293,7 +297,7 @@ class Product(models.Model):
     Modelo que representa a un producto en el sistema.
     """
     name = models.CharField(max_length=100)
-    type = models.CharField(max_length=100)
+    tag = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image_url = models.URLField(null=True, blank=True)  # Campo para almacenar la URL de la imagen en Blob Storage
     description = models.CharField(max_length=500)
@@ -327,7 +331,7 @@ class Product(models.Model):
 
         Product.objects.create(
             name=product_data.get("name"),
-            type=product_data.get("type"),
+            tag=product_data.get("tag"),
             price=product_data.get("price"),
             description=product_data.get("description"),
             image_url=image_url  # Guardar la URL de la imagen
@@ -350,7 +354,7 @@ class Product(models.Model):
             return False, errors
 
         self.name = product_data.get("name", "") or self.name
-        self.type = product_data.get("type", "") or self.type
+        self.tag = product_data.get("tag", "") or self.tag
         self.price = product_data.get("price", "") or self.price
         self.description = product_data.get("description", "") or self.description
 
