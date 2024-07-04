@@ -4,7 +4,7 @@ from datetime import datetime
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from django.utils import timezone
-from playwright.sync_api import Browser, expect, sync_playwright
+from playwright.sync_api import Browser, expect, sync_playwright, TimeoutError
 
 from app.models import Client, Provider
 
@@ -585,20 +585,22 @@ class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
 
         expect(self.page.get_by_role("form")).to_be_visible()
 
-# Completar el formulario para crear un nuevo producto con valores específicos
-        self.page.get_by_label("Nombre").fill("Gentamicina")
-        self.page.get_by_label("Tipo").fill("Antibiotico")
+        # Completar el formulario para crear un nuevo producto con valores específicos
+        self.page.get_by_label("Nombre").fill("alimento")
+        self.page.get_by_label("Etiquetas", exact=True).fill("Antibiotico")
         self.page.get_by_label("Precio").fill("200")
         self.page.get_by_label("Descripción", exact=True).fill("lorem ipsum")
-
+        
+        self.page.get_by_label("Proveedor").select_option(label='Panacea')
 
         self.page.get_by_role("button", name="Guardar").click()
 
-# Verificar que los detalles del producto recién creado sean visibles en la página
-        expect(self.page.get_by_text("Gentamicina")).to_be_visible()
+        # Verificar que los detalles del producto recién creado sean visibles en la página
+        expect(self.page.get_by_text("alimento")).to_be_visible()
         expect(self.page.get_by_text("Antibiotico")).to_be_visible()
         expect(self.page.get_by_text("200")).to_be_visible()
         expect(self.page.get_by_text("lorem ipsum")).to_be_visible()
+        expect(self.page.get_by_text("Panacea")).to_be_visible()
 
 # Prueba para verificar si se muestran errores cuando el formulario es inválido con un precio menor que cero
     def test_should_view_errors_if_form_is_invalid_with_price_less_than_zero(self):
@@ -612,23 +614,24 @@ class ProductCreatePriceGreaterThanZeroTestCase(PlaywrightTestCase):
 
         self.page.get_by_role("button", name="Guardar").click()
 
-# Verificar que se muestren mensajes de error para ingresar nombre, tipo y precio
+# Verificar que se muestren mensajes de error para ingresar nombre, Etiqueta y precio
         expect(self.page.get_by_text("Por favor ingrese un nombre")).to_be_visible()
-        expect(self.page.get_by_text("Por favor ingrese un tipo")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese una etiqueta")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese un precio")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese una descripcion")).to_be_visible()
 
 # Completar el formulario con un precio negativo y enviarlo
-        self.page.get_by_label("Nombre").fill("Gentamicina")
-        self.page.get_by_label("Tipo").fill("Antibiótico")
+        self.page.get_by_label("Nombre").fill("alimento")
+        self.page.get_by_label("Etiquetas", exact=True).fill("Antibiótico")
         self.page.get_by_label("Precio").fill("-10")
         self.page.get_by_label("Descripción", exact=True).fill("lorem ipsum")
+        self.page.get_by_label("Proveedor").select_option("Panacea")
 
         self.page.get_by_role("button", name="Guardar").click()
 
-# Verificar que los mensajes de error para ingresar el nombre y el tipo no sean visibles
+# Verificar que los mensajes de error para ingresar el nombre y el Etiqueta no sean visibles
         expect(self.page.get_by_text("Por favor ingrese su nombre")).not_to_be_visible()
-        expect(self.page.get_by_text("Por favor ingrese un tipo")).not_to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese una etiqueta")).not_to_be_visible(timeout=3000)
         expect(self.page.get_by_text("Por favor ingrese una descripcion")).not_to_be_visible()
 
 # Verificar que el mensaje de error "El precio debe ser mayor que cero" sea visible

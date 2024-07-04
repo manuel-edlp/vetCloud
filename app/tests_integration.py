@@ -530,7 +530,7 @@ class ProductsTest(TestCase):
             reverse("product_form"), 
             data={
                 "name": "Producto Test",
-                "type": "Tipo Test",
+                "tag": "tag Test",
                 "price": "10.00",  # Precio válido
                 "description":"lorem ipsum",
             },
@@ -544,7 +544,7 @@ class ProductsTest(TestCase):
 
         # Verificar los detalles del producto creado
         self.assertEqual(products[0].name, "Producto Test")
-        self.assertEqual(products[0].type, "Tipo Test")
+        self.assertEqual(products[0].tag, "tag Test")
         self.assertEqual(products[0].price, 10.00)  # Precio válido
         self.assertEqual(products[0].description, "lorem ipsum")
 
@@ -560,7 +560,7 @@ class ProductsTest(TestCase):
             reverse("product_form"),
             data={
                 "name": "Producto Test",
-                "product_type": "Tipo Test",
+                "product_tag": "tag Test",
                 "price": "-5.00",  # Precio inválido (negativo)
                 "description":"lorem ipsum",
             },
@@ -583,7 +583,7 @@ class ProductsTest(TestCase):
             reverse("product_form"),
             data={
                 "name": "Producto Test",
-                "product_type": "Tipo Test",
+                "product_tag": "tag Test",
                 "price": "precio_invalido",  # Precio inválido (no numérico)
                 "description":"lorem ipsum",
             },

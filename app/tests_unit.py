@@ -429,7 +429,7 @@ class ProductModelTest(TestCase):
             success, message_or_errors = Product.save_product(
                 {
                     "name": "Test Product",
-                    "type": "Test Type",
+                    "tag": "red",
                     "price": "100",
                     "description":"lorem ipsum",
                 },
@@ -450,7 +450,7 @@ class ProductModelTest(TestCase):
             success, message_or_errors = Product.save_product(
                 {
                 "name": "Test Product",
-                "type": "Test Type",
+                "tag": "Test tag",
                 "price": "0",
                 "description":"lorem ipsum",
                 },
@@ -472,7 +472,7 @@ class ProductModelTest(TestCase):
             success, message_or_errors = Product.save_product(
                 {
                 "name": "Test Product",
-                "type": "Test Type",
+                "tag": "Test tag",
                 "price": "-10",
                 "description":"lorem ipsum",
                 },
