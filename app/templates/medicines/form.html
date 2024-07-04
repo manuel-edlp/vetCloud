@@ -71,14 +71,17 @@
                 </div>
     
                 <div>
-                    <label for="description" class="form-label">Descripción</label>
-                    <style>
-                        textarea {
-                            width: 100%; /* Ancho completo del contenedor */
-                            min-height: 100px; /* Altura mínima inicial */
-                            resize: vertical; /* Permite redimensionar verticalmente */
-                        }
-                    </style>
+                    <div class="load"> 
+                        <label for="description" class="form-label">Descripción</label>
+                        
+                        <!-- Elemento de animación de carga para la descripción -->
+                        <div id="loadingDescription">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    </div>
+            
                     <textarea id="description"
                               name="description"
                               class="form-control {% if errors.description %}is-invalid{% endif %}"
@@ -109,6 +112,28 @@
 
                 <button class="btn btn-primary">Guardar</button>
             </form>
+            <style>
+                .description {
+                    width: 100%; /* Ancho completo del contenedor */
+                    min-height: 100px; /* Altura mínima inicial */
+                    resize: vertical; /* Permite redimensionar verticalmente */
+                }
+
+                .load{
+                    display: inline-flex; /* Utilizar flexbox para alinear el texto y el spinner */
+                }
+
+                #loadingDescription
+                { 
+                    display:none;
+                }
+                .spinner-border{
+                    margin-left: 40%;
+                    margin-top: 15%;
+                    width: 1.25rem; /* Ancho del spinner */
+                    height: 1.25rem; /* Alto del spinner */
+                }
+            </style>
 
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
@@ -202,6 +227,11 @@
                                 formData.append('extract_text', toggleAutoDescription.checked);
                                 formData.append('suggest_tags', toggleSuggestions.checked);
 
+                                // Mostrar animación de carga
+                                if (toggleAutoDescription.checked) {
+                                    document.getElementById('loadingDescription').style.display = 'block';
+                                }
+
                                 fetch('{% url "process_image" %}', {
                                     method: 'POST',
                                     body: formData,
@@ -211,11 +241,22 @@
                                 })
                                 .then(response => response.json())
                                 .then(data => {
-                                    if (toggleAutoDescription.checked && data.extracted_text) {
-                                        descriptionTextarea.value = data.extracted_text;
-                                    }})
+                                        // Ocultar animación de carga después de la carga
+                                        document.getElementById('loadingDescription').style.display = 'none';
+
+                                        // Si se extrajo texto y el toggle está activado, llenar el campo de descripción
+                                        if (toggleAutoDescription.checked && data.extracted_text) {
+                                            descriptionTextarea.value = data.extracted_text;
+                                        }
+                                        // Si no se extrajo texto y el toggle está activado, muestro mensaje de error
+                                        if (toggleAutoDescription.checked && !data.extracted_text) {
+                                            descriptionTextarea.placeholder = "No se pudo generar una descripción automática para este medicamento";
+                                        }
+                                    })
                                 .catch(error => {
                                     console.error("Error al extraer texto:", error);
+                                    // Ocultar animación de carga en caso de error
+                                    doccument.getElementById('loadingDescription').style.display = 'none'; 
                                 });
                             }else{console.log("No se selecciono una imagen aun.");}
                         }
