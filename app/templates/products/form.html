@@ -79,17 +79,17 @@
 
                 <div class="d-inline-flex">
                     <div id="tipo">
-                        <label for="type" class="form-label">Etiquetas</label>
+                        <label for="tag" class="form-label">Etiquetas</label>
                         <input type="text"
-                            id="type"
-                            name="type"
-                            value="{{product.type}}"
-                            class="form-control {% if errors.type %}is-invalid{% endif %}"
+                            id="tag"
+                            name="tag"
+                            value="{{product.tag}}"
+                            class="form-control {% if errors.tag %}is-invalid{% endif %}"
                         />
 
-                        {% if errors.type %}
+                        {% if errors.tag %}
                             <div class="invalid-feedback">
-                                {{ errors.type }}
+                                {{ errors.tag }}
                             </div>
                         {% endif %}
                     </div>
@@ -103,9 +103,9 @@
 
                 <div id="tagContainer" class="form-control tags-container">
                     <!-- Aquí se agregarán las etiquetas dinámicamente -->
-                    {% if product.type %}
-                        {% with product_type_list=product.type|split_string:',' %}
-                            {% for tag in product_type_list %}
+                    {% if product.tag %}
+                        {% with product_tag_list=product.tag|split_string:',' %}
+                            {% for tag in product_tag_list %}
                                 <div class="tag">
                                     <span class="tag-text">{{ tag }}</span>
                                     <i class="bi bi-x-circle tag-close"></i>
@@ -149,26 +149,28 @@
                 
                 <div>
                     <label for="provider" class="form-label">Proveedor</label>
-                    <select name="provider" id="provider" class="form-select">
+                    <select name="provider" id="provider" class="form-select" required>
                         
-                    {% if product.provider %}
-                        {% for provider in providers %}
-                            <option value="{{ provider.id }}"
-                                {% if provider.id == product.provider.id or provider.id|safe|stringformat:"d" == product.provider|safe|stringformat:"d" %}
-                                    selected
-                                {% endif %}>                       
-                                {{ provider.name }}
-                            </option>
-                        {% endfor %}
+                        {% if product.provider %}
+                            {% for provider in providers %}
+                                <option value="{{ provider.id }}"
+                                    {% if provider.id == product.provider.id or provider.id|safe|stringformat:"d" == product.provider|safe|stringformat:"d" %}
+                                        selected
+                                    {% endif %}>                       
+                                    {{ provider.name|striptags }}
+                                </option>
+                            {% endfor %}
 
-                    {% else %}
-                        <option value="" selected>Selecciona un proveedor</option>
-                        {% for provider in providers %}
-                            <option value="{{ provider.id }}">{{ provider.name }}</option>
-                        {% endfor %}
-                    {% endif %}
-
+                        {% else %}
+                            <option value="" disabled selected>Selecciona un proveedor</option>
+                            {% for provider in providers %}
+                                <option value="{{ provider.id }}">{{ provider.name|striptags }}</option>
+                            {% endfor %}
+                        {% endif %}
                     </select>
+                    {% if errors.provider %}
+                        <div class="invalid-feedback">{{ errors.provider }}</div>
+                    {% endif %}
                     
                 </div>
            
@@ -262,7 +264,7 @@
                     const imageInput = document.getElementById('image');
                     const imagePreviewDiv = document.getElementById('imagePreview');
                     const imagePreviewDivLocal = document.getElementById('imagePreviewLocal');
-                    const typeInput = document.getElementById('type');
+                    const tagInput = document.getElementById('tag');
                     const tagContainer = document.getElementById('tagContainer');
                     const form = document.getElementById("form")
                     const tagsElements = tagContainer.getElementsByClassName('tag');
@@ -276,30 +278,30 @@
                     // Por defecto, el toggle está desactivado (no ejecuta las sugerencias de etiquetas)
                     toggleSuggestions.checked = false;
 
-                    typeInput.value=""
+                    tagInput.value=""
 
                     
 
-                    typeInput.addEventListener('keydown', function (event) {
+                    tagInput.addEventListener('keydown', function (event) {
                         // Verificar si se presionó la tecla "Enter"
                         if (event.key === 'Enter') {
                             event.preventDefault(); // Evitar el envío del formulario por defecto
 
-                            const typeValue = this.value.trim(); // Obtener el valor del input y quitar espacios en blanco al cominezo y final
+                            const tagValue = this.value.trim(); // Obtener el valor del input y quitar espacios en blanco al cominezo y final
 
-                            if (typeValue !== '') {
+                            if (tagValue !== '') {
 
                                  // Verificar si la etiqueta ya existe en el diccionario
-                                if (!tags[typeValue]) {
+                                if (!tags[tagValue]) {
                                     // Agregar la etiqueta al diccionario
-                                    tags[typeValue] = true;
+                                    tags[tagValue] = true;
                                 }
                                 // Crear un nuevo elemento div para la etiqueta
                                 const tagElement = document.createElement('div');
                                 tagElement.classList.add('tag');
                                 // Contenido de la etiqueta (texto y botón de eliminar)
                                 tagElement.innerHTML = `
-                                    <span class="tag-text">${typeValue}</span>      
+                                    <span class="tag-text">${tagValue}</span>      
                                     <i class="bi bi-x-circle tag-close"></i> <!-- Icono de Bootstrap Icons como cruz -->                      
                                 `;
 
@@ -651,8 +653,8 @@
                             }
                         }
                         // Convertir las claves del objeto tags a una cadena separada por comas
-                        typeInput.style.color = 'transparent';   
-                        typeInput.value = Object.keys(tags).join(',');
+                        tagInput.style.color = 'transparent';   
+                        tagInput.value = Object.keys(tags).join(',');
                         
                     });
                             

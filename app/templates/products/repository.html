@@ -34,9 +34,9 @@
                 <td>{{ product.name }}</td>
                 <td>
                     <div id="tagContainer" class="tags-container">
-                        {% if product.type %}
-                            {% with product_type_list=product.type|split_string:',' %}
-                                {% for tag in product_type_list %}
+                        {% if product.tag %}
+                            {% with product_tag_list=product.tag|split_string:',' %}
+                                {% for tag in product_tag_list %}
                                     <div class="tag">
                                         <span class="tag-text">{{ tag }}</span>
                                     </div>
