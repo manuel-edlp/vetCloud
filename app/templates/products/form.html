@@ -94,7 +94,17 @@
                         {% endif %}
                     </div>
                     <div id="sugerencias">
-                        <label class="form-label">Sugerencias</label>
+                        <div class="load">
+                            <label id="suggestionsLabel" class="form-label">Sugerencias</label>
+
+                            <!-- Elemento de animación de carga para las sugerencias -->
+                            <div id="loadingSuggestions">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div id="suggestionsContainer" class="form-control tags-container">
                             <!-- Aquí se agregarán las sugerencias dinámicamente -->                        
                         </div>
@@ -116,7 +126,17 @@
                 </div>
 
                 <div>
-                    <label for="description" class="form-label">Descripción</label>
+                    <div class="load">
+                        <label for="description" class="form-label">Descripción</label>
+                        
+                        <!-- Elemento de animación de carga para la descripción -->
+                        <div id="loadingDescription">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <textarea id="description"
                               name="description"
                               class="form-control {% if errors.description %}is-invalid{% endif %}"
@@ -178,6 +198,25 @@
             </form>
 
             <style>
+
+                .load{
+                    display: inline-flex; /* Utilizar flexbox para alinear el texto y el spinner */
+                }
+
+                #loadingSuggestions{ 
+                    display:none;
+                }
+
+                #loadingDescription
+                { 
+                    display:none;
+                }
+                .spinner-border{
+                    margin-left: 40%;
+                    margin-top: 15%;
+                    width: 1.25rem; /* Ancho del spinner */
+                    height: 1.25rem; /* Alto del spinner */
+                }
                 .description {
                     width: 100%; /* Opcional: ancho completo del contenedor */
                     min-height: 100px; /* Altura mínima inicial */
@@ -395,10 +434,6 @@
                         // Guardar el nombre del archivo en el local storage
                         localStorage.setItem('imagenNombre', fileName);
 
-                        // imprimo valores de los toggles
-                        console.log('toggleAutoDescription:', toggleAutoDescription.checked);
-                        console.log('toggleSuggestions:', toggleSuggestions.checked);
-
                         saveImageToLocalStorage(file);
 
                         showImagePreview();
@@ -420,6 +455,14 @@
                             formData.append('extract_text', toggleAutoDescription.checked);
                             formData.append('suggest_tags', toggleSuggestions.checked);
 
+                            // Mostrar animación de carga
+                            if (toggleAutoDescription.checked) {
+                                document.getElementById('loadingDescription').style.display = 'block';
+                            }
+                            if (toggleSuggestions.checked){
+                                document.getElementById('loadingSuggestions').style.display = 'block';
+                            }
+
                             fetch('{% url "process_image" %}', {
                                 method: 'POST',
                                 body: formData,
@@ -429,11 +472,43 @@
                             })
                             .then(response => response.json())
                             .then(data => {
+                                // Ocultar animación de carga después de la carga
+                                document.getElementById('loadingSuggestions').style.display = 'none';
+                                document.getElementById('loadingDescription').style.display = 'none';
+
+                                // Si se extrajo texto y el toggle está activado, llenar el campo de descripción
                                 if (toggleAutoDescription.checked && data.extracted_text) {
                                     descriptionTextarea.value = data.extracted_text;
                                 }
-                                                               
-                                if (toggleSuggestions.checked && data.suggested_tags) {
+
+                                // Si no se extrajo texto y el toggle está activado, muestro mensaje de error
+                                if (toggleAutoDescription.checked && !data.extracted_text){
+                                    descriptionTextarea.placeholder = "No se pudo generar una descripción automática para este producto";
+                                }
+
+                                // Si no se sugirieron etiquetas y el toggle está activado, muestro mensaje de error
+                                if (toggleSuggestions.checked && data.suggested_tags.length == 0){
+                                    // obtengo contenedor
+                                    const suggestionsContainer = document.getElementById('suggestionsContainer');
+                                    
+                                    // Limpiamos el contenido anterior del contenedor de sugerencias
+                                    suggestionsContainer.innerHTML = '';
+
+                                    // Crear un nuevo elemento div para la etiqueta
+                                    const tagElement = document.createElement('div');
+                                        tagElement.classList.add('tag');
+                                        // Contenido de la etiqueta
+                                        tagElement.innerHTML = `
+                                            <span class="tag-text">No hay sugerencias</span>      
+                                            <i class="bi bi-exclamation-circle"></i>           
+                                        `;
+                                        // Agregar la etiqueta al contenedor de etiquetas
+                                        suggestionsContainer.appendChild(tagElement);
+                
+                                }
+
+                                // Si se extrajeron etiquetas y el toggle está activado, mostrar las sugerencias en el contenedor de sugerencias
+                                if (toggleSuggestions.checked && data.suggested_tags.length > 0) {
                                     const suggestionsContainer = document.getElementById('suggestionsContainer');
 
                                     // Limpiamos el contenido anterior del contenedor de sugerencias
@@ -459,12 +534,16 @@
                                     //suggestionsContainer.style.display = 'flex';
                                 } else {
                                     // Ocultamos el contenedor de sugerencias si no hay etiquetas sugeridas o el toggle no está activado
-                                    document.getElementById('suggestionsContainer').style.display = 'none';
+                                    //document.getElementById('suggestionsContainer').style.display = 'none';
                                 }
 
                             })
                             .catch(error => {
                                 console.error("Error al procesar la imagen:", error);
+                                
+                                // Ocultar animación de carga en caso de error
+                                document.getElementById('loadingSuggestions').style.display = 'none';
+                                doccument.getElementById('loadingDescription').style.display = 'none'; 
                             });
                         } else {
                             console.log("No se seleccionó una imagen.");
@@ -617,9 +696,9 @@
                                     const newTagElement = document.createElement('div');
                                     newTagElement.classList.add('tag');
                                     newTagElement.innerHTML = `
-                    <span class="tag-text">${tagText}</span>      
-                    <i class="bi bi-x-circle tag-close"></i>
-                `;
+                                        <span class="tag-text">${tagText}</span>      
+                                        <i class="bi bi-x-circle tag-close"></i>
+                                    `;
 
                                     tagContainer.appendChild(newTagElement);
 
