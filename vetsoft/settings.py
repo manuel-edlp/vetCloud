@@ -12,25 +12,32 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+import os
+
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env
+# Ensure the .env file is in the root directory of your project
+ENV_FILE = os.path.join(BASE_DIR, '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-p)^5i@33!)v)l7*c#q)%j(g5d+**-yo%)6l*vg!gs_w-e=^_ig"
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = ['vet-web-app.azurewebsites.net','127.0.0.1']
+# Configuración de hosts permitidos
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
 
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://vet-web-app.azurewebsites.net',
-]
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS').split(',')
 
 
 # Application definition
@@ -81,20 +88,22 @@ WSGI_APPLICATION = "vetsoft.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
+# Configuración de la base de datos PostgreSQL
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "vet-cloud-database", # Nombre de la base de datos
-        "USER": "postgres",
-        "PASSWORD": "Admin1234",
-        "HOST": "vet-cloud-server.postgres.database.azure.com",  # dirección del servidor de PostgreSQL
-        "PORT": "5432",  # el puerto por defecto de PostgreSQL
+    'default': {
+        'ENGINE': config('DB_ENGINE'),
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 
 # Conexion con blob storage
-AZURE_BLOB_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=vetstorage02;AccountKey=PxH6LI6QM41Z1jxuYqC2J1qDReXxJQAAKNoTSwPiXG9UT+INOgRW71U24ateGuJrsXI69w1Zuy85+AStUD8lzw==;EndpointSuffix=core.windows.net'
-AZURE_BLOB_CONTAINER_NAME = 'imagenes'
+AZURE_BLOB_CONNECTION_STRING = config('AZURE_BLOB_CONNECTION_STRING')
+AZURE_BLOB_CONTAINER_NAME = config('AZURE_BLOB_CONTAINER_NAME')
 
 
 

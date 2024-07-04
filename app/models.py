@@ -7,8 +7,13 @@ from django.conf import settings
 from azure.storage.blob import BlobServiceClient
 from django.core.files.uploadedfile import UploadedFile
 import uuid
+import os
+from decouple import config
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Cargar variables de entorno desde .env
+ENV_FILE = os.path.join(BASE_DIR, '.env')
 
 class CityEnum(models.TextChoices):
     """
@@ -401,7 +406,8 @@ def upload_image_to_azure(image_file):
         blob_client.upload_blob(data)
 
     # Construir y devolver la URL de la imagen
-    return f"https://vetstorage02.blob.core.windows.net/imagenes/{unique_name}"
+    url = config('URL')
+    return f"{url}{unique_name}"
 
 
 

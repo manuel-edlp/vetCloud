@@ -12,12 +12,19 @@ from azure.cognitiveservices.vision.computervision import ComputerVisionClient
 from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes,VisualFeatureTypes
 from msrest.authentication import CognitiveServicesCredentials
 from io import BytesIO
+import os
+from decouple import config
 
 import json
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Cargar variables de entorno desde .env
+ENV_FILE = os.path.join(BASE_DIR, '.env')
+
 # Configurar las credenciales y el cliente para Azure Computer Vision
-KEY = '54d2d1efe0184a369ed2c2f290e50d15'
-ENDPOINT = 'https://vet-computer-vision.cognitiveservices.azure.com/'
+KEY = config('KEY')
+ENDPOINT = config('ENDPOINT')
 computervision_client = ComputerVisionClient(ENDPOINT, CognitiveServicesCredentials(KEY))
 
 
