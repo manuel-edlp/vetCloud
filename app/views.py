@@ -372,7 +372,7 @@ def product_search(request):
         products = Product.objects.filter(
             Q(name__icontains=query) |  # Búsqueda por nombre que contiene la consulta
             Q(description__icontains=query) |  # Búsqueda por descripción que contiene la consulta
-            Q(type__icontains=query) | # Búsqueda por dosis que contiene la consulta
+            Q(tag__icontains=query) | # Búsqueda por dosis que contiene la consulta
             Q(price__icontains=query) | # Búsqueda por precio que contiene la consulta
             Q(provider__name__icontains=query) # Búsqueda por nombre de proveedor que contiene la consulta          
         )
