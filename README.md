@@ -1,14 +1,23 @@
-# Vetsoft
+# VetCloud
 
-Aplicación web para veterinarias utilizada en la cursada 2024 de Ingeniería y Calidad de Software. UTN-FRLP
+Aplicación web de gestión de veterinaria para el trabajo integrador de Software Cloud. UTN-FRLP. 2024.
 
-## Dependencias
+## Características
 
-- python 3
-- Django
-- sqlite
-- playwright
-- ruff
+Permite el registro y gestión de proveedores, clientes, veterinarios, mascotas, productos y medicamentos.
+
+Integración con IA de Azure: Utilizamos Azure Cognitive Services para mejorar la experiencia del usuario:
+
+Extracción de Texto Inteligente: La aplicación puede extraer automáticamente texto de las etiquetas de los medicamentos, utilizando tecnología OCR (Reconocimiento Óptico de Caracteres), y autocompletar la descripción del producto.
+
+Recomendaciones de Categorías: Al subir imágenes de productos, la IA de Azure analiza la imagen y sugiere categorías apropiadas para el producto, facilitando la organización y clasificación de los inventarios.
+
+## Tecnologías
+Tecnología Cloud: Azure
+
+Motor de Base de Datos: PostgreSQL
+
+FrameWork: Django
 
 ## Instalar dependencias
 
@@ -33,61 +42,16 @@ Aplicación web para veterinarias utilizada en la cursada 2024 de Ingeniería y 
 
 `coverage report`
 
-## Integrantes:
+# Créditos y Agradecimientos
 
-Baez Gonazalo - Proveedor
-Semper, Juan Manuel - Producto
-Morullo Manuel  - Mascota
-Abregu Candela - Veterinario
-González Lurbé, Feliciano - Medicamento
+## Colaboradores Actuales
+Morullo Manuel - Desarrollador principal y encargado del proyecto.
 
-## Docker Baez Gonzalo
-Comando utilizado para construir imagen
->> docker build --build-arg VERSION=1.0 -t vetsoft-app:1.0 .
+## Colaboradores Anteriores
+Baez Gonzalo
 
-Comando utilizado para crear y ejecutar contenedor
->> docker run -p 8000:8000 --name vetsoft-v0 vetsoft-app:1.0
+Semper Juan Manuel
 
-Comando para utilizar mi imagen
->> docker start vetsoft-v0
+Abregu Candela
 
-## Docker Gonzalez Lurbe Feliciano
-Comando utilizado para construir imagen
-docker build --build-arg VERSION=1.1 -t vetsoft-app:1.1 .
-
-Comando utilizado para crear y ejecutar contenedor
->> docker run -p 8000:8000 --name vetsoft-v1 vetsoft-app:1.1
-
-Comando para utilizar mi imagen
->> docker start vetsoft-v1
-
-## Docker Semper Juan Manuel
-Comando utilizado para construir imagen
->> docker build --build-arg VERSION=1.2 -t vetsoft-app:1.2 .
-
-Comando utilizado para crear y ejecutar contenedor
->> docker run -p 8000:8000 --name vetsoft-v0 vetsoft-app:1.2
-
-Comando para utilizar mi imagen
->> docker start vetsoft-v2
-
-## Docker Abregu Candela
-Comando utilizado para construir imagen
->> docker build --build-arg VERSION=1.3 -t vetsoft-app:1.3 .
-
-Comando utilizado para crear y ejecutar contenedor
->> docker run -p 8000:8000 --name vetsoft-v3 vetsoft-app:1.3
-
-Comando para utilizar mi imagen
->> docker start vetsoft-v3
-
-## Docker Morullo Manuel
-Comando utilizado para construir imagen
->> docker build --build-arg VERSION=1.4 -t vetsoft-app:1.4 .
-
-Comando utilizado para crear y ejecutar contenedor
->> docker run -p 8000:8000 --name vetsoft-v4 vetsoft-app:1.4
-
-Comando para utilizar mi imagen
->> docker start vetsoft-v4
-
+Gonzalez Lurbe Feliciano
