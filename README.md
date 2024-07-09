@@ -6,13 +6,17 @@ Aplicación web de gestión de veterinaria para el trabajo integrador de Softwar
 
 Permite el registro y gestión de proveedores, clientes, veterinarios, mascotas, productos y medicamentos.
 
-Integración con IA de Azure: Utilizamos Azure Cognitive Services para mejorar la experiencia del usuario:
+### Integración con IA de Azure: 
+Utilizamos Azure Cognitive Services para mejorar la experiencia del usuario:
 
-Extracción de Texto Inteligente: La aplicación puede extraer automáticamente texto de las etiquetas de los medicamentos, utilizando tecnología OCR (Reconocimiento Óptico de Caracteres), y autocompletar la descripción del producto.
+### Extracción de Texto Inteligente: 
+La aplicación puede extraer automáticamente texto de las etiquetas de los medicamentos, utilizando tecnología OCR (Reconocimiento Óptico de Caracteres), y autocompletar la descripción del producto.
 
-Recomendaciones de Categorías: Al subir imágenes de productos, la IA de Azure analiza la imagen y sugiere categorías apropiadas para el producto, facilitando la organización y clasificación de los inventarios.
+### Recomendaciones de Categorías:
+Al subir imágenes de productos, la IA de Azure analiza la imagen y sugiere categorías apropiadas para el producto, facilitando la organización y clasificación de los inventarios.
 
 ## Tecnologías
+
 Tecnología Cloud: Azure
 
 Motor de Base de Datos: PostgreSQL
